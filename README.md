@@ -7,6 +7,8 @@ dove si arriva.
 **Nessun account, nessuna installazione, nessun server.** È un sito statico: il mondo
 si scarica un campionato per volta, e la partita gira tutta nel browser.
 
+**Si gioca qui:** <https://trovarts.github.io/legend/>
+
 ## Com'è fatto
 
 **Il salvataggio è un seme e una lista di scelte.** Non c'è stato di gioco da nessuna
@@ -38,6 +40,7 @@ regge:
 | `npm run racconto` | stampa una carriera intera, da leggere |
 | `npm run check:bundle` | il peso della prima pagina |
 | `npm run check:static` | che il sito costruito si apra davvero |
+| `npm run codice-finito` | il codice di una carriera già conclusa, per provare le schermate finali |
 
 `npm run verify` li esegue tutti.
 

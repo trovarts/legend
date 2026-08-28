@@ -572,3 +572,32 @@ qualcuno che a ventotto anni esce dal professionismo perché non gioca più.
 costruzione senza che nessun test se ne accorga. Il Lab guardava le *stagioni per
 carriera* (20,4, dentro la forbice 12-24) e non l'*età al ritiro*: la stessa cosa
 vista da un'angolazione che nascondeva il problema. Adesso guarda quella.
+
+## D-026 — Avevo costruito un documento, serviva una scena
+
+Il committente ha giocato e ha detto una cosa precisa: «non ti prende. Il loro sembra
+che appaiano pop-up, schermate guidate, non devi scorrere tutto lì». Aveva ragione, e
+il difetto non era estetico: era l'impianto.
+
+**Com'era.** Una pagina che scorreva, con impilati in ordine: tessera del giocatore,
+barra del Rivale, sei schede, quattro riquadri di contesto, e *poi* la decisione — che
+cominciava a 450 pixel dall'alto e finiva sotto il bordo. Per fare la cosa per cui si
+era lì bisognava cercarla.
+
+**Com'è.** La carriera è una **scena**: `100dvh`, testata ferma in alto, corpo che
+scorre da solo, bottone del passo appoggiato in basso che non se ne va mai. Il
+contesto e la gerarchia si sono spostati nella scheda Profilo. Su desktop le tre
+opzioni stanno una accanto all'altra e **quindici schermate su sedici non richiedono
+di scorrere affatto**.
+
+**Cosa ho imparato misurando invece di guardare.** Il colore del club c'era già, ma non
+si vedeva: l'alone dello stadio era dipinto su `body` mentre le variabili del tema
+stavano su un `div` interno, e soprattutto le carte erano opache e coprivano lo
+schermo. Spostare il colore sulla radice del documento e rendere le carte di vetro ha
+fatto comparire una cosa che era lì da sempre. Prima di aggiungere, controllare se
+quello che manca è solo coperto.
+
+**E la regola generale, che vale oltre questo progetto:** una schermata che chiede di
+scorrere per trovare l'azione non è una schermata piena, è una schermata sbagliata.
+Se il contenuto non ci sta, non è il lettore a doversi muovere: è il contenuto a dover
+essere meno.
