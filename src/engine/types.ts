@@ -64,16 +64,27 @@ export interface NationalSeason {
   tournament: { name: string; stageReached: string } | null;
 }
 
-/** Una riga della timeline di carriera. La Fase 2 aggiungerà gol, assist e trofei. */
+/** Una riga della timeline di carriera. */
 export interface SeasonRecord {
   season: number;
   age: number;
   clubId: string;
   clubName: string;
   leagueId: string;
+  leagueName: string;
+  leagueLevel: number;
   minutesShare: number;
   overallStart: number;
   overallEnd: number;
+  stats: SeasonStats;
+  /** Posizione finale del club in campionato, 1-based. */
+  position: number;
+  trophies: Trophy[];
+  awards: Award[];
+  national: NationalSeason;
+  valueEur: number;
+  /** Offerte ricevute a fine stagione. */
+  offers: Offer[];
 }
 
 export interface CareerResult {
@@ -81,4 +92,10 @@ export interface CareerResult {
   seasons: SeasonRecord[];
   peakOverall: number;
   retiredAt: number;
+  /** Nomi dei club in cui ha giocato, in ordine, senza ripetizioni consecutive. */
+  clubsPlayed: string[];
+  trophies: Trophy[];
+  awards: Award[];
+  peakValueEur: number;
+  totalCaps: number;
 }
