@@ -25,8 +25,8 @@ export const YOUTH_OPTIONS: readonly YouthOption[] = [
     focus: 'Focus fisico',
     text: 'Chiedi doppie sedute e carichi da categoria superiore: puoi accelerare molto, oppure scoprire che il fisico ha bisogno di tempo.',
     outcomes: [
-      { chance: 0.5, overall: 3, label: '+3 OVR' },
-      { chance: 0.5, overall: 0, label: 'nessuna variazione' },
+      { chance: 0.5, overall: 6, label: '+6 OVR' },
+      { chance: 0.5, overall: 1, label: 'solo +1 OVR' },
     ],
   },
   {
@@ -36,8 +36,8 @@ export const YOUTH_OPTIONS: readonly YouthOption[] = [
     focus: 'Focus tattica',
     text: 'Alterni tecnica, tattica e atletica con lo staff: niente scorciatoie, ma una buona possibilità di fare un passo avanti concreto.',
     outcomes: [
-      { chance: 0.6, overall: 2, label: '+2 OVR' },
-      { chance: 0.4, overall: 0, label: 'nessuna variazione' },
+      { chance: 0.6, overall: 4, label: '+4 OVR' },
+      { chance: 0.4, overall: 2, label: 'solo +2 OVR' },
     ],
   },
   {
@@ -46,7 +46,7 @@ export const YOUTH_OPTIONS: readonly YouthOption[] = [
     approach: 'Approccio conservativo',
     focus: 'Focus finalizzazione',
     text: 'Scegli lavoro individuale, recupero e correzione dei fondamentali: meno esplosivo, ma senza il rischio di un anno sprecato.',
-    outcomes: [{ chance: 1, overall: 1, label: '+1 OVR' }],
+    outcomes: [{ chance: 1, overall: 3, label: '+3 OVR' }],
   },
 ];
 

@@ -56,6 +56,50 @@ export function Creazione({
     .filter((entry) => entry.leagueId === leagueId)
     .sort((a, b) => clubStrength(b.club) - clubStrength(a.club));
 
+  // Le due categorie più basse del paese, un girone per livello: è da lì che
+  // arrivano le proposte di vivaio.
+  const livelliBassi = [...new Set(campionati.map((league) => league.level))]
+    .sort((a, b) => b - a)
+    .slice(0, 2);
+  const legheVivaio = livelliBassi
+    .map((livello) => campionati.find((league) => league.level === livello))
+    .filter((league): league is (typeof campionati)[number] => league !== undefined);
+
+  /**
+   * Tre proposte diverse fra loro: la squadra più modesta del fondo, una di metà
+   * classifica e la più forte della categoria sopra. Se sono tutte uguali non è
+   * una scelta, è un modulo da compilare.
+   */
+  function offerteDiVivaio(): typeof world.clubs {
+    const scelte: typeof world.clubs = [];
+    const bassa = legheVivaio[0];
+    const alta = legheVivaio[1];
+
+    const daLega = (id: string | undefined) =>
+      id === undefined
+        ? []
+        : world.clubs
+            .filter((entry) => entry.leagueId === id)
+            .sort((a, b) => clubStrength(a.club) - clubStrength(b.club));
+
+    const inBasso = daLega(bassa?.id);
+    const inAlto = daLega(alta?.id);
+    if (inBasso[0]) scelte.push(inBasso[0]);
+    const mediana = inBasso[Math.floor(inBasso.length / 2)];
+    if (mediana) scelte.push(mediana);
+    const migliore = inAlto[inAlto.length - 1];
+    if (migliore) scelte.push(migliore);
+
+    // Se il paese ha una piramide corta si ripiega sui club più deboli disponibili.
+    if (scelte.length < 3) {
+      for (const entry of [...inBasso, ...inAlto]) {
+        if (scelte.length >= 3) break;
+        if (!scelte.includes(entry)) scelte.push(entry);
+      }
+    }
+    return scelte;
+  }
+
   const testata = (titolo: string, sommario: string, numeroPasso: Passo): ReactElement => (
     <>
       <header className="testata">
@@ -287,10 +331,12 @@ export function Creazione({
                 }
                 return;
               }
-              // A sorpresa: si parte dal fondo della piramide del proprio paese.
+              // A sorpresa: le proposte arrivano dalle due categorie più basse.
               if (primaLega) {
                 setLeagueId(primaLega.id);
-                void world.loadLeagues([primaLega.id]).then(() => setPasso(4));
+                void world
+                  .loadLeagues(legheVivaio.map((league) => league.id))
+                  .then(() => setPasso(4));
               }
             }}
           >
@@ -330,18 +376,22 @@ export function Creazione({
             </div>
           )}
 
-          {club.length === 0 && <p className="tenue">Sto caricando le squadre…</p>}
+          {(() => {
+            const proposte = sceltaClub === 'sorpresa' ? offerteDiVivaio() : club;
+            return proposte.length === 0 ? <p className="tenue">Sto caricando le squadre…</p> : null;
+          })()}
 
           <Scelte>
-            {(sceltaClub === 'sorpresa' ? club.slice(-3) : club).map((entry) => {
+            {(sceltaClub === 'sorpresa' ? offerteDiVivaio() : club).map((entry) => {
               const forza = clubStrength(entry.club);
+              const suaLega = world.leagues.find((league) => league.id === entry.leagueId);
               return (
                 <Scelta
                   key={entry.club.id}
                   sigla={sigla(entry.club.name)}
                   titolo={sceltaClub === 'sorpresa' ? `Firma per ${entry.club.name}` : entry.club.name}
                   sottotitolo={inItaliano(country).toUpperCase()}
-                  nota={`${lega?.name ?? ''} · ${entry.club.squad.length} in rosa`}
+                  nota={`${(sceltaClub === 'sorpresa' ? suaLega?.name : lega?.name) ?? ''} · ${entry.club.squad.length} in rosa`}
                   etichetta="forza della rosa"
                   sicura={forza < 72}
                   puntata={
@@ -355,7 +405,13 @@ export function Creazione({
                       </span>
                     </span>
                   }
-                  onClick={() => avvia(entry.club.id, lega?.level ?? 1, country)}
+                  onClick={() =>
+                    avvia(
+                      entry.club.id,
+                      (sceltaClub === 'sorpresa' ? suaLega?.level : lega?.level) ?? 1,
+                      country,
+                    )
+                  }
                 />
               );
             })}

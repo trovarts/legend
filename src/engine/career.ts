@@ -68,6 +68,8 @@ export interface RunCareerInput {
   agent?: Agent;
   /** Cosa gli è stato chiesto di cercare, stagione per stagione. */
   requestFor?: (season: number) => AgentRequest | undefined;
+  /** L'overall con cui esce dal vivaio, se la carriera comincia da lì. */
+  startOverall?: number;
   /** Su cosa lavora in preparazione; in Fase 4 lo sceglie l'utente. */
   trainingPolicy?: (
     season: number,
@@ -94,7 +96,7 @@ export function runCareer(input: RunCareerInput): CareerResult {
   let current: CandidateClub = partenza;
 
   const startingLeagueLevel = current.leagueLevel;
-  let player = createPlayer(input.create, rng);
+  let player = createPlayer({ ...input.create, startOverall: input.startOverall }, rng);
   let contract = signContract(0, player.age, rng);
 
   let rival = createRival({

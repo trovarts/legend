@@ -1,5 +1,5 @@
 import { DecisionRequired, runCareer, type PendingDecision } from './career';
-import type { CreatePlayerInput } from './create';
+import { createPlayer, type CreatePlayerInput } from './create';
 import type { CandidateClub } from './market';
 import type { Agent } from './agent';
 import { agentById, offerAgents } from './agent';
@@ -96,7 +96,9 @@ export function playCareer(save: CareerSave, clubs: readonly CandidateClub[]): P
     clubs.find((entry) => entry.club.id === save.startClubId)?.club.name ?? 'il club';
   const youth: YouthSeason[] = [];
   let overall = 40 + (save.create.age - YOUTH_START_AGE) * 2;
-  const potential = 55 + (save.seed % 35);
+  // Il potenziale è quello del giocatore vero, non un numero a parte: il vivaio e
+  // la carriera devono parlare dello stesso ragazzo.
+  const potential = createPlayer(save.create, createRng(save.seed)).potential;
   let age = YOUTH_START_AGE;
   let year = 1;
 
@@ -133,7 +135,9 @@ export function playCareer(save: CareerSave, clubs: readonly CandidateClub[]): P
 
   try {
     const result = runCareer({
-      create: save.create,
+      // Dal vivaio si esce con un'età e un overall: la prima squadra parte da lì.
+      create: { ...save.create, age },
+      startOverall: overall,
       world: { clubs, startClubId: save.startClubId },
       seed: save.seed,
       style: save.decisions.style,

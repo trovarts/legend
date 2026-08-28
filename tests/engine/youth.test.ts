@@ -37,21 +37,38 @@ describe('playYouthSeason', () => {
     expect(season.rating).toBeLessThan(9);
   });
 
-  it("l'approccio conservativo dà sempre un punto", () => {
+  it("l'approccio conservativo dà sempre lo stesso passo avanti", () => {
+    const certo = youthOption('proteggi-la-crescita').outcomes[0]!.overall;
     for (let seed = 0; seed < 50; seed += 1) {
       const season = playYouthSeason({ ...base, approach: 'proteggi-la-crescita' }, createRng(seed));
-      expect(season.overallEnd - season.overallStart).toBe(1);
+      expect(season.overallEnd - season.overallStart).toBe(certo);
     }
   });
 
-  it("l'approccio aggressivo a volte non dà niente, a volte molto", () => {
+  it("l'approccio aggressivo a volte dà poco, a volte molto", () => {
     const guadagni = new Set<number>();
     for (let seed = 0; seed < 60; seed += 1) {
       const season = playYouthSeason({ ...base, approach: 'forza-il-ritmo' }, createRng(seed));
       guadagni.add(season.overallEnd - season.overallStart);
     }
-    expect(guadagni.has(0)).toBe(true);
-    expect(guadagni.has(3)).toBe(true);
+    const attesi = youthOption('forza-il-ritmo').outcomes.map((o) => o.overall);
+    for (const atteso of attesi) expect(guadagni.has(atteso)).toBe(true);
+  });
+
+  it('tre anni di vivaio portano dove comincia una carriera vera', () => {
+    // Il salto in prima squadra parte da qui: se si esce troppo deboli non si
+    // recupera più, se troppo forti il vivaio diventa una scorciatoia.
+    for (const approach of ['forza-il-ritmo', 'piano-completo', 'proteggi-la-crescita'] as const) {
+      let overall = 40;
+      for (let anno = 1; anno <= 3; anno += 1) {
+        overall = playYouthSeason(
+          { ...base, year: anno, age: 13 + anno, overall, approach },
+          createRng(anno * 31 + 5),
+        ).overallEnd;
+      }
+      expect(overall).toBeGreaterThanOrEqual(43);
+      expect(overall).toBeLessThanOrEqual(58);
+    }
   });
 
   it('non si supera mai il proprio potenziale', () => {

@@ -10,6 +10,11 @@ export interface CreatePlayerInput {
   age: number;
   /** Livello del campionato in cui si comincia: 1 = massima serie. */
   leagueLevel: number;
+  /**
+   * L'overall con cui si esce dal vivaio. Quando c'è, sostituisce il sorteggio:
+   * gli anni giocati nelle giovanili devono contare per qualcosa.
+   */
+  startOverall?: number;
 }
 
 /** Partire in basso significa partire più deboli — ma con più spazio per giocare (spec §3.1). */
@@ -33,8 +38,12 @@ function talentBonus(rng: Rng): number {
 
 export function createPlayer(input: CreatePlayerInput, rng: Rng): CareerPlayer {
   const base = BASE_OVERALL_BY_LEVEL[input.leagueLevel] ?? BASE_OVERALL_BY_LEVEL[4]!;
-  const overall = base + talentBonus(rng) + rng.int(-2, 2);
-  const potential = Math.min(MAX_POTENTIAL, overall + rng.int(10, 26));
+  // I tre sorteggi restano sempre gli stessi, anche quando l'overall arriva dal
+  // vivaio: così una carriera vecchia rigiocata dà ancora lo stesso giocatore.
+  const sorteggiato = base + talentBonus(rng) + rng.int(-2, 2);
+  const margine = rng.int(10, 26);
+  const overall = input.startOverall ?? sorteggiato;
+  const potential = Math.min(MAX_POTENTIAL, Math.max(sorteggiato, overall) + margine);
   const physique = rng.int(40, 85);
 
   return {
