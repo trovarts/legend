@@ -30,7 +30,9 @@ export function growPlayer(
   minutesShare: number,
   rng: Rng,
 ): CareerPlayer {
-  const playFactor = 0.25 + 0.75 * minutesShare;
+  // Giocare titolare pesa più che allenarsi: chi ha talento e campo lo esprime davvero,
+  // altrimenti i fuoriclasse non nascono mai (verificato col Simulation Lab).
+  const playFactor = 0.2 + 0.8 * minutesShare;
   const gap = Math.max(0, player.potential - player.overall);
   const gain = Math.round(gap * 0.3 * growthFactor(player.age) * playFactor);
 

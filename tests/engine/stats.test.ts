@@ -87,3 +87,17 @@ describe('seasonStats', () => {
     );
   });
 });
+
+describe('coerenza fra minuti e presenze', () => {
+  it('le presenze bastano sempre a contenere i minuti, anche con quote minime', () => {
+    for (const share of [0.02, 0.031, 0.05, 0.08, 0.12, 0.31, 0.5, 0.95]) {
+      for (let seed = 0; seed < 200; seed += 1) {
+        const stats = seasonStats({ ...starterForward, minutesShare: share }, createRng(seed));
+        expect(
+          stats.minutes,
+          `share ${share}: ${stats.minutes} minuti in ${stats.appearances} presenze`,
+        ).toBeLessThanOrEqual(stats.appearances * 90);
+      }
+    }
+  });
+});

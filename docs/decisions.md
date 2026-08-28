@@ -129,3 +129,76 @@ contratti pluriennali, che in Fase 2 non esistono.
 **Non corretto adesso di proposito:** i contratti servono comunque alla Fase 3, dove il
 rinnovo è uno dei bivi con posta dichiarata (spec §3.5). Introdurli lì, e non qui con una
 pezza nella politica di trasferimento.
+
+## D-009 — Il talento va generato, non sperato
+
+Alla fine della Fase 3 il Lab segnalava che **meno dell'1% delle carriere superava 85 di
+picco**: la condizione posta da D-004 era di nuovo violata, perché gli infortuni tolgono
+minuti e senza minuti non si cresce.
+
+La prima ipotesi era sbagliata. Il collo di bottiglia non erano gli infortuni ma la
+**generazione del giocatore**: `createPlayer` partiva sempre da un overall di ~55 e
+affidava tutto al margine di potenziale, con un tetto che rendeva 85 quasi irraggiungibile.
+
+I dati hanno chiarito come funziona la realtà: sui 1999 under 19 del dataset il margine di
+potenziale arriva **al massimo a +26** (mediana +15), mentre il potenziale assoluto tocca
+95. Vuol dire che i fuoriclasse non hanno un margine enorme — **partono già forti**. Il
+modello ora genera il talento in tre fasce (fenomeno, promessa, buon giovane), e la
+crescita premia di più chi gioca titolare, perché chi ha talento e campo deve esprimerlo.
+
+Effetto: le carriere sopra 85 di picco sono tornate sopra l'1%, e il picco medio è salito
+da 70 a 71,7 in tutti e quattro i ruoli.
+
+## D-010 — Il protagonista è più talentuoso della media, di proposito
+
+Il generatore produce circa il **7% di giovani con potenziale da 85 in su**, contro il
+**3,9%** misurato fra gli under 19 di prima divisione nel dataset.
+
+Lo scarto è voluto. Quel 3,9% riguarda ragazzi che sono già stati selezionati per entrare
+in una rosa di massima serie; il giocatore dell'utente è il protagonista di una storia, non
+un nome preso a caso da una lista. Un gioco in cui il 96% delle partite dice «sei un onesto
+mestierante» non è un gioco.
+
+È la stessa lezione di D-007, dall'altro lato: **i dati misurano, il design decide** — e
+quando il design si allontana dal dato, lo si scrive invece di nasconderlo in una soglia.
+
+## D-011 — Lo strumento che verifica le scelte mentiva
+
+Il `choices-lab` (spec §6: nessun ramo deve essere quello giusto più del 70% delle volte)
+alla prima esecuzione dichiarava **sei bivi dominanti su otto**, uno addirittura al 100%.
+Erano quasi tutti falsi.
+
+**Bug 1 — i pareggi contati come vittorie.** Se in una carriera il bivio non si presentava
+(per `pace-col-mister` serve aver già litigato col mister), le due varianti forzate erano
+identiche e producevano lo stesso punteggio: il confronto assegnava allora la vittoria alla
+prima opzione della lista, sempre. Ora si contano solo le carriere in cui il bivio è
+davvero comparso, e i pareggi vengono scartati.
+
+**Bug 2 — lo strumento non visitava tutti i rami.** Sugli altri bivi usava `boldPolicy`,
+che non sceglie mai un'opzione dal valore atteso negativo: nessuno litigava col mister,
+quindi il bivio della riconciliazione non si presentava **mai** in cento carriere. Ora la
+politica di contorno **esplora** — sceglie in modo deterministico ma vario — così tutti i
+rami vengono percorsi. Un utente vero, del resto, sceglie anche col cuore.
+
+**Esito dopo le correzioni** (200 carriere per bivio, contando solo quelle in cui il bivio
+è comparso):
+
+| Bivio | Ripartizione delle vittorie |
+|---|---|
+| rientro-anticipato | aspetta 52% \| anticipa 39% \| infiltrazioni 8% |
+| panchina-lunga | lavora 30% \| parla 38% \| chiedi-cessione 31% |
+| rinnovo-o-addio | rinnova 52% \| aspetta-scadenza 48% |
+| intervista-dopo-la-sconfitta | difendi 48% \| attacca 30% \| niente 22% |
+| pace-col-mister | scusati 55% \| tieni-il-punto 45% |
+| fascia-di-capitano | accetta 51% \| rifiuta 49% |
+| il-ragazzino | aiutalo 42% \| ignoralo 58% |
+| ritorno-a-casa | torna 60% \| resta 40% |
+
+Nessuna strada supera il 60%. Per arrivarci sono serviti veri ribilanciamenti del catalogo:
+ogni opzione «prudente» che non offriva nulla perdeva sempre, perché il punteggio GOAT
+premia minuti, trofei e valore. Adesso **ogni strada paga in qualche moneta**: tenere il
+punto col mister può portare al suo esonero, rifiutare la fascia toglie pressione, restare
+ad alto livello vale più soldi che tornare a casa.
+
+**Lezione:** prima di credere a uno strumento di verifica, verificare lo strumento. Un
+100% netto non è un risultato, è un sintomo.

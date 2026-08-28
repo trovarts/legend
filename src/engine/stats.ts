@@ -34,9 +34,14 @@ function around(expected: number, rng: Rng): number {
 
 export function seasonStats(input: SeasonStatsInput, rng: Rng): SeasonStats {
   const minutes = Math.round(MATCHES_PER_SEASON * MINUTES_PER_MATCH * input.minutesShare);
+  // Le presenze devono poter contenere i minuti: con quote molto basse l'arrotondamento
+  // per difetto produceva stagioni impossibili, tipo 106 minuti in una sola partita.
   const appearances = Math.min(
     MATCHES_PER_SEASON,
-    Math.round(MATCHES_PER_SEASON * Math.min(1, input.minutesShare * 1.25)),
+    Math.max(
+      Math.round(MATCHES_PER_SEASON * Math.min(1, input.minutesShare * 1.25)),
+      Math.ceil(minutes / MINUTES_PER_MATCH),
+    ),
   );
 
   const talent = (input.overall / 70) ** 3;
