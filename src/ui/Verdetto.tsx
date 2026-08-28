@@ -6,6 +6,7 @@ import type { CareerResult, GoatComponent } from '../engine/types';
 import { Albo } from './Albo';
 import { registraNellAlbo } from './alboSalvato';
 import { Traguardi } from './Traguardi';
+import { registraSfida } from './sfidaSalvata';
 import { registraTraguardi } from './traguardiSalvati';
 
 const ETICHETTE: Record<GoatComponent, string> = {
@@ -26,7 +27,12 @@ export function Verdetto({ result }: { result: CareerResult }) {
   const davanti = result.seasonsAheadOfRival > result.seasons.length / 2;
   const [nuovi, setNuovi] = useState<readonly string[]>([]);
   const [posto, setPosto] = useState<number | undefined>(undefined);
+  const [striscia, setStriscia] = useState(0);
   const registrato = useRef(false);
+
+  const oggi = new Date().toISOString().slice(0, 10);
+  const sfida = dailyChallenge(oggi);
+  const centrata = quantoFatto(result, sfida.unit) >= sfida.target;
 
   // Una volta sola per carriera finita. La carriera si rigioca dal seed a ogni
   // disegno, quindi `result` è un oggetto nuovo ogni volta: senza questa guardia
@@ -36,9 +42,8 @@ export function Verdetto({ result }: { result: CareerResult }) {
     registrato.current = true;
     setNuovi(registraTraguardi(window.localStorage, result));
     setPosto(registraNellAlbo(window.localStorage, result, Date.now()) ?? undefined);
-  }, [result]);
-
-  const sfida = dailyChallenge(new Date().toISOString().slice(0, 10));
+    setStriscia(registraSfida(window.localStorage, oggi, centrata));
+  }, [result, oggi, centrata]);
 
   return (
     <>
@@ -90,6 +95,11 @@ export function Verdetto({ result }: { result: CareerResult }) {
       <p className="tenue" style={{ margin: '.2rem 0 0', fontSize: '.85rem' }}>
         {esitoSfida(result, sfida.unit, sfida.target)}
       </p>
+      {centrata && striscia > 0 && (
+        <p className="sfida-striscia" style={{ margin: '.35rem 0 0' }}>
+          🔥 {striscia} {striscia === 1 ? 'giorno' : 'giorni'} di fila
+        </p>
+      )}
     </div>
 
     {posto === 1 && (
@@ -104,16 +114,20 @@ export function Verdetto({ result }: { result: CareerResult }) {
   );
 }
 
-/** A che punto è arrivata questa carriera rispetto alla sfida di oggi. */
-function esitoSfida(result: CareerResult, unit: string, target: number): string {
-  const fatto =
-    unit === 'gol' ? result.seasons.reduce((s, st) => s + st.stats.goals, 0)
+/** Quanto ha prodotto questa carriera nell'unità che la sfida chiede. */
+function quantoFatto(result: CareerResult, unit: string): number {
+  return unit === 'gol' ? result.seasons.reduce((s, st) => s + st.stats.goals, 0)
     : unit === 'assist' ? result.seasons.reduce((s, st) => s + st.stats.assists, 0)
     : unit === 'presenze' ? result.seasons.reduce((s, st) => s + st.stats.appearances, 0)
     : unit === 'club' ? result.clubsPlayed.length
     : unit === 'punti' ? result.goat.total
     : unit === 'overall' ? result.peakOverall
     : result.seasons.length;
+}
+
+/** A che punto è arrivata questa carriera rispetto alla sfida di oggi. */
+function esitoSfida(result: CareerResult, unit: string, target: number): string {
+  const fatto = quantoFatto(result, unit);
 
   return fatto >= target
     ? `Centrata: ${fatto} ${unit} contro ${target} richiesti.`

@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import Link from 'next/link';
 import { dailyChallenge } from '../engine/challenge';
 import { Albo } from '../ui/Albo';
+import { Sfida } from '../ui/Sfida';
 import { Traguardi } from '../ui/Traguardi';
 import type { LeagueSummary } from '../world/types';
 
@@ -49,19 +50,7 @@ export default function Home() {
         </span>
       </div>
 
-      <section className="sfida">
-        <span className="contesto-etichetta">Sfida di oggi</span>
-        <div className="riga" style={{ alignItems: 'flex-start' }}>
-          <div>
-            <h2 style={{ marginBottom: '.3rem' }}>{sfida.title}</h2>
-            <p className="tenue" style={{ margin: 0 }}>{sfida.text}</p>
-          </div>
-          <div className="sfida-target">
-            <b className="numero">{sfida.target}</b>
-            <span>{sfida.unit}</span>
-          </div>
-        </div>
-      </section>
+      <Sfida sfida={sfida} oggi={oggi} />
 
       <section className="card">
         <span className="contesto-etichetta">Nuova carriera</span>

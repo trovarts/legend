@@ -636,3 +636,6 @@ select.bottone { appearance: none; }
 .albo-nuova { border-color: var(--oro); background: rgba(245,197,24,.08); }
 .albo-posto { color: var(--tenue); font-size: .75rem; }
 .albo-goat { font-weight: 800; font-size: 1.05rem; }
+
+.sfida-striscia { margin: .4rem 0 0; font-size: .82rem; font-weight: 700; color: var(--oro); }
+.sfida-fatta { color: var(--positivo); }
