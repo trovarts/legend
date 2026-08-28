@@ -16,11 +16,12 @@
     "lab:choices": "tsx scripts/choices-lab.ts",
     "lab:vivaio": "tsx scripts/vivaio-check.ts",
     "racconto": "tsx scripts/racconto.ts",
-    "verify": "npm run check && npm run build && npm run check:bundle && npm run lab -- --careers=2000 --seed=42 && npm run lab:choices -- --careers=100 && npm run lab:vivaio -- 4",
+    "verify": "npm run check && npm run build && npm run check:bundle && npm run check:static && npm run lab -- --careers=2000 --seed=42 && npm run lab:choices -- --careers=100 && npm run lab:vivaio -- 4",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "check:bundle": "tsx scripts/check-bundle.ts",
+    "check:static": "tsx scripts/check-static.ts",
     "build:map": "tsx scripts/build-map.ts"
   },
   "devDependencies": {

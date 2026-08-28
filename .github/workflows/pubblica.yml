@@ -47,6 +47,11 @@ jobs:
       - name: Controlla il peso della pagina
         run: npm run check:bundle
 
+      - name: Controlla che il sito si apra davvero
+        run: npm run check:static
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
