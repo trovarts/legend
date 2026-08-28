@@ -19,14 +19,15 @@ for (const league of leagues) {
 }
 
 const seed = Number(process.argv[2] ?? '7');
+const ruolo = (process.argv[3] ?? 'FWD') as 'GK' | 'DEF' | 'MID' | 'FWD';
 const start = clubs.find((c) => c.leagueLevel === 4)!;
 const result = runCareer({
   seed,
-  create: { name: 'Diego Trovato', nationality: 'Italy', role: 'FWD', age: 17, leagueLevel: 4 },
+  create: { name: 'Diego Trovato', nationality: 'Italy', role: ruolo, age: 17, leagueLevel: 4 },
   world: { clubs, startClubId: start.club.id },
 });
 
-console.log(`\n${'='.repeat(70)}\nDiego Trovato — dal ${start.club.name}, ${start.leagueName}\n${'='.repeat(70)}`);
+console.log(`\n${'='.repeat(70)}\nDiego Trovato (${ruolo}) — dal ${start.club.name}, ${start.leagueName}\n${'='.repeat(70)}`);
 let precedente;
 for (const stagione of result.seasons) {
   const obiettivi = stagione.objectivesMet

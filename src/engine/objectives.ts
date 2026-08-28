@@ -13,7 +13,7 @@ import type { SeasonStats } from './types';
  */
 export type ObjectiveKind =
   | 'titolo' | 'piazzamento' | 'salvezza'
-  | 'coppa' | 'minuti' | 'gol' | 'assist' | 'media' | 'nazionale';
+  | 'coppa' | 'minuti' | 'gol' | 'assist' | 'media' | 'porta' | 'nazionale';
 
 export interface Objective {
   kind: ObjectiveKind;
@@ -35,6 +35,16 @@ export interface ObjectivesInput {
   /** Il nome vero della coppa del paese. */
   cupName: string;
 }
+
+/**
+ * La media voto che si può davvero chiedere, ruolo per ruolo.
+ *
+ * Un attaccante da 82 di overall in una buona squadra chiude a 6.7 nelle stagioni
+ * migliori, un difensore a 6.6: chiedere «almeno 6.8» a un difensore era chiedergli
+ * una cosa che il modello non produce. Un obiettivo irraggiungibile non è difficile,
+ * è rotto.
+ */
+const MEDIA_CHIEDIBILE: Record<Role, number> = { GK: 6.4, DEF: 6.3, MID: 6.5, FWD: 6.6 };
 
 const NOMI_TURNO: Record<number, string> = {
   1: 'gli ottavi', 2: 'i quarti', 3: 'la semifinale', 4: 'la finale', 5: 'la vittoria',
@@ -66,13 +76,20 @@ function secondario(input: ObjectivesInput, rng: Rng): Objective {
       target: forte ? 3 : 1,
     },
     { kind: 'minuti', text: 'Giocare almeno metà dei minuti stagionali', target: 50 },
-    { kind: 'media', text: 'Chiudere con una media voto di almeno 6.5', target: 6.5 },
+    {
+      kind: 'media',
+      text: `Chiudere con una media voto di almeno ${MEDIA_CHIEDIBILE[input.role].toFixed(1)}`,
+      target: MEDIA_CHIEDIBILE[input.role],
+    },
   ];
 
   if (input.role === 'FWD') opzioni.push({ kind: 'gol', text: 'Segnare almeno 8 gol', target: 8 });
   if (input.role === 'MID') opzioni.push({ kind: 'assist', text: 'Servire almeno 5 assist', target: 5 });
-  if (input.role === 'DEF' || input.role === 'GK') {
-    opzioni.push({ kind: 'media', text: 'Chiudere con una media voto di almeno 6.8', target: 6.8 });
+  if (input.role === 'GK') {
+    opzioni.push({ kind: 'porta', text: 'Tenere la porta inviolata almeno 8 volte', target: 8 });
+  }
+  if (input.role === 'DEF') {
+    opzioni.push({ kind: 'porta', text: 'Tenere la porta inviolata almeno 6 volte', target: 6 });
   }
 
   return opzioni[rng.int(0, opzioni.length - 1)] ?? opzioni[0]!;
@@ -113,6 +130,8 @@ export function judgeObjectives(
         return esito.stats.assists >= obiettivo.target;
       case 'media':
         return esito.stats.rating >= obiettivo.target;
+      case 'porta':
+        return esito.stats.cleanSheets >= obiettivo.target;
       case 'nazionale':
         return esito.capped;
     }

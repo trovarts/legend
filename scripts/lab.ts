@@ -166,7 +166,19 @@ async function main(): Promise<void> {
 
   for (const role of ROLES) {
     const byRole = results.filter((result) => result.player.role === role);
-    console.log(`  ${role}: picco medio ${average(byRole.map((r) => r.peakOverall)).toFixed(1)} su ${byRole.length} carriere`);
+    // Anche l'obiettivo personale va guardato per ruolo: chiedere a un difensore una
+    // media voto da attaccante è chiedergli una cosa che il modello non produce, e
+    // una media generale al 39% non lo mostra.
+    const stagioni = byRole.flatMap((r) => r.seasons).filter((s) => s.objectivesMet !== undefined);
+    const centrato = stagioni.length === 0 ? 0
+      : stagioni.filter((s) => s.objectivesMet!.secondary).length / stagioni.length;
+    console.log(
+      `  ${role}: picco medio ${average(byRole.map((r) => r.peakOverall)).toFixed(1)} su ${byRole.length} carriere`
+      + ` · obiettivo personale centrato nel ${(centrato * 100).toFixed(0)}%`,
+    );
+    if (stagioni.length > 100 && (centrato < 0.15 || centrato > 0.85)) {
+      failures.push(`obiettivo personale sbilanciato per ${role}: centrato nel ${(centrato * 100).toFixed(0)}% (atteso 15-85%)`);
+    }
   }
 
   if (averageSeasons < 12 || averageSeasons > 24) {
