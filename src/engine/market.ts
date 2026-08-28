@@ -24,6 +24,12 @@ const MAX_OFFERS = 4;
 /** Sotto questa quota di minuti un giovane è considerato bloccato e va mandato a giocare. */
 const STUCK_SHARE = 0.25;
 const LOAN_AGE = 23;
+/**
+ * Quanti minuti in più deve promettere un prestito per avere senso.
+ * Non una soglia assoluta: nel calcio vero un diciassettenne non gioca titolare da
+ * nessuna parte, ma passare dall'8% al 22% è comunque triplicare il campo.
+ */
+const LOAN_MINUTES_GAIN = 0.1;
 
 /** Quanto una stagione è piaciuta: usata per alzare o abbassare l'interesse. */
 function seasonScore(stats: SeasonStats, role: Role): number {
@@ -53,16 +59,19 @@ export function generateOffers(input: OffersInput, rng: Rng): Offer[] {
     // Un club guarda un giocatore se lo migliora o se ha il fisico per il futuro.
     const fitsSquad = input.player.overall >= strength - 6;
     const isProspect = input.player.age <= 23 && input.player.potential >= strength + 2;
-    const wantsLoan = isStuck && expectedMinutesShare > 0.45;
+    const wantsLoan =
+      isStuck && expectedMinutesShare > input.currentMinutesShare + LOAN_MINUTES_GAIN;
 
     if (!fitsSquad && !isProspect && !wantsLoan) continue;
 
     // I club forti non prendono giocatori in là con gli anni che non li migliorano.
     if (input.player.age >= 33 && input.player.overall < strength) continue;
 
+    // Il divario di forza pesa solo su un acquisto vero: chi ti prende in prestito
+    // lo fa proprio perché sei un giovane da far crescere.
+    const strengthPenalty = wantsLoan ? 0 : Math.max(0, (strength - input.player.overall) * 0.04);
     const interest =
-      0.25 + score + (isProspect ? 0.25 : 0) + (wantsLoan ? 0.5 : 0)
-      - Math.max(0, (strength - input.player.overall) * 0.04);
+      0.25 + score + (isProspect ? 0.25 : 0) + (wantsLoan ? 0.5 : 0) - strengthPenalty;
 
     if (!rng.chance(Math.min(0.9, interest))) continue;
 
@@ -110,6 +119,19 @@ function offerScore(offer: Offer, context: TransferContext): number {
 
 /** Politica predefinita: giocare conta più di tutto, ma senza buttare via la carriera. */
 export const ambitiousPolicy: TransferPolicy = (offers, context) => {
+  // Chi non gioca accetta il prestito che gli dà più campo: scendere di categoria
+  // per un anno vale molto più che restare in tribuna in una big.
+  if (context.currentMinutesShare < STUCK_SHARE) {
+    const loans = offers.filter(
+      (offer) => offer.isLoan && offer.expectedMinutesShare > context.currentMinutesShare + LOAN_MINUTES_GAIN,
+    );
+    if (loans.length > 0) {
+      return loans.reduce((best, offer) =>
+        offer.expectedMinutesShare > best.expectedMinutesShare ? offer : best,
+      );
+    }
+  }
+
   const acceptable = offers.filter((offer) => {
     // Mai finire in panchina di proposito.
     if (offer.expectedMinutesShare < 0.3 && offer.expectedMinutesShare <= context.currentMinutesShare) {
