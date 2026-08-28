@@ -26,10 +26,17 @@ export default function Gioca() {
 
   // Il mercato ha senso solo se il mondo è abbastanza grande: appena la carriera
   // comincia carichiamo altri campionati, mentre l'utente legge la prima stagione.
+  // Prima di tutto quelli del suo paese: riprendendo una carriera salvata, il club
+  // di partenza sta lì, e senza non si può nemmeno ricostruirla.
+  const nazionalita = save?.create.nationality;
   useEffect(() => {
     if (!started || leagues.length === 0) return;
-    void loadLeagues(leagues.slice(0, CAMPIONATI_DI_MERCATO).map((league) => league.id));
-  }, [started, leagues, loadLeagues]);
+    const suoi = leagues
+      .filter((league) => league.country === nazionalita)
+      .map((league) => league.id);
+    const altri = leagues.slice(0, CAMPIONATI_DI_MERCATO).map((league) => league.id);
+    void loadLeagues([...new Set([...suoi, ...altri])]);
+  }, [started, leagues, loadLeagues, nazionalita]);
 
   // Salvataggio automatico a ogni decisione: costa poche centinaia di byte.
   useEffect(() => {
@@ -86,6 +93,8 @@ export default function Gioca() {
           <Creazione world={world} onStart={start} />
           <Salvataggi slots={slots} onResume={resume} onRefresh={() => setSlots(refreshSlots())} />
         </>
+      ) : world.clubs.every((entry) => entry.club.id !== save.startClubId) ? (
+        <p className="tenue">Sto riaprendo la carriera…</p>
       ) : (
         <>
           <Carriera save={save} clubs={world.clubs} onChange={setSave} />

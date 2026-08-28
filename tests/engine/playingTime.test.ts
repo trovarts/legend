@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { playingTimeShare } from '../../src/engine/playingTime';
+import { gerarchiaDelReparto, playingTimeShare, postiDaTitolare } from '../../src/engine/playingTime';
 import type { Role, WorldPlayer } from '../../src/world/types';
+
+function giocatore(role: Role, overall: number): WorldPlayer {
+  return {
+    id: `p${role}${overall}`, name: `${role} ${overall}`, age: 26, role,
+    overall, potential: overall, valueEur: 1_000_000, nationality: 'Italy',
+  };
+}
 
 function squadOf(role: Role, overalls: readonly number[]): WorldPlayer[] {
   return overalls.map((overall, index) => ({
@@ -51,5 +58,32 @@ describe('playingTimeShare', () => {
 
   it('senza concorrenti in rosa gioca al massimo', () => {
     expect(playingTimeShare({ overall: 50, age: 24, role: 'MID' }, [])).toBeGreaterThan(0.85);
+  });
+
+  it('la gerarchia del reparto mette il giocatore al suo posto, per nome', () => {
+    const rosa = [
+      giocatore('GK', 80), giocatore('GK', 62),
+      giocatore('DEF', 78), giocatore('DEF', 76), giocatore('DEF', 74), giocatore('DEF', 71),
+      giocatore('DEF', 68),
+    ];
+    const fila = gerarchiaDelReparto(
+      { name: 'Diego', overall: 72, age: 19, role: 'DEF' },
+      rosa,
+    );
+
+    expect(fila).toHaveLength(6);
+    expect(fila.map((posto) => posto.overall)).toEqual([78, 76, 74, 72, 71, 68]);
+    const mio = fila.find((posto) => posto.mine);
+    expect(mio?.name).toBe('Diego');
+    expect(mio?.starter).toBe(true);
+    expect(fila.filter((posto) => posto.starter)).toHaveLength(postiDaTitolare('DEF'));
+  });
+
+  it('chi non arriva alla soglia resta fuori dai titolari', () => {
+    const rosa = [
+      giocatore('FWD', 84), giocatore('FWD', 80), giocatore('FWD', 77),
+    ];
+    const fila = gerarchiaDelReparto({ name: 'Diego', overall: 70, age: 18, role: 'FWD' }, rosa);
+    expect(fila.find((posto) => posto.mine)?.starter).toBe(false);
   });
 });

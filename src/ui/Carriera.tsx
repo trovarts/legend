@@ -9,6 +9,7 @@ import { AnnoVivaio } from './AnnoVivaio';
 import { Bivio } from './Bivio';
 import { Contesto } from './Contesto';
 import { FineStagione } from './FineStagione';
+import { Gerarchia } from './Gerarchia';
 import { Giornale } from './Giornale';
 import { Mercato } from './Mercato';
 import { modoDi } from './preferenze';
@@ -40,9 +41,15 @@ export function Carriera({
   const last = seasons[seasons.length - 1];
   const lastRival = state.rivals[state.rivals.length - 1] ?? null;
 
-  /** Fin dove l'utente ha già guardato: serve solo alla messa in scena, non al gioco. */
-  const [vista, setVista] = useState(0);
-  const [vivaioVisto, setVivaioVisto] = useState(0);
+  /**
+   * Fin dove l'utente ha già guardato: serve solo alla messa in scena, non al gioco.
+   * Riprendendo una carriera si riparte da dov'era: le stagioni già vissute non si
+   * rivedono una per una, e gli anni di vivaio nemmeno.
+   */
+  const [vista, setVista] = useState(() => Math.max(0, state.seasons.length - 1));
+  const [vivaioVisto, setVivaioVisto] = useState(() =>
+    state.seasons.length > 0 ? state.youth.length : 0,
+  );
   const [scheda, setScheda] = useState<Scheda>('carriera');
   /**
    * Una scommessa appena giocata di cui va ancora mostrato l'esito.
@@ -266,7 +273,7 @@ export function Carriera({
         />
       )}
 
-      {scheda === 'carriera' && rivelazione === null && (daMostrare !== null ? (
+      {scheda === 'carriera' && rivelazione === null && annoVivaio === null && (daMostrare !== null ? (
         <FineStagione
           key={daMostrare.season}
           record={daMostrare}
@@ -286,6 +293,18 @@ export function Carriera({
             clubStrengthValue={clubCorrente ? clubStrength(clubCorrente.club) : null}
             contractYearsLeft={null}
           />
+
+          {/* Chi ti sta davanti nel reparto: è quello che decide quanto giochi. */}
+          {clubCorrente && (last !== undefined || pending?.kind === 'training') && (
+            <Gerarchia
+              playerName={save.create.name}
+              overall={last?.overallEnd ?? (pending?.kind === 'training' ? pending.overall : 0)}
+              age={last?.age ?? (pending?.kind === 'training' ? pending.age : 0)}
+              role={save.create.role}
+              squad={clubCorrente.club.squad}
+              clubName={clubCorrente.club.name}
+            />
+          )}
 
           {pending?.kind === 'training' && (
             <Preparazione

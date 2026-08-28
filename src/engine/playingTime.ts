@@ -54,3 +54,40 @@ export function playingTimeShare(
   const floor = player.age <= YOUNG_AGE ? YOUNG_MIN_SHARE : MIN_SHARE;
   return Math.min(MAX_SHARE, Math.max(floor, share));
 }
+
+export interface PostoInGerarchia {
+  name: string;
+  overall: number;
+  age: number;
+  /** Vero per la riga del giocatore dell'utente. */
+  mine: boolean;
+  /** Dentro l'undici titolare del reparto. */
+  starter: boolean;
+}
+
+/**
+ * Chi ti sta davanti, con nome e cognome.
+ *
+ * La quota di minuti è il numero più importante della carriera, e finché resta un
+ * numero non dice niente. Qui diventa una fila: sopra di te c'è un portiere vero di
+ * una rosa vera, e per giocare devi passargli davanti.
+ */
+export function gerarchiaDelReparto(
+  player: PlayingTimeInput & { name: string },
+  squad: readonly WorldPlayer[],
+): PostoInGerarchia[] {
+  const slots = STARTING_SLOTS[player.role];
+  const reparto: PostoInGerarchia[] = squad
+    .filter((mate) => mate.role === player.role)
+    .map((mate) => ({ name: mate.name, overall: mate.overall, age: mate.age, mine: false, starter: false }));
+
+  reparto.push({ name: player.name, overall: player.overall, age: player.age, mine: true, starter: false });
+  reparto.sort((a, b) => b.overall - a.overall || (a.mine ? -1 : b.mine ? 1 : 0));
+
+  return reparto.map((posto, indice) => ({ ...posto, starter: indice < slots }));
+}
+
+/** Quanti posti da titolare ha questo reparto. */
+export function postiDaTitolare(role: Role): number {
+  return STARTING_SLOTS[role];
+}
