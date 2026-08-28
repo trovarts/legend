@@ -14,7 +14,7 @@ describe('la carriera completa', () => {
     for (const league of leagues.slice(0, 6)) {
       const bundle = await source.loadLeague(league.id);
       for (const club of bundle.clubs) {
-        clubs.push({ club, leagueId: league.id, leagueName: league.name, leagueLevel: league.level });
+        clubs.push({ club, leagueId: league.id, leagueName: league.name, leagueLevel: league.level, country: league.country });
       }
     }
     startId = clubs[0]!.club.id;

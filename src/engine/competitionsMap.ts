@@ -8,16 +8,21 @@
 export type ContinentalTier = 'prima' | 'seconda' | 'terza';
 
 export interface CountryCompetitions {
+  /** Il continente in chiaro: serve alla scheda del paese. */
+  continent: string;
   cup: string;
   continental: Record<ContinentalTier, string>;
   national: { major: string; minor: string };
   /** Quanti posti dà il campionato per ciascuna coppa continentale. */
   spots: { prima: number; seconda: number; terza: number };
-  /** Ranking del paese: più è alto, più posti nelle coppe. */
+  /** Ranking del paese: 1 è il movimento più forte del suo continente. */
   ranking: number;
+  /** Il punteggio con cui si compila quel ranking. */
+  points: number;
 }
 
 const EUROPA = {
+  continent: 'Europa',
   continental: {
     prima: 'Coppa Europea',
     seconda: 'Seconda Coppa Europea',
@@ -27,6 +32,7 @@ const EUROPA = {
 } as const;
 
 const SUDAMERICA = {
+  continent: 'Sudamerica',
   continental: {
     prima: 'Coppa Sudamericana',
     seconda: 'Seconda Coppa Sudamericana',
@@ -36,6 +42,7 @@ const SUDAMERICA = {
 } as const;
 
 const ASIA = {
+  continent: 'Asia',
   continental: {
     prima: 'Coppa Asiatica per Club',
     seconda: 'Seconda Coppa Asiatica',
@@ -45,6 +52,7 @@ const ASIA = {
 } as const;
 
 const NORDAMERICA = {
+  continent: 'Nordamerica',
   continental: {
     prima: 'Coppa Nordamericana',
     seconda: 'Seconda Coppa Nordamericana',
@@ -92,11 +100,14 @@ export function competitionsOf(country: string): CountryCompetitions {
     : { prima: 1, seconda: 1, terza: 1 };
 
   return {
+    continent: continente.continent,
     cup: COPPE_NAZIONALI[country] ?? 'Coppa Nazionale',
     continental: continente.continental,
     national: continente.national,
     spots,
     ranking,
+    // Il coefficiente che compila il ranking: scende col piazzamento, come quello vero.
+    points: Math.max(120, Math.round(2100 / Math.sqrt(ranking)) - ranking * 12),
   };
 }
 

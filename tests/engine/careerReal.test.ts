@@ -20,6 +20,7 @@ describe('carriere sulle rose vere', () => {
           leagueId: league.id,
           leagueName: league.name,
           leagueLevel: league.level,
+          country: league.country,
         });
       }
     }

@@ -26,9 +26,12 @@ function chiaveDi(nomeMappa: string): string {
  */
 export function Mappa({
   giocabili,
+  scelto,
   onChoose,
 }: {
   giocabili: readonly string[];
+  /** Il paese gia' scelto resta acceso mentre leggi la sua scheda. */
+  scelto?: string;
   onChoose: (paese: string) => void;
 }) {
   const [cerca, setCerca] = useState('');
@@ -74,7 +77,7 @@ export function Mappa({
             <path
               key={paese.name}
               d={paese.d}
-              className={`paese-mappa${attivo ? ' paese-attivo' : ''}`}
+              className={`paese-mappa${attivo ? ' paese-attivo' : ''}${chiave === scelto ? ' paese-scelto' : ''}`}
               onClick={attivo ? () => onChoose(chiave) : undefined}
               onMouseEnter={attivo ? () => setSopra(chiave) : undefined}
               onMouseLeave={() => setSopra(null)}
@@ -87,7 +90,12 @@ export function Mappa({
 
       <div className="paesi" style={{ marginTop: '.7rem' }}>
         {elenco.map((paese) => (
-          <button key={paese} type="button" className="paese" onClick={() => onChoose(paese)}>
+          <button
+            key={paese}
+            type="button"
+            className={`paese${paese === scelto ? ' bottone-scelto' : ''}`}
+            onClick={() => onChoose(paese)}
+          >
             <span className="paese-bandiera" aria-hidden="true">{bandiera(paese)}</span>
             <span>{inItaliano(paese)}</span>
           </button>

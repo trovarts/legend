@@ -38,6 +38,7 @@ export function useWorld() {
               leagueId: bundle.league.id,
               leagueName: bundle.league.name,
               leagueLevel: bundle.league.level,
+              country: bundle.league.country,
             });
           }
         }

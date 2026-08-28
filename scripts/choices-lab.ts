@@ -50,7 +50,7 @@ async function main(): Promise<void> {
   for (const league of leagues.slice(0, 8)) {
     const bundle = await source.loadLeague(league.id);
     for (const club of bundle.clubs) {
-      clubs.push({ club, leagueId: league.id, leagueName: league.name, leagueLevel: league.level });
+      clubs.push({ club, leagueId: league.id, leagueName: league.name, leagueLevel: league.level, country: league.country });
     }
   }
 

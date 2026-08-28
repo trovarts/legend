@@ -15,9 +15,9 @@ describe('le divisioni minori', () => {
     expect(leghe.filter((lega) => lega.summary.level === 4)).toHaveLength(3);
   });
 
-  it('ogni girone ha sedici squadre con rose complete', () => {
+  it('ogni girone ha le squadre della sua categoria, con rose complete', () => {
     for (const lega of buildLowerLeagues('Italy', 7)) {
-      expect(lega.clubs).toHaveLength(16);
+      expect(lega.clubs).toHaveLength(lega.summary.level === 3 ? 20 : 18);
       for (const club of lega.clubs) {
         expect(club.squad.length).toBeGreaterThanOrEqual(20);
         expect(club.squad.filter((giocatore) => giocatore.role === 'GK').length).toBeGreaterThanOrEqual(2);
@@ -46,5 +46,11 @@ describe('le divisioni minori', () => {
 
   it('un paese senza città elencate non produce niente', () => {
     expect(buildLowerLeagues('Bolivia', 7)).toEqual([]);
+  });
+
+  it('si possono generare solo i livelli che al paese mancano davvero', () => {
+    const leghe = buildLowerLeagues('Germany', 7, [4]);
+    expect(leghe).toHaveLength(3);
+    for (const lega of leghe) expect(lega.summary.level).toBe(4);
   });
 });

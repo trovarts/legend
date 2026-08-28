@@ -6,6 +6,7 @@
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildLowerLeagues, countriesWithPyramid } from '../src/engine/pyramid';
 import { leagueIdOf, toLevel, toRole } from '../src/world/importMapping';
 import type { Club, LeagueBundle, LeagueSummary, WorldPlayer } from '../src/world/types';
 
@@ -50,6 +51,16 @@ function mostFrequent(values: readonly string[]): string {
     if (count > bestCount) { best = value; bestCount = count; }
   }
   return best;
+}
+
+/** Lo stesso paese produce sempre le stesse squadre: il mondo non cambia fra due build. */
+function semeDelPaese(country: string): number {
+  let hash = 2166136261;
+  for (const carattere of country) {
+    hash ^= carattere.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
 }
 
 function main(): void {
@@ -127,6 +138,27 @@ function main(): void {
     const bundle: LeagueBundle = { league: summary, clubs };
     writeFileSync(join(OUT_DIR, 'leagues', `${id}.json`), JSON.stringify(bundle));
     index.push(summary);
+  }
+
+  // Terza e quarta divisione: il dataset si ferma alla serie B, ma una carriera
+  // vera comincia piu' in basso. Le generiamo qui, una volta, con lo stesso seed.
+  const livelliVeri = new Map<string, Set<number>>();
+  for (const league of index) {
+    const set = livelliVeri.get(league.country) ?? new Set<number>();
+    set.add(league.level);
+    livelliVeri.set(league.country, set);
+  }
+  for (const country of countriesWithPyramid()) {
+    const gia = livelliVeri.get(country);
+    if (!gia) continue;
+    // Inghilterra e Germania hanno gia' la terza serie vera: li' non si inventa niente.
+    const mancanti = [3, 4].filter((livello) => !gia.has(livello));
+    if (mancanti.length === 0) continue;
+    for (const generata of buildLowerLeagues(country, semeDelPaese(country), mancanti)) {
+      const bundle: LeagueBundle = { league: generata.summary, clubs: generata.clubs };
+      writeFileSync(join(OUT_DIR, 'leagues', `${generata.summary.id}.json`), JSON.stringify(bundle));
+      index.push(generata.summary);
+    }
   }
 
   index.sort((a, b) => a.country.localeCompare(b.country) || a.level - b.level);

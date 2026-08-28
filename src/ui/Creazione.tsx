@@ -14,6 +14,7 @@ const Mappa = dynamic(() => import('./Mappa').then((modulo) => modulo.Mappa), {
   ssr: false,
   loading: () => <p className="tenue">Sto aprendo il planisfero…</p>,
 });
+import { Nazione } from './Nazione';
 import { newSave, randomSeed } from './newSave';
 import { Scelta, Scelte, sigla } from './Scelte';
 import type { useWorld } from './useWorld';
@@ -91,13 +92,10 @@ export function Creazione({
       {passo === 1 && (
         <>
           {testata('Da dove vieni', 'Tre passi: nazione, ruolo e maglia, poi le opzioni di carriera.', 1)}
-          <Mappa
-            giocabili={world.countries}
-            onChoose={(paese) => {
-              setCountry(paese);
-              setPasso(2);
-            }}
-          />
+          <Mappa giocabili={world.countries} scelto={country} onChoose={setCountry} />
+          {country !== '' && (
+            <Nazione country={country} leagues={world.leagues} onConfirm={() => setPasso(2)} />
+          )}
         </>
       )}
 

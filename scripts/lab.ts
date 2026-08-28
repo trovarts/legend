@@ -43,6 +43,7 @@ async function main(): Promise<void> {
         leagueId: league.id,
         leagueName: league.name,
         leagueLevel: league.level,
+        country: league.country,
       });
     }
   }

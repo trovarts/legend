@@ -56,7 +56,8 @@ const SOPRANNOMI: readonly string[] = [
   'Granata', 'Verdeblù', 'Neri', 'Azzurri', 'Verdi', 'Arancioni', 'Bianchi', 'Rossi',
 ];
 
-const CLUB_PER_GIRONE = 16;
+/** Come nella realtà: la terza serie è più larga della quarta a girone singolo. */
+const CLUB_PER_GIRONE: Record<number, number> = { 3: 20, 4: 18 };
 
 export interface GeneratedLeague {
   summary: LeagueSummary;
@@ -94,7 +95,11 @@ function rosaGenerata(clubId: string, forza: number, rng: Rng): WorldPlayer[] {
  * Costruisce le divisioni sotto la seconda serie di un paese: due livelli, tre gironi
  * ciascuno, come nella piramide vera.
  */
-export function buildLowerLeagues(country: string, seed: number): GeneratedLeague[] {
+export function buildLowerLeagues(
+  country: string,
+  seed: number,
+  livelli: readonly number[] = [3, 4],
+): GeneratedLeague[] {
   const citta = CITTA[country];
   if (!citta || citta.length < 12) return [];
 
@@ -118,13 +123,14 @@ export function buildLowerLeagues(country: string, seed: number): GeneratedLeagu
     return ripiego;
   };
 
-  for (const livello of [3, 4]) {
+  for (const livello of livelli) {
     for (const girone of ['A', 'B', 'C']) {
       const id = `${country.toLowerCase().replace(/[^a-z]/g, '')}-${livello}${girone.toLowerCase()}`;
       const nome = `${livello === 3 ? 'Terza' : 'Quarta'} Divisione · Girone ${girone}`;
       const clubs: Club[] = [];
 
-      for (let indice = 0; indice < CLUB_PER_GIRONE; indice += 1) {
+      const quanti = CLUB_PER_GIRONE[livello] ?? 18;
+      for (let indice = 0; indice < quanti; indice += 1) {
         const citta1 = citta[indiceCitta % citta.length]!;
         indiceCitta += 1;
         const clubId = `${id}-c${indice}`;

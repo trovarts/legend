@@ -574,3 +574,14 @@ select.bottone { appearance: none; }
     transition: none; opacity: 1; transform: none;
   }
 }
+
+.paese-scelto { fill: var(--oro); stroke: var(--nero); stroke-width: .6; }
+.nazione { margin-top: .8rem; }
+.nazione-testa { display: flex; align-items: center; gap: .7rem; padding-bottom: .6rem; border-bottom: 1px solid var(--bordo); }
+.nazione-bandiera { font-size: 2.1rem; line-height: 1; }
+.nazione-nome { display: block; font-size: 1.35rem; font-weight: 800; letter-spacing: .02em; }
+.nazione-riga { display: block; font-size: .8rem; color: var(--tenue); margin-top: .1rem; }
+.nazione-blocchi { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .8rem; padding: .7rem 0; }
+.nazione-blocco { display: flex; flex-direction: column; gap: .18rem; }
+.nazione-voce { font-size: .82rem; line-height: 1.35; }
+.nazione-voce b { display: inline-block; min-width: 1.1em; color: var(--oro); }
