@@ -6,3 +6,10 @@ public/world/
 # Output di build: si rigenera con npm run build, non va in cronologia.
 .next/
 out/
+
+# Copie di conflitto create dalla sincronizzazione del Mac: «file 2.ts», «file 3.ts».
+# Non sono lavoro, sono istantanee vecchie — e in cronologia fanno solo danno.
+*[0-9].bak
+* 2.*
+* 3.*
+* 4.*

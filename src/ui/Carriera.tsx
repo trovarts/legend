@@ -283,6 +283,7 @@ export function Carriera({
             overall={last?.overallEnd ?? (pending?.kind === 'training' ? pending.overall : 0)}
             age={last?.age ?? (pending?.kind === 'training' ? pending.age : 0)}
             role={save.create.role}
+            posizionePreferita={save.decisions.position ?? 'ST'}
           />
         ) : (
           <p className="tenue">La prima squadra arriva dopo il vivaio.</p>

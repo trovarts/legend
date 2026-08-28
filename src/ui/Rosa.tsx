@@ -2,6 +2,7 @@
 
 import { gerarchiaDelReparto, postiDaTitolare } from '../engine/playingTime';
 import type { Role, WorldPlayer } from '../world/types';
+import { Formazione } from './Formazione';
 
 const REPARTI: readonly { role: Role; nome: string }[] = [
   { role: 'GK', nome: 'Portieri' },
@@ -30,6 +31,7 @@ export function Rosa({
   overall,
   age,
   role,
+  posizionePreferita,
 }: {
   squad: readonly WorldPlayer[];
   clubName: string;
@@ -38,12 +40,23 @@ export function Rosa({
   overall: number;
   age: number;
   role: Role;
+  posizionePreferita: string;
 }) {
   if (squad.length === 0) {
     return <p className="tenue">La rosa non è ancora stata caricata.</p>;
   }
 
   return (
+    <>
+    <Formazione
+      squad={squad}
+      playerName={playerName}
+      overall={overall}
+      age={age}
+      role={role}
+      posizionePreferita={posizionePreferita}
+    />
+
     <section className="card">
       <h2 style={{ marginBottom: '.1rem' }}>{clubName}</h2>
       <p className="tenue" style={{ margin: '0 0 .6rem', fontSize: '.85rem' }}>
@@ -91,5 +104,6 @@ export function Rosa({
         );
       })}
     </section>
+    </>
   );
 }
