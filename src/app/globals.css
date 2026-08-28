@@ -64,8 +64,12 @@ h1, h2, h3 { line-height: 1.08; margin: 0 0 .5rem; letter-spacing: -.025em; }
   padding: .6rem .9rem; margin-bottom: 1rem;
   backdrop-filter: blur(8px);
 }
-.tessera-nome { font-weight: 700; font-size: 1.05rem; letter-spacing: -.01em; }
-.tessera-dati { margin-left: auto; display: flex; gap: 1.1rem; text-align: right; }
+/* Il nome è la parte che cede: i numeri devono restare leggibili anche su 375px. */
+.tessera-nome {
+  font-weight: 700; font-size: 1.05rem; letter-spacing: -.01em;
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.tessera-dati { margin-left: auto; display: flex; gap: 1.1rem; text-align: right; flex: 0 0 auto; }
 .tessera-dato { display: flex; flex-direction: column; line-height: 1.1; }
 .tessera-dato b { font-size: 1.15rem; font-variant-numeric: tabular-nums; }
 .tessera-dato span { font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: var(--tenue); }
@@ -79,6 +83,7 @@ h1, h2, h3 { line-height: 1.08; margin: 0 0 .5rem; letter-spacing: -.025em; }
 }
 .testata {
   display: flex; align-items: baseline; justify-content: space-between;
+  flex-wrap: wrap; gap: .2rem .8rem;
   border-bottom: 1px solid var(--bordo); padding-bottom: .6rem; margin-bottom: .5rem;
 }
 .testata-nome {
@@ -606,6 +611,15 @@ select.bottone { appearance: none; }
 .a-caso { margin-left: .5rem; border: 1px solid var(--bordo); background: var(--carta-alta); color: var(--testo); border-radius: 999px; padding: .12rem .5rem; font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
 .a-caso:hover { border-color: var(--oro); color: var(--oro); }
 .tessera-avatar { display: block; width: 34px; flex: 0 0 34px; }
+@media (max-width: 26rem) {
+  /* Sul telefono il nome sta su una riga sua: troncarlo a «Il tu…» non serve a nessuno. */
+  .tessera { flex-wrap: wrap; gap: .35rem .5rem; padding: .55rem .7rem; }
+  .tessera-avatar { width: 26px; flex-basis: 26px; }
+  .tessera-nome { flex: 1 1 auto; }
+  .tessera-dati { flex: 1 0 100%; margin-left: 0; justify-content: space-between; gap: .4rem; text-align: left; }
+  .tessera-dato b { font-size: 1rem; }
+  .tessera-dato span { font-size: .56rem; letter-spacing: .08em; }
+}
 .tessera-avatar .avatar { width: 100%; height: auto; display: block; }
 
 .velocita-modo { letter-spacing: .1em; text-transform: uppercase; font-size: .58rem; border-color: var(--oro); color: var(--oro); }

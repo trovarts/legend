@@ -213,8 +213,15 @@ export function Partita({
                 <span className="stat-centro">
                   <span className="stat-nome">{nome}</span>
                   <span className="stat-barra">
-                    <span className="stat-casa" style={{ width: `${(casa / totale) * 100}%` }} />
-                    <span className="stat-ospite" style={{ width: `${(ospite / totale) * 100}%` }} />
+                    {/* I colori sono quelli dei due stemmi: la barra si legge senza legenda. */}
+                    <span
+                      className="stat-casa"
+                      style={{ width: `${(casa / totale) * 100}%`, background: temaCasa.primario }}
+                    />
+                    <span
+                      className="stat-ospite"
+                      style={{ width: `${(ospite / totale) * 100}%`, background: temaOspite.primario }}
+                    />
                   </span>
                 </span>
                 <span className="numero">{ospite}{unita}</span>
