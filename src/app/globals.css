@@ -37,16 +37,20 @@ html, body {
   -webkit-text-size-adjust: 100%;
 }
 
-/* L'alone dello stadio dietro tutto. */
+/*
+ * L'alone dello stadio dietro tutto. Prende il colore del club in cui giochi: è la
+ * cosa che fa sentire il trasferimento più di qualsiasi scritta.
+ */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(120% 80% at 50% -10%, rgba(216, 31, 63, .22), transparent 60%),
-    radial-gradient(90% 60% at 50% 110%, rgba(109, 18, 38, .18), transparent 60%);
+    radial-gradient(120% 78% at 50% -14%, color-mix(in srgb, var(--rosso) 58%, transparent), transparent 62%),
+    radial-gradient(95% 58% at 50% 114%, color-mix(in srgb, var(--rosso-scuro) 62%, transparent), transparent 60%);
   pointer-events: none;
   z-index: 0;
+  transition: background .7s ease;
 }
 
 main { position: relative; z-index: 1; max-width: var(--colonna); margin: 0 auto; padding: 1rem .9rem 4rem; }
@@ -59,8 +63,12 @@ h1, h2, h3 { line-height: 1.08; margin: 0 0 .5rem; letter-spacing: -.025em; }
 .tessera {
   position: sticky; top: 0; z-index: 5;
   display: flex; align-items: center; gap: .9rem;
-  background: linear-gradient(180deg, rgba(26,22,32,.98), rgba(18,16,26,.94));
-  border: 1px solid var(--bordo); border-radius: var(--raggio);
+  /* La maglia si vede addosso alla tessera: è l'unica cosa sempre sullo schermo. */
+  background:
+    linear-gradient(100deg, color-mix(in srgb, var(--rosso) 30%, transparent), transparent 46%),
+    linear-gradient(180deg, rgba(26,22,32,.92), rgba(18,16,26,.88));
+  border: 1px solid var(--bordo); border-left: 3px solid var(--rosso);
+  border-radius: var(--raggio);
   padding: .6rem .9rem; margin-bottom: 1rem;
   backdrop-filter: blur(8px);
 }
@@ -74,9 +82,16 @@ h1, h2, h3 { line-height: 1.08; margin: 0 0 .5rem; letter-spacing: -.025em; }
 .tessera-dato b { font-size: 1.15rem; font-variant-numeric: tabular-nums; }
 .tessera-dato span { font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: var(--tenue); }
 
-/* ── Il giornale: la stagione raccontata ─────────────────────────────────── */
+/* ── Il giornale: la stagione raccontata ───────────────────────────────────
+ *
+ * Le carte sono di vetro, non di cartone: l'alone del club deve passare attraverso.
+ * Con uno sfondo opaco il colore della maglia restava dietro e non lo vedeva nessuno.
+ */
 .giornale {
-  background: linear-gradient(165deg, var(--carta-alta), var(--carta));
+  background: linear-gradient(165deg,
+    color-mix(in srgb, var(--carta-alta) 80%, transparent),
+    color-mix(in srgb, var(--carta) 84%, transparent));
+  backdrop-filter: blur(12px);
   border: 1px solid var(--bordo); border-radius: var(--raggio);
   padding: 1.4rem 1.2rem; margin-bottom: 1rem;
   animation: entra .45s ease both;
@@ -121,7 +136,9 @@ h1, h2, h3 { line-height: 1.08; margin: 0 0 .5rem; letter-spacing: -.025em; }
 @media (min-width: 38rem) { .scelte { grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); } }
 .scelta {
   display: flex; flex-direction: column; align-items: center; text-align: center; gap: .5rem;
-  background: linear-gradient(165deg, rgba(216,31,63,.10), var(--carta));
+  background: linear-gradient(165deg,
+    color-mix(in srgb, var(--rosso) 12%, transparent),
+    color-mix(in srgb, var(--carta) 78%, transparent));
   border: 1px solid var(--bordo); border-radius: var(--raggio);
   padding: 1.1rem .9rem; color: var(--testo); font: inherit; cursor: pointer;
   transition: transform .18s ease, border-color .18s ease;
@@ -152,7 +169,8 @@ h1, h2, h3 { line-height: 1.08; margin: 0 0 .5rem; letter-spacing: -.025em; }
 
 /* ── Elementi comuni ─────────────────────────────────────────────────────── */
 .card {
-  background: var(--carta); border: 1px solid var(--bordo);
+  backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--carta) 84%, transparent); border: 1px solid var(--bordo);
   border-radius: var(--raggio); padding: 1rem; margin-bottom: .9rem;
 }
 .bottone {
@@ -742,3 +760,29 @@ select.bottone { appearance: none; }
 .scena-corpo .faccia-esito { font-size: .82rem; }
 .scena-corpo .obiettivi { padding: .5rem .7rem; margin: .5rem 0; }
 .scena-corpo .obiettivo { padding: .25rem 0; }
+
+/* ── Che si veda dove sei ────────────────────────────────────────────────────
+ *
+ * Il colore del club non tingeva quasi niente: un bordo, un bottone. Adesso è
+ * l'aria della scena — un alone dietro la carta, che cambia quando cambi maglia.
+ * È il modo più diretto per far sentire che il Napoli non è il Monza.
+ */
+
+
+/* Ogni passo entra come una scena nuova, non come un pezzo di pagina che compare. */
+@keyframes passo {
+  from { opacity: 0; transform: translateY(16px) scale(.985); }
+  to { opacity: 1; transform: none; }
+}
+.scena-corpo > * { animation: passo .34s cubic-bezier(.22,.9,.3,1) both; }
+
+/* La scelta risponde sotto il dito, prima che la schermata cambi. */
+.scelta:active, .stile:active, .bottone:active, .avanti:active { transform: scale(.985); }
+.scelta { transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+.scelta:hover, .scelta:focus-visible {
+  box-shadow: 0 10px 30px -18px var(--rosso), inset 0 0 0 1px color-mix(in srgb, var(--rosso) 40%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scena-corpo > *, .scena::before { animation: none; transition: none; }
+}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { clubStrength } from '../engine/clubStrength';
 import type { CandidateClub } from '../engine/market';
 import { decisionKey, playCareer, type CareerSave } from '../engine/play';
@@ -162,18 +162,24 @@ export function Carriera({
     ?? (pending?.kind === 'youth' || pending?.kind === 'promotion' ? pending.clubName : undefined);
   const tema = nomeClub !== undefined ? temaDelClub(nomeClub) : null;
 
+  /*
+   * Il colore del club va messo sulla radice del documento, non su questo riquadro:
+   * l'alone dello stadio è dipinto su `body`, e da qui dentro non lo raggiungerebbe.
+   * È la differenza fra un bordo colorato e un'aria che cambia quando cambi maglia.
+   */
+  useEffect(() => {
+    const radice = document.documentElement;
+    if (tema === null) return undefined;
+    radice.style.setProperty('--rosso', tema.primario);
+    radice.style.setProperty('--rosso-scuro', tema.secondario);
+    return () => {
+      radice.style.removeProperty('--rosso');
+      radice.style.removeProperty('--rosso-scuro');
+    };
+  }, [tema]);
+
   return (
-    <div
-      className="tinta scena"
-      style={
-        tema === null
-          ? undefined
-          : ({
-              '--rosso': tema.primario,
-              '--rosso-scuro': tema.secondario,
-            } as CSSProperties)
-      }
-    >
+    <div className="tinta scena">
       <header className="scena-alto">
       {onEsci && (
         <div className="scena-barra">
