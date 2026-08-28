@@ -70,13 +70,12 @@ export function Tessera({
 
       {rival && (
         <div className={`rivale ${rival.aheadOfYou ? 'rivale-avanti' : 'rivale-dietro'}`}>
-          <span className="tenue" style={{ fontSize: '.6rem', letterSpacing: '.14em', textTransform: 'uppercase' }}>
-            Il tuo rivale
+          <span className="rivale-etichetta">Il tuo rivale</span>
+          <span className="rivale-nome">
+            <strong>{rival.name}</strong>
+            <span className="tenue rivale-club"> · {rival.clubName}</span>
           </span>
-          <span>
-            <strong>{rival.name}</strong> <span className="tenue">· {rival.clubName}</span>
-          </span>
-          <span className="numero tenue">
+          <span className="numero tenue rivale-cifre">
             {rival.goals}g · OVR {rival.overall}
           </span>
           <span

@@ -9,6 +9,7 @@ import { AnnoVivaio } from './AnnoVivaio';
 import { Bivio } from './Bivio';
 import { Contesto } from './Contesto';
 import { FineStagione } from './FineStagione';
+import { Codice } from './Codice';
 import { Gerarchia } from './Gerarchia';
 import { Rosa } from './Rosa';
 import { Giornale } from './Giornale';
@@ -31,10 +32,15 @@ export function Carriera({
   save,
   clubs,
   onChange,
+  codice,
+  onEsci,
 }: {
   save: CareerSave;
   clubs: readonly CandidateClub[];
   onChange: (save: CareerSave) => void;
+  /** Il codice da condividere: si legge dalla scheda Profilo, non davanti al passo. */
+  codice?: string;
+  onEsci?: () => void;
 }) {
   // Nessuno stato di gioco qui dentro: la schermata è una funzione del salvataggio.
   const state = useMemo(() => playCareer(save, clubs), [save, clubs]);
@@ -134,6 +140,20 @@ export function Carriera({
   const clubCorrente = clubs.find((entry) => entry.club.id === last?.clubId);
 
   /**
+   * Cambia a ogni passo: serve a rimontare il corpo della scena, così ogni schermata
+   * entra con la sua animazione invece di comparire dentro quella di prima.
+   */
+  const chiaveDelPasso = [
+    scheda,
+    rivelazione === null ? '' : 'esito',
+    daMostrare?.season ?? '',
+    annoVivaio?.year ?? '',
+    pending?.kind ?? 'fine',
+    pending && 'season' in pending ? pending.season : '',
+  ].join('|');
+
+
+  /**
    * I colori del club tingono tutta l'interfaccia: giocare nel Monza non deve
    * assomigliare a giocare nell'Inter. Le variabili sono le stesse di sempre,
    * cambia solo il loro valore.
@@ -144,7 +164,7 @@ export function Carriera({
 
   return (
     <div
-      className="tinta"
+      className="tinta scena"
       style={
         tema === null
           ? undefined
@@ -154,6 +174,13 @@ export function Carriera({
             } as CSSProperties)
       }
     >
+      <header className="scena-alto">
+      {onEsci && (
+        <div className="scena-barra">
+          <button type="button" className="torna" onClick={onEsci}>← Menu di gioco</button>
+          <span className="tenue" style={{ fontSize: '.64rem' }}>Salvata da sola, a ogni scelta</span>
+        </div>
+      )}
       <Tessera
         name={save.create.name}
         nationality={save.create.nationality}
@@ -176,8 +203,33 @@ export function Carriera({
       />
 
       {state.agent !== null && <BarraSchede attiva={scheda} onChange={setScheda} />}
+      </header>
+
+      {/*
+        Il corpo della scena. Qui dentro scorre il passo, non la pagina: chi gioca
+        deve avere davanti una cosa sola, e il bottone per andare avanti deve
+        restare a portata senza cercarlo.
+      */}
+      <div className="scena-corpo" key={chiaveDelPasso}>
 
       {scheda === 'profilo' && (
+        <>
+        <Contesto
+          last={last}
+          clubStrengthValue={clubCorrente ? clubStrength(clubCorrente.club) : null}
+          contractYearsLeft={null}
+        />
+        {clubCorrente && (last !== undefined || pending?.kind === 'training') && (
+          <Gerarchia
+            playerName={save.create.name}
+            overall={last?.overallEnd ?? (pending?.kind === 'training' ? pending.overall : 0)}
+            age={last?.age ?? (pending?.kind === 'training' ? pending.age : 0)}
+            role={save.create.role}
+            squad={clubCorrente.club.squad}
+            clubName={clubCorrente.club.name}
+          />
+        )}
+        {codice !== undefined && <Codice codice={codice} />}
         <Profilo
           name={save.create.name}
           position={posizioneById(save.decisions.position ?? 'ST').label}
@@ -185,6 +237,7 @@ export function Carriera({
           seasons={seasons}
           youth={state.youth}
         />
+        </>
       )}
 
       {scheda === 'agente' && (
@@ -307,24 +360,6 @@ export function Carriera({
         />
       ) : (
         <>
-          <Contesto
-            last={last}
-            clubStrengthValue={clubCorrente ? clubStrength(clubCorrente.club) : null}
-            contractYearsLeft={null}
-          />
-
-          {/* Chi ti sta davanti nel reparto: è quello che decide quanto giochi. */}
-          {clubCorrente && (last !== undefined || pending?.kind === 'training') && (
-            <Gerarchia
-              playerName={save.create.name}
-              overall={last?.overallEnd ?? (pending?.kind === 'training' ? pending.overall : 0)}
-              age={last?.age ?? (pending?.kind === 'training' ? pending.age : 0)}
-              role={save.create.role}
-              squad={clubCorrente.club.squad}
-              clubName={clubCorrente.club.name}
-            />
-          )}
-
           {pending?.kind === 'training' && (
             <Preparazione
               season={pending.season}
@@ -399,6 +434,7 @@ export function Carriera({
           ))}
         </details>
       )}
+      </div>
     </div>
   );
 }

@@ -181,6 +181,18 @@ select.bottone { appearance: none; }
 .rivale-avanti { border-left-color: var(--negativo); }
 .rivale-dietro { border-left-color: var(--positivo); }
 .rivale-verdetto { margin-left: auto; font-weight: 700; }
+.rivale-etichetta { font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--tenue); }
+.rivale-nome { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/*
+ * Sul telefono la testata rubava un terzo dello schermo al passo. Il rivale resta,
+ * ma su una riga sola: l'etichetta e il club sono ripetizioni, il nome e il verdetto no.
+ */
+@media (max-width: 30rem) {
+  .rivale { flex-wrap: nowrap; gap: .5rem; padding: .4rem .6rem; margin-bottom: .5rem; font-size: .8rem; }
+  .rivale-etichetta, .rivale-club { display: none; }
+  .rivale-cifre { font-size: .72rem; }
+}
 
 /* ── Archivio delle stagioni passate ─────────────────────────────────────── */
 .archivio summary { cursor: pointer; color: var(--tenue); padding: .6rem 0; }
@@ -653,3 +665,80 @@ select.bottone { appearance: none; }
 
 .sfida-striscia { margin: .4rem 0 0; font-size: .82rem; font-weight: 700; color: var(--oro); }
 .sfida-fatta { color: var(--positivo); }
+
+/* ── La scena: una carta sola che possiede lo schermo ────────────────────────
+ *
+ * Il difetto peggiore della prima versione era l'impianto, non i colori: tessera,
+ * barra del rivale, sei schede, pannello di contesto e poi finalmente la decisione,
+ * tutto impilato in una pagina che scorreva. Chi giocava doveva cercare la cosa per
+ * cui era lì. Adesso il passo corrente occupa lo schermo: la testata resta ferma in
+ * alto, il corpo scorre da solo, e il bottone per andare avanti non se ne va mai.
+ */
+/* Il gioco non è una colonna di lettura: può usare più larghezza, così le tre
+   opzioni stanno una accanto all'altra e si vedono insieme. */
+.gioco { height: 100dvh; padding: 0; display: flex; max-width: 64rem; }
+.gioco > .scena { flex: 1; min-height: 0; }
+
+.scena {
+  display: flex; flex-direction: column; height: 100dvh;
+  /* Senza questi due, la barra delle schede — che è più larga dello schermo e scorre
+     da sola — allargherebbe tutta la scena e la pagina scorrerebbe in orizzontale. */
+  min-height: 0; min-width: 0;
+}
+.scena-alto { flex: 0 0 auto; min-width: 0; padding: .6rem .9rem 0; }
+.scena-alto .tessera { position: static; margin-bottom: .5rem; }
+.scena-barra { display: flex; align-items: center; justify-content: space-between; gap: .6rem; margin-bottom: .4rem; }
+@media (max-width: 30rem) { .scena-barra > .tenue { display: none; } }
+.scena-alto .schede { margin-bottom: .2rem; }
+.scena-alto .tessera { padding: .45rem .7rem; }
+.scena-alto .tessera-dato b { font-size: 1.02rem; }
+.scena-alto .scheda { padding: .3rem .7rem; font-size: .7rem; }
+
+.scena-corpo {
+  flex: 1 1 auto; min-height: 0; min-width: 0; overflow-y: auto; overscroll-behavior: contain;
+  padding: .2rem .9rem 1rem;
+  scrollbar-width: thin;
+}
+/*
+ * Il passo sta al centro dello spazio che avanza, e quando è più alto dello schermo
+ * scorre senza perdere la testa: i margini automatici assorbono il vuoto, mentre
+ * `justify-content: center` in una colonna flex taglierebbe la parte di sopra.
+ */
+.scena-corpo { display: flex; flex-direction: column; }
+.scena-corpo > :first-child { margin-top: auto; }
+.scena-corpo > :last-child { margin-bottom: auto; }
+
+/* Il bottone del passo resta appoggiato in basso: sempre a portata, mai da cercare. */
+.scena-corpo .avanti {
+  position: sticky; bottom: 0; z-index: 3;
+  box-shadow: 0 -14px 22px -12px var(--nero);
+}
+
+@media (max-width: 26rem) {
+  .scena-alto { padding: .5rem .6rem 0; }
+  .scena-corpo { padding: .2rem .6rem 1rem; }
+}
+
+/* ── Dentro la scena le scelte si stringono ──────────────────────────────────
+ *
+ * Fuori (creazione, menu) una scelta può respirare. Dentro il gioco no: tre opzioni
+ * devono stare sotto gli occhi insieme, o si torna a scorrere per capire cosa si sta
+ * scegliendo — che è esattamente il difetto da cui siamo partiti.
+ */
+.scena-corpo .giornale { padding: 1rem .9rem; }
+.scena-corpo .titolone { font-size: clamp(1.3rem, 5vw, 1.9rem); margin-bottom: .3rem; }
+.scena-corpo .sommario { margin-bottom: .6rem; font-size: .85rem; }
+.scena-corpo .scelte { gap: .5rem; }
+@media (min-width: 34rem) {
+  .scena-corpo .scelte { grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr)); }
+}
+.scena-corpo .scelta { padding: .7rem .8rem; gap: .35rem; }
+.scena-corpo .scelta-stemma { width: 2rem; height: 2rem; font-size: .68rem; border-radius: 7px; }
+.scena-corpo .scelta-titolo { font-size: .98rem; }
+.scena-corpo .scelta-nota { font-size: .78rem; }
+.scena-corpo .scelta-sottotitolo { font-size: .66rem; }
+.scena-corpo .scelta-badge { padding: .16rem .6rem; font-size: .7rem; }
+.scena-corpo .faccia { padding: .28rem .6rem; min-width: 4.6rem; }
+.scena-corpo .faccia-esito { font-size: .82rem; }
+.scena-corpo .obiettivi { padding: .5rem .7rem; margin: .5rem 0; }
+.scena-corpo .obiettivo { padding: .25rem 0; }

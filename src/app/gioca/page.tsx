@@ -18,7 +18,6 @@ export default function Gioca() {
   const [save, setSave] = useState<CareerSave | null>(null);
   const [slotId, setSlotId] = useState<string | null>(null);
   const [slots, setSlots] = useState<SlotSummary[]>([]);
-  const [codeShown, setCodeShown] = useState(false);
   const { leagues, loadLeagues, clubs } = world;
   const started = save !== null;
 
@@ -66,7 +65,8 @@ export default function Gioca() {
   }, []);
 
   return (
-    <main>
+    <main className={started ? 'gioco' : undefined}>
+      {!started && (
       <div className="barra-alta">
         {save === null ? (
           <Link href="/" className="torna">← Menu di gioco</Link>
@@ -83,10 +83,9 @@ export default function Gioca() {
             ← Menu di gioco
           </button>
         )}
-        <span className="tenue" style={{ fontSize: '.68rem' }}>
-          {save === null ? 'Nessuna carriera aperta' : 'Salvata da sola, a ogni scelta'}
-        </span>
+        <span className="tenue" style={{ fontSize: '.68rem' }}>Nessuna carriera aperta</span>
       </div>
+      )}
 
       {save === null ? (
         <>
@@ -96,26 +95,17 @@ export default function Gioca() {
       ) : world.clubs.every((entry) => entry.club.id !== save.startClubId) ? (
         <p className="tenue">Sto riaprendo la carriera…</p>
       ) : (
-        <>
-          <Carriera save={save} clubs={world.clubs} onChange={setSave} />
-          <div className="card">
-            <button type="button" className="bottone" onClick={() => setCodeShown(!codeShown)}>
-              {codeShown ? 'Nascondi il codice' : 'Condividi questa carriera'}
-              <span className="posta">
-                Chi lo incolla rivive esattamente la tua carriera, decisione per decisione.
-              </span>
-            </button>
-            {codeShown && (
-              <textarea
-                className="bottone"
-                style={{ marginTop: '.6rem', minHeight: '5rem', fontFamily: 'ui-monospace, monospace', fontSize: '.8rem' }}
-                readOnly
-                value={encodeSave(save)}
-                onFocus={(event) => event.target.select()}
-              />
-            )}
-          </div>
-        </>
+        <Carriera
+          save={save}
+          clubs={world.clubs}
+          onChange={setSave}
+          codice={encodeSave(save)}
+          onEsci={() => {
+            setSave(null);
+            setSlotId(null);
+            setSlots(refreshSlots());
+          }}
+        />
       )}
     </main>
   );
