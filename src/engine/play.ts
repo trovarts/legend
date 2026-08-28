@@ -36,6 +36,8 @@ export interface CareerDecisions {
   piede?: 'Destro' | 'Sinistro';
   /** Come si guardano le stagioni: tutto d'un fiato o passo per passo. */
   modo?: 'classica' | 'dettagliata';
+  /** Cosa vuoi che questa carriera sia: si sceglie prima e si giudica alla fine. */
+  ambizione?: string;
 }
 
 /**

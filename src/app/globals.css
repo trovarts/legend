@@ -899,3 +899,19 @@ select.bottone { appearance: none; }
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--oro) 35%, transparent);
 }
 .in-campo-mio .in-campo-nome { color: var(--oro); font-weight: 800; }
+
+/* ── L'ambizione, mentre la insegui ──────────────────────────────────────── */
+.ambizione-riga { display: flex; align-items: center; gap: .55rem; }
+.ambizione-titolo { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--tenue); white-space: nowrap; }
+.ambizione-barra { flex: 1; height: 5px; border-radius: 99px; background: rgba(255,255,255,.08); overflow: hidden; }
+.ambizione-barra > span { display: block; height: 100%; background: linear-gradient(90deg, var(--rosso), var(--oro)); transition: width .8s cubic-bezier(.2,.8,.2,1); }
+.ambizione-conto { font-size: .74rem; color: var(--tenue); white-space: nowrap; }
+.ambizione-centrata .ambizione-barra > span { background: var(--positivo); }
+.ambizione-centrata .ambizione-conto { color: var(--positivo); font-weight: 700; }
+.scena-alto .ambizione-riga { margin-bottom: .45rem; padding: 0 .1rem; }
+
+.ambizione-verdetto {
+  margin: .6rem 0 0; padding: .5rem .7rem; border-radius: 10px; font-size: .9rem;
+  border: 1px solid var(--bordo); background: rgba(255,255,255,.03);
+}
+.ambizione-verdetto.ambizione-centrata { border-color: var(--positivo); color: var(--positivo); }

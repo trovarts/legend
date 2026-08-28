@@ -1,8 +1,14 @@
 'use client';
 
+import { usaPortaInVista } from './portaInVista';
+
+
 import type { StandingRow } from '../engine/standings';
 
 export function Classifica({ rows, leagueName }: { rows: readonly StandingRow[]; leagueName: string }) {
+  // La riga del proprio club si porta sotto gli occhi da sola.
+  const mia = usaPortaInVista<HTMLDivElement>();
+
   return (
     <section className="giornale">
       <header className="testata">
@@ -11,7 +17,11 @@ export function Classifica({ rows, leagueName }: { rows: readonly StandingRow[];
       </header>
       <div className="tabella">
         {rows.map((row, index) => (
-          <div key={row.clubId} className={`tabella-riga${row.isPlayer ? ' tabella-mia' : ''}`}>
+          <div
+            key={row.clubId}
+            ref={row.isPlayer ? mia : undefined}
+            className={`tabella-riga${row.isPlayer ? ' tabella-mia' : ''}`}
+          >
             <span className="numero tabella-pos">{index + 1}</span>
             <span className="tabella-club">{row.clubName}</span>
             <span className="tabella-ovr numero">{row.strength.toFixed(0)}</span>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { ambizioneById, progressoAmbizione } from '../engine/ambizione';
 import { dailyChallenge } from '../engine/challenge';
 import type { CareerResult, GoatComponent } from '../engine/types';
 import { Albo } from './Albo';
@@ -21,7 +22,18 @@ const ETICHETTE: Record<GoatComponent, string> = {
   difficulty: 'Difficoltà del percorso',
 };
 
-export function Verdetto({ result }: { result: CareerResult }) {
+export function Verdetto({
+  result,
+  ambizioneId,
+  paeseDelClub,
+}: {
+  result: CareerResult;
+  /** Cosa aveva promesso questa carriera quando è cominciata. */
+  ambizioneId?: string;
+  paeseDelClub?: (clubId: string) => string | undefined;
+}) {
+  const ambizione = ambizioneById(ambizioneId);
+  const promessa = progressoAmbizione(ambizione, result.seasons, paeseDelClub ?? (() => undefined));
   const gol = result.seasons.reduce((sum, season) => sum + season.stats.goals, 0);
   const presenze = result.seasons.reduce((sum, season) => sum + season.stats.appearances, 0);
   const davanti = result.seasonsAheadOfRival > result.seasons.length / 2;
@@ -50,9 +62,18 @@ export function Verdetto({ result }: { result: CareerResult }) {
     <div className="card" style={{ borderColor: 'var(--tabellone)' }}>
       <h2>Ritirato a {result.retiredAt} anni</h2>
       <p className="numero" style={{ fontSize: '2.6rem', fontWeight: 700, margin: '.2rem 0' }}>
-        {result.goat.total}
+        {result.goat.total + (promessa.centrata ? ambizione.premio : 0)}
         <span className="tenue" style={{ fontSize: '1rem', fontWeight: 400 }}> / 1000</span>
       </p>
+
+      {ambizione.id !== 'nessuna' && (
+        <p className={`ambizione-verdetto${promessa.centrata ? ' ambizione-centrata' : ''}`}>
+          <b>{ambizione.titolo}</b>{' '}
+          {promessa.centrata
+            ? `— promessa mantenuta. +${ambizione.premio} punti.`
+            : `— rimasta a ${Math.round(promessa.fatto)} su ${ambizione.target} ${ambizione.unita}.`}
+        </p>
+      )}
 
       <div className="riga numero">
         <span>{presenze} presenze</span>

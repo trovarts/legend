@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { ambizioneById, progressoAmbizione } from '../engine/ambizione';
 import { clubStrength } from '../engine/clubStrength';
 import type { CandidateClub } from '../engine/market';
 import { decisionKey, playCareer, type CareerSave } from '../engine/play';
@@ -9,6 +10,7 @@ import { AnnoVivaio } from './AnnoVivaio';
 import { Bivio } from './Bivio';
 import { Contesto } from './Contesto';
 import { FineStagione } from './FineStagione';
+import { Ambizione } from './Ambizione';
 import { Codice } from './Codice';
 import { Gerarchia } from './Gerarchia';
 import { Rosa } from './Rosa';
@@ -139,6 +141,12 @@ export function Carriera({
   const pending = state.pending;
   const clubCorrente = clubs.find((entry) => entry.club.id === last?.clubId);
 
+  // L'ambizione scelta alla creazione, e a che punto è.
+  const ambizione = ambizioneById(save.decisions.ambizione);
+  const paeseDelClub = (clubId: string): string | undefined =>
+    clubs.find((entry) => entry.club.id === clubId)?.country;
+  const progresso = progressoAmbizione(ambizione, seasons, paeseDelClub);
+
   /**
    * Cambia a ogni passo: serve a rimontare il corpo della scena, così ogni schermata
    * entra con la sua animazione invece di comparire dentro quella di prima.
@@ -208,6 +216,10 @@ export function Carriera({
         }
       />
 
+      {seasons.length > 0 && (
+        <Ambizione voce={ambizione} progresso={progresso} compatta />
+      )}
+
       {state.agent !== null && <BarraSchede attiva={scheda} onChange={setScheda} />}
       </header>
 
@@ -235,6 +247,7 @@ export function Carriera({
             clubName={clubCorrente.club.name}
           />
         )}
+        <Ambizione voce={ambizione} progresso={progresso} />
         {codice !== undefined && <Codice codice={codice} />}
         <Profilo
           name={save.create.name}
@@ -410,7 +423,13 @@ export function Carriera({
             />
           )}
 
-          {state.finished && state.result !== null && <Verdetto result={state.result} />}
+          {state.finished && state.result !== null && (
+        <Verdetto
+          result={state.result}
+          ambizioneId={save.decisions.ambizione}
+          paeseDelClub={paeseDelClub}
+        />
+      )}
 
           {last && state.finished && (
             <Giornale

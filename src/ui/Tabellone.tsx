@@ -1,5 +1,7 @@
 'use client';
 
+import { usaPortaInVista } from './portaInVista';
+
 import type { CupBracket, CupRound } from '../engine/cup';
 
 const TITOLI: Record<CupRound, string> = {
@@ -9,6 +11,9 @@ const TITOLI: Record<CupRound, string> = {
 };
 
 export function Tabellone({ bracket }: { bracket: CupBracket }) {
+  // Il proprio accoppiamento si porta sotto gli occhi da solo.
+  const mia = usaPortaInVista<HTMLDivElement>();
+
   const turni: CupRound[] = ['quarti', 'semifinale', 'finale'];
 
   return (
@@ -28,7 +33,11 @@ export function Tabellone({ bracket }: { bracket: CupBracket }) {
             <div key={turno} className="tabellone-colonna">
               <span className="contesto-etichetta">{TITOLI[turno]}</span>
               {partite.map((tie, index) => (
-                <div key={`${turno}-${index}`} className={`tie${tie.playerInvolved ? ' tie-mia' : ''}`}>
+                <div
+                  key={`${turno}-${index}`}
+                  ref={tie.playerInvolved ? mia : undefined}
+                  className={`tie${tie.playerInvolved ? ' tie-mia' : ''}`}
+                >
                   <span className={tie.homeGoals > tie.awayGoals ? 'tie-vince' : ''}>
                     {tie.home} <b className="numero">{tie.homeGoals}</b>
                   </span>

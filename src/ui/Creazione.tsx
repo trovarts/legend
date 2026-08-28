@@ -15,6 +15,7 @@ const Mappa = dynamic(() => import('./Mappa').then((modulo) => modulo.Mappa), {
   loading: () => <p className="tenue">Sto aprendo il planisfero…</p>,
 });
 import { Nazione } from './Nazione';
+import { AMBIZIONI, type AmbizioneId } from '../engine/ambizione';
 import { MODI_PARTITA, type ModoPartita } from './preferenze';
 import { newSave, randomSeed } from './newSave';
 import { Scelta, Scelte, sigla } from './Scelte';
@@ -47,6 +48,7 @@ export function Creazione({
   const [piede, setPiede] = useState<'Destro' | 'Sinistro'>('Destro');
   const [sceltaClub, setSceltaClub] = useState<'sorpresa' | 'io'>('sorpresa');
   const [modo, setModo] = useState<ModoPartita>('dettagliata');
+  const [ambizione, setAmbizione] = useState<AmbizioneId>('nessuna');
   const [leagueId, setLeagueId] = useState('');
 
   const ruolo = posizioneById(posizione);
@@ -134,6 +136,7 @@ export function Creazione({
         style,
         position: posizione,
         modo,
+        ambizione,
         look: aspetto,
         numero,
         piede,
@@ -310,6 +313,28 @@ export function Creazione({
                   <span className="tenue" style={{ display: 'block', fontSize: '.82rem' }}>{item.text}</span>
                 </span>
                 <span className="stile-spunta" aria-hidden="true">{modo === item.id ? '✓' : ''}</span>
+              </button>
+            ))}
+          </div>
+
+          <span className="contesto-etichetta" style={{ display: 'block', marginBottom: '.35rem' }}>
+            Che carriera vuoi che sia
+          </span>
+          <div className="stili" style={{ marginBottom: '.9rem' }}>
+            {AMBIZIONI.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={`stile${ambizione === item.id ? ' stile-scelto' : ''}`}
+                onClick={() => setAmbizione(item.id)}
+              >
+                <span>
+                  <strong>{item.titolo}</strong>
+                  <span className="tenue" style={{ display: 'block', fontSize: '.82rem' }}>{item.testo}</span>
+                </span>
+                <span className="stile-spunta" aria-hidden="true">
+                  {ambizione === item.id ? '✓' : item.premio > 0 ? `+${item.premio}` : ''}
+                </span>
               </button>
             ))}
           </div>
