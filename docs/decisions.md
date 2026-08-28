@@ -222,3 +222,38 @@ le carriere. Sono saltati fuori stampando una carriera intera:
 
 **Lezione:** il Lab misura le distribuzioni, non la leggibilità. Prima di chiudere una
 fase bisogna stampare una carriera intera e leggerla come la leggerebbe un giocatore.
+
+## D-013 — L'interfaccia rifatta guardando il concorrente giocare
+
+La prima versione dell'interfaccia era corretta e illeggibile: card grigie, righe di
+testo, bottoni in colonna. Funzionava e non coinvolgeva nessuno. Il committente l'ha
+detto in tre parole — «troppo statico, poco coinvolgente» — e aveva ragione.
+
+Guardando cinque minuti di gameplay del concorrente si capisce dove sta la differenza,
+e non è nei colori:
+
+1. **La stagione è un articolo di giornale.** Testata («NOVANTA MINUTI», «SPORT OGGI»),
+   occhiello, titolo in maiuscolo su tre righe, capolettera, colonna laterale «DAL CAMPO»
+   con le voci dello spogliatoio. Non una tabella: una prima pagina.
+2. **Le scelte sono card grandi affiancate**, con lo stemma della squadra e in fondo un
+   badge verde con quello che ci si guadagna (`+3 OVR`). Non bottoni in fila.
+3. **Il giocatore è sempre in alto**, in una tessera con età, overall e valore.
+
+Il nostro difetto peggiore però era un altro, e non riguardava l'estetica: **il Rivale
+non si vedeva mai**. Il sistema su cui abbiamo puntato di più compariva solo nel verdetto
+finale, dopo venti stagioni. Ora sta sotto la tessera a ogni schermata, verde quando sei
+avanti e rosso quando ti è davanti, e ricompare nella colonna del giornale a fine anno.
+
+**Come l'abbiamo rifatta:** `Giornale.tsx` costruisce l'articolo dai momenti già prodotti
+dal motore (nessuna logica di gioco nell'interfaccia); `Scelte.tsx` dà a preparazione,
+bivi e mercato la stessa forma di card con badge; `Tessera.tsx` tiene in alto chi sei
+diventato. I titoli non sono mai statistiche travestite: una funzione dedicata titola sui
+fatti — `ATALANTA CAMPIONE`, `SI FERMA: 12 PARTITE FUORI`, `UN ANNO A GUARDARE` — e
+quando non è successo niente lo ammette (`ANNO DI MESTIERE A LINCOLN CITY`).
+
+**Il peso, misurato allo stesso modo per entrambi:** primo caricamento 186 KB compressi
+contro i 1.199 KB del concorrente. Sei volte e mezzo più leggeri, con un'interfaccia più
+ricca. `npm run check:bundle` fallisce se superiamo i 240 KB.
+
+**Lezione:** un'interfaccia può passare tutti i test e non essere un gioco. I test dicono
+se funziona; solo guardarla dice se qualcuno ha voglia di usarla.

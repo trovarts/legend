@@ -7,20 +7,47 @@ import type { RivalSnapshot, SeasonRecord } from '../engine/types';
 const TESTATE = ['NOVANTA MINUTI', 'IL CORRIERE DEL CAMPO', 'PALLONE', 'FUORICLASSE', 'PRIMA PAGINA'];
 const MESI = ['giugno', 'luglio', 'agosto', 'settembre'];
 
-function titoloDi(record: SeasonRecord, momento: string): string {
+/**
+ * Il titolo di prima pagina. Non è mai una statistica: un giornale titola sui fatti,
+ * e se non è successo niente lo dice con onestà.
+ */
+function titoloDi(record: SeasonRecord, isFirst: boolean): string {
   const stats = record.stats;
+  const club = record.clubName.toUpperCase();
+  const crescita = record.overallEnd - record.overallStart;
+
   if (record.trophies.length > 0) {
-    return `${record.clubName}: è ${record.trophies[0]!.competitionName.toUpperCase()}`;
+    const trofeo = record.trophies[0]!;
+    if (trofeo.kind === 'league') return `${club} CAMPIONE`;
+    if (trofeo.kind === 'continental') return `L'EUROPA È DI ${club}`;
+    return `COPPA: ${club} LA ALZA`;
   }
-  if (record.awards.length > 0) return `L'anno di ${record.clubName}: nessuno come lui`;
-  if (record.injury && record.injury.severity !== 'lieve') {
-    return `Si ferma sul più bello: ${record.injury.matchesOut} partite fuori`;
+  if (record.awards.length > 0) {
+    const premio = record.awards[0]!;
+    if (premio.kind === 'topScorer') return `${stats.goals} GOL: NESSUNO COME LUI`;
+    if (premio.kind === 'youngPlayer') return 'IL MIGLIORE DEI GIOVANI';
+    return 'IL MIGLIORE DEL CAMPIONATO';
   }
-  if (stats.goals >= 18) return `${stats.goals} gol: la stagione che cambia tutto`;
-  if (record.minutesShare < 0.2) return 'Un anno in tribuna, e la pazienza finisce';
-  if (record.position === 1) return `${record.clubName} in testa, e lui c'era`;
-  if (record.position >= 18) return 'Salvezza a fatica, e adesso?';
-  return momento;
+  if (record.injury && record.injury.severity === 'grave') {
+    return 'STAGIONE FINITA IN UN ATTIMO';
+  }
+  if (record.injury && record.injury.severity === 'seria') {
+    return `SI FERMA: ${record.injury.matchesOut} PARTITE FUORI`;
+  }
+  if (isFirst) return `ESORDIO CON ${club}`;
+  if (record.national.tournament) {
+    return `NAZIONALE: FINO A ${record.national.tournament.stageReached.toUpperCase()}`;
+  }
+  if (stats.goals >= 18) return `${stats.goals} GOL, E LA GENTE IMPARA IL NOME`;
+  if (record.minutesShare < 0.15) return 'UN ANNO A GUARDARE';
+  if (record.position === 1) return `${club} IN TESTA`;
+  if (record.position >= 18) return 'SALVEZZA SOFFERTA';
+  if (crescita >= 4) return 'CRESCE, E SI VEDE';
+  if (crescita <= -4) return 'LE GAMBE COMINCIANO A PARLARE';
+  if (record.national.capped) return 'CHIAMATA IN NAZIONALE';
+  if (stats.goals >= 10) return `DIECI GOL E PASSA: ${club} SI AFFIDA A LUI`;
+  if (record.position <= 4) return `${club} IN ALTO, LUI C'ERA`;
+  return `ANNO DI MESTIERE A ${club}`;
 }
 
 export function Giornale({
@@ -42,6 +69,7 @@ export function Giornale({
   const anno = 2026 + record.season;
   const principale = moments[0]?.text ?? 'Una stagione da raccontare';
   const resto = moments.slice(1);
+  const titolo = titoloDi(record, isFirst);
 
   return (
     <article className="giornale">
@@ -56,7 +84,7 @@ export function Giornale({
         {record.leagueName} · {record.position}° posto
       </span>
 
-      <h2 className="titolone">{titoloDi(record, principale)}</h2>
+      <h2 className="titolone">{titolo}</h2>
 
       <p className="sommario numero">
         {playerName} · {record.age} anni · {record.clubName} · {record.stats.appearances} presenze ·{' '}
