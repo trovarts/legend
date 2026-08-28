@@ -56,6 +56,14 @@ export interface Offer {
   isLoan: boolean;
 }
 
+/** La stagione in nazionale. `tournament` è valorizzato solo negli anni di torneo. */
+export interface NationalSeason {
+  capped: boolean;
+  caps: number;
+  goals: number;
+  tournament: { name: string; stageReached: string } | null;
+}
+
 /** Una riga della timeline di carriera. La Fase 2 aggiungerà gol, assist e trofei. */
 export interface SeasonRecord {
   season: number;
