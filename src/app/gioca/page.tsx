@@ -65,33 +65,24 @@ export default function Gioca() {
   }, []);
 
   return (
-    <main className={started ? 'gioco' : undefined}>
-      {!started && (
-      <div className="barra-alta">
-        {save === null ? (
-          <Link href="/" className="torna">← Menu di gioco</Link>
-        ) : (
-          <button
-            type="button"
-            className="torna"
-            onClick={() => {
-              setSave(null);
-              setSlotId(null);
-              setSlots(refreshSlots());
-            }}
-          >
-            ← Menu di gioco
-          </button>
-        )}
-        <span className="tenue" style={{ fontSize: '.68rem' }}>Nessuna carriera aperta</span>
-      </div>
-      )}
-
+    /*
+     * Anche la creazione è una scena: un passo per volta, la testata ferma e il corpo
+     * che scorre da solo. Era l'ultimo posto in cui restava una pagina da scorrere.
+     */
+    <main className="gioco">
       {save === null ? (
-        <>
-          <Creazione world={world} onStart={start} />
-          <Salvataggi slots={slots} onResume={resume} onRefresh={() => setSlots(refreshSlots())} />
-        </>
+        <div className="scena">
+          <header className="scena-alto">
+            <div className="scena-barra">
+              <Link href="/" className="torna">← Menu di gioco</Link>
+              <span className="tenue" style={{ fontSize: '.64rem' }}>Nessuna carriera aperta</span>
+            </div>
+          </header>
+          <div className="scena-corpo">
+            <Creazione world={world} onStart={start} />
+            <Salvataggi slots={slots} onResume={resume} onRefresh={() => setSlots(refreshSlots())} />
+          </div>
+        </div>
       ) : world.clubs.every((entry) => entry.club.id !== save.startClubId) ? (
         <p className="tenue">Sto riaprendo la carriera…</p>
       ) : (

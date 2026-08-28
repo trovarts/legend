@@ -51,9 +51,10 @@ export function Creazione({
   const [ambizione, setAmbizione] = useState<AmbizioneId>('nessuna');
   const [leagueId, setLeagueId] = useState('');
 
-  // Ogni passo comincia dall'alto: restare a meta' pagina fa perdere il filo.
+  // Ogni passo comincia dall'alto: restare a metà strada fa perdere il filo. Adesso
+  // a scorrere è il corpo della scena, non la finestra.
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.querySelector('.scena-corpo')?.scrollTo({ top: 0, behavior: 'smooth' });
   }, [passo]);
 
   const ruolo = posizioneById(posizione);
@@ -153,10 +154,28 @@ export function Creazione({
     <section className="giornale">
       {passo === 1 && (
         <>
-          {testata('Da dove vieni', 'Tre passi: nazione, ruolo e maglia, poi le opzioni di carriera.', 1)}
-          <Mappa giocabili={world.countries} scelto={country} onChoose={setCountry} />
-          {country !== '' && (
-            <Nazione country={country} leagues={world.leagues} onConfirm={() => setPasso(2)} />
+          {/*
+            Scelto un paese, la sua scheda prende il posto della mappa invece di
+            nascere sotto: una cosa per volta, senza andarla a cercare.
+          */}
+          {country === '' ? (
+            <>
+              {testata('Da dove vieni', 'Tre passi: nazione, ruolo e maglia, poi le opzioni di carriera.', 1)}
+              <Mappa giocabili={world.countries} scelto={country} onChoose={setCountry} />
+            </>
+          ) : (
+            <>
+              {testata('Da dove vieni', 'Ecco dove si gioca. Se non ti convince, cambia pure.', 1)}
+              <Nazione country={country} leagues={world.leagues} onConfirm={() => setPasso(2)} />
+              <button
+                type="button"
+                className="bottone"
+                style={{ marginTop: '.6rem', textAlign: 'center' }}
+                onClick={() => setCountry('')}
+              >
+                ← Scegli un&apos;altra nazione
+              </button>
+            </>
           )}
         </>
       )}
