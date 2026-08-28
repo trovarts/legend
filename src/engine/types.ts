@@ -64,6 +64,34 @@ export interface NationalSeason {
   tournament: { name: string; stageReached: string } | null;
 }
 
+/** I Segni sono la memoria della carriera: una scelta fatta a vent'anni pesa ancora a trenta. */
+export type MarkId =
+  | 'ginocchio-fragile'
+  | 'uomo-spogliatoio'
+  | 'rissa-col-mister'
+  | 'mercenario'
+  | 'bandiera'
+  | 'beniamino-dei-tifosi'
+  | 'promessa-tradita'
+  | 'tornato-a-casa'
+  | 'carattere-fragile'
+  | 'leader-riconosciuto';
+
+export interface Mark {
+  id: MarkId;
+  /** Da 0 a 1: quanto pesa adesso. Cala col tempo, tranne per i segni permanenti. */
+  intensity: number;
+  seasonAcquired: number;
+}
+
+export type InjurySeverity = 'lieve' | 'seria' | 'grave';
+
+export interface Injury {
+  severity: InjurySeverity;
+  matchesOut: number;
+  season: number;
+}
+
 /** Una riga della timeline di carriera. */
 export interface SeasonRecord {
   season: number;
