@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { clubStrength } from '../engine/clubStrength';
 import type { CandidateClub } from '../engine/market';
 import { decisionKey, playCareer, type CareerSave } from '../engine/play';
@@ -20,6 +20,7 @@ import { youthOption, type YouthApproach } from '../engine/youth';
 import type { Dilemma } from '../engine/types';
 import { posizioneById } from './Campo';
 import { PLAY_STYLES } from '../engine/playstyle';
+import { temaDelClub } from './temaClub';
 import { Verdetto } from './Verdetto';
 
 export function Carriera({
@@ -122,8 +123,27 @@ export function Carriera({
   const pending = state.pending;
   const clubCorrente = clubs.find((entry) => entry.club.id === last?.clubId);
 
+  /**
+   * I colori del club tingono tutta l'interfaccia: giocare nel Monza non deve
+   * assomigliare a giocare nell'Inter. Le variabili sono le stesse di sempre,
+   * cambia solo il loro valore.
+   */
+  const nomeClub = last?.clubName ?? state.youth[state.youth.length - 1]?.clubName
+    ?? (pending?.kind === 'youth' || pending?.kind === 'promotion' ? pending.clubName : undefined);
+  const tema = nomeClub !== undefined ? temaDelClub(nomeClub) : null;
+
   return (
-    <>
+    <div
+      className="tinta"
+      style={
+        tema === null
+          ? undefined
+          : ({
+              '--rosso': tema.primario,
+              '--rosso-scuro': tema.secondario,
+            } as CSSProperties)
+      }
+    >
       <Tessera
         name={save.create.name}
         nationality={save.create.nationality}
@@ -313,6 +333,6 @@ export function Carriera({
           ))}
         </details>
       )}
-    </>
+    </div>
   );
 }

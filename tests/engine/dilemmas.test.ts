@@ -39,13 +39,15 @@ describe('pickDilemmas', () => {
     }
   });
 
-  it("chi è infortunato incontra il bivio dell'infortunio", () => {
+  it("chi è infortunato si trova davanti una decisione sull'infortunio", () => {
     const hurt = { ...base, injury: { severity: 'grave' as const, matchesOut: 28, season: 5 } };
+    // Con un infortunio grave i bivi a tema sono due: il rientro e la sala operatoria.
+    const aTema = ['rientro-anticipato', 'sala-operatoria'];
     let seen = 0;
     for (let seed = 0; seed < 100; seed += 1) {
-      if (pickDilemmas(hurt, createRng(seed)).some((d) => d.id === 'rientro-anticipato')) seen += 1;
+      if (pickDilemmas(hurt, createRng(seed)).some((d) => aTema.includes(d.id))) seen += 1;
     }
-    expect(seen).toBeGreaterThan(50);
+    expect(seen).toBeGreaterThan(85);
   });
 
   it('un Segno vecchio apre un bivio che prima non esisteva', () => {

@@ -27,9 +27,17 @@ export function pickDilemmas(context: DilemmaContext, rng: Rng): Dilemma[] {
   const picked: Dilemma[] = [];
   const used = new Set<string>();
 
+  // Gli urgenti passano davanti: se c'è un infortunio grave, se ne parla.
+  const urgenti = available.filter((entry) => entry.urgent === true);
+  if (urgenti.length > 0) {
+    const scelto = urgenti[rng.int(0, urgenti.length - 1)]!;
+    used.add(scelto.id);
+    picked.push(scelto.build(context));
+  }
+
   const howMany = Math.min(MAX_PER_SEASON, available.length, rng.int(1, MAX_PER_SEASON));
 
-  for (let i = 0; i < howMany; i += 1) {
+  for (let i = picked.length; i < howMany; i += 1) {
     const pool = available.filter((entry) => !used.has(entry.id));
     if (pool.length === 0) break;
 

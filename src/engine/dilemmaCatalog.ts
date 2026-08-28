@@ -29,6 +29,11 @@ export interface DilemmaEntry {
   id: string;
   /** Peso nell'estrazione: quanto spesso questo bivio si presenta, fra quelli possibili. */
   weight: number;
+  /**
+   * Un bivio urgente non aspetta il sorteggio: se le condizioni ci sono, si presenta.
+   * Un ginocchio rotto non è un evento fra tanti, è *la* cosa di quella stagione.
+   */
+  urgent?: boolean;
   when: (context: DilemmaContext) => boolean;
   build: (context: DilemmaContext) => Dilemma;
 }
@@ -41,6 +46,7 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
   {
     id: 'rientro-anticipato',
     weight: 3,
+    urgent: true,
     when: (context) => context.injury !== null && context.injury.severity !== 'lieve',
     build: (context) => ({
       id: 'rientro-anticipato',
@@ -415,6 +421,125 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
           stake: 'Nessuna conseguenza, nessun credito.',
           outcomes: [
             { chance: 1, text: 'Giri la testa dall\'altra parte e vai avanti.', effects: {} },
+          ],
+        },
+      ],
+    }),
+  },
+  {
+    id: 'sala-operatoria',
+    weight: 3,
+    urgent: true,
+    when: (context) => context.injury !== null && context.injury.severity === 'grave',
+    build: (context) => ({
+      id: 'sala-operatoria',
+      title: 'Sala operatoria',
+      text: `${context.clubName}. Un intervento elettivo può sistemare la cosa una volta per tutte, ma vuol dire mesi di stampelle.`,
+      options: [
+        {
+          id: 'operati',
+          label: 'Operazione elettiva',
+          stake: 'Mesi fuori adesso, ma il problema sparisce.',
+          outcomes: [
+            { chance: 0.7, text: 'Il ginocchio torna nuovo. Il chirurgo ha fatto un lavoro pulito.', effects: { removeMark: 'ginocchio-fragile', minutesDelta: -0.2 } },
+            { chance: 0.3, text: 'L\'operazione riesce a metà: giochi, ma con la testa altrove.', effects: { minutesDelta: -0.15, overall: -1 } },
+          ],
+        },
+        {
+          id: 'continua-cosi',
+          label: 'Continua così',
+          stake: 'Stringi i denti e giochi, finché regge.',
+          outcomes: [
+            { chance: 0.55, text: 'Con le infiltrazioni si va avanti. Per quest\'anno tiene.', effects: { minutesDelta: 0.05 } },
+            { chance: 0.45, text: 'Cede di nuovo, e stavolta è peggio.', effects: { addMark: { id: 'ginocchio-fragile', intensity: 0.9 }, overall: -2, retirementDelta: -2 } },
+          ],
+        },
+      ],
+    }),
+  },
+  {
+    id: 'lavoro-mentale',
+    weight: 2,
+    when: (context) => markIntensity(context.marks, 'carattere-fragile') > 0.25,
+    build: () => ({
+      id: 'lavoro-mentale',
+      title: 'Lavoro mentale',
+      text: 'Qualcuno ti ha fatto notare che nei momenti che contano ti irrigidisci. La società propone un percorso con un preparatore mentale.',
+      options: [
+        {
+          id: 'mental-coach',
+          label: 'Mental coach',
+          stake: 'Ci lavori sopra: serve tempo, ma qualcosa cambia.',
+          outcomes: [
+            { chance: 0.7, text: 'Impari a stare nel momento. La testa non trema più.', effects: { removeMark: 'carattere-fragile', minutesDelta: 0.06 } },
+            { chance: 0.3, text: 'Sedute educate, nessun cambiamento vero.', effects: {} },
+          ],
+        },
+        {
+          id: 'da-solo',
+          label: 'Te la gestisci da solo',
+          stake: 'Nessuno che ti dice cosa pensare, nel bene e nel male.',
+          outcomes: [
+            { chance: 0.5, text: 'Ci arrivi da solo, e vale di più.', effects: { removeMark: 'carattere-fragile', addMark: { id: 'leader-riconosciuto', intensity: 0.4 } } },
+            { chance: 0.5, text: 'Continui a ingoiare tutto. Prima o poi si vede.', effects: { minutesDelta: -0.05 } },
+          ],
+        },
+      ],
+    }),
+  },
+  {
+    id: 'intervista-fine-stagione',
+    weight: 2,
+    when: (context) => context.season >= 2 && context.minutesShare >= 0.4,
+    build: (context) => ({
+      id: 'intervista-fine-stagione',
+      title: 'Intervista di fine stagione',
+      text: `${context.clubName}. I microfoni vogliono il tuo bilancio dell'annata: quello che dici finisce sui giornali di domani.`,
+      options: [
+        {
+          id: 'umilta',
+          label: 'Umiltà nei media',
+          stake: 'Nessun titolo, ma neanche nemici.',
+          outcomes: [
+            { chance: 1, text: 'Ringrazi compagni e staff. Nessuno si offende.', effects: { addMark: { id: 'uomo-spogliatoio', intensity: 0.4 } } },
+          ],
+        },
+        {
+          id: 'dichiarazioni-di-fuoco',
+          label: 'Dichiarazioni di fuoco',
+          stake: 'La piazza si infiamma, la società meno.',
+          outcomes: [
+            { chance: 0.5, text: 'Hai detto quello che pensavano tutti. La curva ti porta in trionfo.', effects: { addMark: { id: 'beniamino-dei-tifosi', intensity: 0.8 } } },
+            { chance: 0.5, text: 'In società non l\'hanno presa bene. Il mercato lo faranno senza chiederti niente.', effects: { addMark: { id: 'promessa-tradita', intensity: 0.5 }, minutesDelta: -0.08 } },
+          ],
+        },
+      ],
+    }),
+  },
+  {
+    id: 'lingua-e-cultura',
+    weight: 2,
+    when: (context) => context.season >= 3 && context.contractYearsLeft >= 2,
+    build: (context) => ({
+      id: 'lingua-e-cultura',
+      title: 'Un paese nuovo',
+      text: `${context.clubName}. Fuori dal campo non capisci metà di quello che dicono, e nello spogliatoio si ride di battute che non afferri.`,
+      options: [
+        {
+          id: 'studia',
+          label: 'Lingua e cultura',
+          stake: "Ore sui libri dopo l'allenamento, ma entri nel gruppo.",
+          outcomes: [
+            { chance: 0.75, text: 'In tre mesi parli con tutti. Cambia tutto, anche in campo.', effects: { addMark: { id: 'uomo-spogliatoio', intensity: 0.6 }, minutesDelta: 0.08 } },
+            { chance: 0.25, text: 'Fatichi più del previsto: la testa resta altrove.', effects: { minutesDelta: -0.04 } },
+          ],
+        },
+        {
+          id: 'solo-campo',
+          label: 'Parla solo il campo',
+          stake: 'Ti isoli, ma non perdi un minuto di allenamento.',
+          outcomes: [
+            { chance: 1, text: 'Fai il tuo e torni a casa. Funziona, per un po\'.', effects: { addMark: { id: 'carattere-fragile', intensity: 0.3 } } },
           ],
         },
       ],

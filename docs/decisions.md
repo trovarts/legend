@@ -382,3 +382,36 @@ il sorteggio: non c'è niente da rivelare.
 si sceglie — il replay è deterministico. La rivelazione è solo interfaccia: confronta
 l'esito registrato nella stagione con le facce dichiarate dall'opzione, e mostra quale
 delle due è uscita. Nessuno stato di gioco in più.
+
+## D-019 — Studiato il concorrente per intero, non a campione
+
+Il committente ha chiesto di studiarlo **bene**. Estratti e catalogati tutti i fotogrammi
+dei cinque minuti di gameplay, sono venute fuori cose che a campione non si vedevano:
+
+**Il tema colore segue il club.** Giocare nel Nassr tinge l'interfaccia di giallo, nel
+Brianza di blu, nel Genova di rosso. Non è un dettaglio: è quello che fa sentire che hai
+cambiato squadra. Da noi lo ricava `temaDelClub` dal nome — nessun marchio di nessuno,
+solo parole («ross», «inter», «verd», «gial») e in mancanza di quelle un colore stabile
+per hash. Le variabili CSS restano le stesse, cambia il loro valore.
+
+**Le partite non possono finire pari.** Nelle finali si va ai supplementari e poi ai
+rigori, con la serie che si ferma appena è matematicamente decisa — anche a metà coppia,
+per questo il numero di tiri può essere dispari — e a oltranza se serve. La schermata ora
+è la loro: stemmi con badge OVR, punteggio grande con i rigori fra parentesi, barra del
+tempo, banner dell'ultimo episodio, statistiche a barre casa/trasferta e la sequenza dal
+dischetto (● segnato, ✕ sbagliato).
+
+**Quattro situazioni nuove**, prese dal loro flusso: sala operatoria, lavoro mentale,
+intervista di fine stagione, lingua e cultura in un paese nuovo. Diciassette bivi in
+tutto, e il `choices-lab` dice che nessuno è dominante.
+
+**I bivi urgenti.** Un test diceva che con un ginocchio rotto solo il 70% delle stagioni
+proponeva una decisione sull'infortunio: il sorteggio a pesi lo faceva perdere contro gli
+altri bivi. Alzare i pesi non bastava — quando il gioco ne estrae uno solo, può ancora
+perdere. Ora un bivio può dichiararsi **urgente**: se le condizioni ci sono, passa davanti.
+Un infortunio grave è *la* cosa di quella stagione, non un evento fra tanti.
+
+**Cosa resta da fare**, e lo scrivo perché non vada perso: la schermata celebrativa del
+trofeo con l'animazione, i playoff di promozione, il tabellone del Mondiale, la scheda
+agente interattiva («dimmi che tipo di opportunità vuoi», con altri agenti che ti cercano)
+e le offerte multiple in stile «tre club ti vogliono».
