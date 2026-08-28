@@ -600,3 +600,5 @@ select.bottone { appearance: none; }
 .a-caso:hover { border-color: var(--oro); color: var(--oro); }
 .tessera-avatar { display: block; width: 34px; flex: 0 0 34px; }
 .tessera-avatar .avatar { width: 100%; height: auto; display: block; }
+
+.velocita-modo { letter-spacing: .1em; text-transform: uppercase; font-size: .58rem; border-color: var(--oro); color: var(--oro); }

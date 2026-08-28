@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { MatchEvent, MatchResult } from '../engine/match';
+import { leggiModoPartita, scriviModoPartita, type ModoPartita } from './preferenze';
 import { temaDelClub } from './temaClub';
 import { sigla } from './Scelte';
 
@@ -48,22 +49,46 @@ export function Partita({
   onEnd: () => void;
 }) {
   const durata = match.penalties !== null || match.events.some((e) => e.kind === 'supplementari') ? 120 : 90;
+  // In classica la partita è già finita quando si apre: si legge il tabellino e via.
+  const [modo, setModo] = useState<ModoPartita>('dettagliata');
   const [minuto, setMinuto] = useState(0);
   const [tiriMostrati, setTiriMostrati] = useState(0);
   const [velocita, setVelocita] = useState<number>(2);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // La preferenza si legge dal browser, quindi solo dopo il primo disegno.
+  useEffect(() => {
+    const salvato = leggiModoPartita();
+    setModo(salvato);
+    if (salvato === 'classica') {
+      setMinuto(durata);
+      setTiriMostrati(match.penalties?.shots.length ?? 0);
+    }
+  }, [durata, match.penalties]);
+
+  function cambiaModo(nuovo: ModoPartita): void {
+    setModo(nuovo);
+    scriviModoPartita(nuovo);
+    if (nuovo === 'classica') {
+      setMinuto(durata);
+      setTiriMostrati(match.penalties?.shots.length ?? 0);
+    } else {
+      setMinuto(0);
+      setTiriMostrati(0);
+    }
+  }
 
   const tiriTotali = match.penalties?.shots.length ?? 0;
   const finitiTempi = minuto >= durata;
   const finita = finitiTempi && tiriMostrati >= tiriTotali;
 
   useEffect(() => {
-    if (finitiTempi) return undefined;
+    if (finitiTempi || modo === 'classica') return undefined;
     timer.current = setInterval(() => setMinuto((m) => Math.min(durata, m + 1)), PASSO / velocita);
     return () => {
       if (timer.current !== null) clearInterval(timer.current);
     };
-  }, [velocita, finitiTempi, durata]);
+  }, [velocita, finitiTempi, durata, modo]);
 
   // Finiti i tempi, i rigori scorrono uno alla volta: è lì che si soffre.
   useEffect(() => {
@@ -133,16 +158,25 @@ export function Partita({
           {finita ? 'FINALE' : tiriTotali > 0 && finitiTempi ? 'RIG' : minuto > 90 ? 'SUPP' : `${minuto}'`}
         </span>
         <span className="testata-data">
-          {VELOCITA.map((v) => (
-            <button
-              key={v}
-              type="button"
-              className={`velocita${velocita === v ? ' velocita-attiva' : ''}`}
-              onClick={() => setVelocita(v)}
-            >
-              {v}×
-            </button>
-          ))}
+          {modo === 'dettagliata' &&
+            VELOCITA.map((v) => (
+              <button
+                key={v}
+                type="button"
+                className={`velocita${velocita === v ? ' velocita-attiva' : ''}`}
+                onClick={() => setVelocita(v)}
+              >
+                {v}×
+              </button>
+            ))}
+          <button
+            type="button"
+            className="velocita velocita-modo"
+            onClick={() => cambiaModo(modo === 'classica' ? 'dettagliata' : 'classica')}
+            title="Come vuoi vedere le partite"
+          >
+            {modo === 'classica' ? 'Classica' : 'Dettagliata'}
+          </button>
         </span>
       </div>
 

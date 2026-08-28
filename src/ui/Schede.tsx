@@ -4,6 +4,7 @@ import type { Agent } from '../engine/agent';
 import { REQUEST_KINDS, type RequestKind } from '../engine/agentRequest';
 import type { CareerResult, SeasonRecord, Trophy } from '../engine/types';
 import type { YouthSeason } from '../engine/youth';
+import { PannelloPreferenze } from './PannelloPreferenze';
 
 export type Scheda = 'carriera' | 'profilo' | 'agente' | 'statistiche' | 'bacheca';
 
@@ -77,6 +78,8 @@ export function Profilo({
           </div>
         </>
       )}
+
+      <PannelloPreferenze />
     </section>
   );
 }
