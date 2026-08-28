@@ -43,6 +43,19 @@ export interface Award {
   competitionName: string;
 }
 
+/** Un'offerta ricevuta a fine stagione. `expectedMinutesShare` è la stima che l'utente vede. */
+export interface Offer {
+  clubId: string;
+  clubName: string;
+  leagueId: string;
+  leagueName: string;
+  leagueLevel: number;
+  feeEur: number;
+  weeklyWageEur: number;
+  expectedMinutesShare: number;
+  isLoan: boolean;
+}
+
 /** Una riga della timeline di carriera. La Fase 2 aggiungerà gol, assist e trofei. */
 export interface SeasonRecord {
   season: number;
