@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import type { Agent } from '../engine/agent';
 import { REQUEST_KINDS, type RequestKind } from '../engine/agentRequest';
 import type { CareerResult, SeasonRecord, Trophy } from '../engine/types';
@@ -23,11 +24,19 @@ export function BarraSchede({
   attiva: Scheda;
   onChange: (scheda: Scheda) => void;
 }) {
+  const scelta = useRef<HTMLButtonElement | null>(null);
+
+  // Sul telefono la barra scorre: la scheda aperta deve restare in vista da sola.
+  useEffect(() => {
+    scelta.current?.scrollIntoView({ block: 'nearest', inline: 'center' });
+  }, [attiva]);
+
   return (
     <nav className="schede" aria-label="Sezioni della carriera">
       {SCHEDE.map((scheda) => (
         <button
           key={scheda.id}
+          ref={attiva === scheda.id ? scelta : null}
           type="button"
           className={`scheda${attiva === scheda.id ? ' scheda-attiva' : ''}`}
           onClick={() => onChange(scheda.id)}
