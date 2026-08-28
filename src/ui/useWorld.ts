@@ -10,7 +10,12 @@ import type { LeagueSummary } from '../world/types';
  * Il gioco parte con una manciata di kilobyte: i club arrivano quando servono.
  */
 export function useWorld() {
-  const source = useMemo(() => createFetchWorldSource('/world'), []);
+  // I dati del mondo stanno accanto al sito: se il sito vive in una sottocartella,
+  // ci vivono anche loro.
+  const source = useMemo(
+    () => createFetchWorldSource(`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/world`),
+    [],
+  );
   const [leagues, setLeagues] = useState<LeagueSummary[]>([]);
   const [clubs, setClubs] = useState<CandidateClub[]>([]);
   const [loading, setLoading] = useState(true);

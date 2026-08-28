@@ -1,0 +1,63 @@
+# Pubblica LEGGENDA su GitHub Pages a ogni push su main.
+#
+# I dati del mondo non stanno in cronologia (sono rigenerabili): si ricavano qui dal
+# CSV in data/raw, che invece è tracciato. Il sito finisce in una sottocartella col
+# nome del repository, quindi il build riceve il percorso base.
+name: Pubblica
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  costruisci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # Le stesse porte che tengono il gioco in piedi in locale.
+      - run: npm run typecheck
+      - run: npm test
+
+      - name: Costruisci il mondo dai dati veri
+        run: npm run import:world
+
+      - name: Costruisci il sito
+        run: npm run build
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}
+
+      - name: Controlla il peso della pagina
+        run: npm run check:bundle
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  pubblica:
+    needs: costruisci
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4
