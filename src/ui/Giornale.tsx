@@ -2,6 +2,7 @@
 
 import { seasonMoments } from '../engine/moments';
 import type { RivalSnapshot, SeasonRecord } from '../engine/types';
+import type { Role } from '../world/types';
 import { dataDi, etichettaStagione } from './calendario';
 
 /** Testate diverse a rotazione: dà l'impressione di una rassegna stampa, non di un template. */
@@ -56,6 +57,7 @@ export function Giornale({
   before,
   isFirst,
   playerName,
+  role,
   rival,
 }: {
   record: SeasonRecord;
@@ -64,9 +66,10 @@ export function Giornale({
   before?: readonly SeasonRecord[];
   isFirst: boolean;
   playerName: string;
+  role?: Role;
   rival: RivalSnapshot | null;
 }) {
-  const moments = seasonMoments({ record, previous, isFirstSeason: isFirst, playerName, before });
+  const moments = seasonMoments({ record, previous, isFirstSeason: isFirst, playerName, before, role });
   const testata = TESTATE[record.season % TESTATE.length]!;
   const data = dataDi('fine', record.season);
   const principale = moments[0]?.text ?? 'Una stagione da raccontare';

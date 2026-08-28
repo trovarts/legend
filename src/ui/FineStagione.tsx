@@ -17,6 +17,7 @@ import { Playoff } from './Playoff';
 import { Trofeo } from './Trofeo';
 import { Giornale } from './Giornale';
 import { Partita } from './Partita';
+import type { Role } from '../world/types';
 import type { ModoPartita } from './preferenze';
 import { Resoconto } from './Resoconto';
 import { Tabellone } from './Tabellone';
@@ -35,6 +36,7 @@ export function FineStagione({
   rival,
   clubs,
   playerName,
+  role,
   nazione,
   seed,
   modo,
@@ -47,6 +49,7 @@ export function FineStagione({
   rival: RivalSnapshot | null;
   clubs: readonly CandidateClub[];
   playerName: string;
+  role?: Role;
   nazione: string;
   seed: number;
   /** Classica salta il campo e i tabelloni: classifica, trofeo, resoconto, giornale. */
@@ -255,6 +258,7 @@ export function FineStagione({
         before={before}
         isFirst={record.season === 1}
         playerName={playerName}
+        role={role}
         rival={rival}
       />
       <button type="button" className="avanti" onClick={onEnd}>

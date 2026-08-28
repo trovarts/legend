@@ -131,4 +131,31 @@ describe('seasonMoments', () => {
     );
     expect(new Set(numeri).size).toBe(3);
   });
+
+  it('chi difende viene raccontato con le porte inviolate, non coi gol che non ha', () => {
+    const stagione = record({
+      stats: { appearances: 34, minutes: 3000, goals: 0, assists: 1, cleanSheets: 9, rating: 6.4 },
+    });
+    const dietro = seasonMoments({ ...base, record: stagione, role: 'DEF' });
+    expect(dietro.some((m) => /porta|inviolat/i.test(m.text))).toBe(true);
+
+    const davanti = seasonMoments({ ...base, record: stagione, role: 'FWD' });
+    expect(davanti.some((m) => /0 gol/.test(m.text))).toBe(true);
+  });
+
+  it('si scrive in italiano: niente «1 partite», e ogni riga comincia in maiuscolo', () => {
+    const testi = seasonMoments({
+      ...base,
+      record: record({
+        injury: { severity: 'lieve', matchesOut: 1, season: 3 },
+        stats: { appearances: 1, minutes: 60, goals: 0, assists: 0, cleanSheets: 1, rating: 6 },
+      }),
+      role: 'GK',
+    }).map((m) => m.text);
+
+    for (const testo of testi) {
+      expect(testo).not.toMatch(/\b1 (partite|presenze|volte)\b/);
+      expect(testo.charAt(0)).toBe(testo.charAt(0).toUpperCase());
+    }
+  });
 });

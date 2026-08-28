@@ -299,6 +299,7 @@ export function Carriera({
           rival={lastRival}
           clubs={clubs}
           playerName={save.create.name}
+          role={save.create.role}
           nazione={save.create.nationality}
           seed={save.seed}
           modo={modoDi(save.decisions.modo)}

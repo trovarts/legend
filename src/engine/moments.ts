@@ -1,3 +1,4 @@
+import type { Role } from '../world/types';
 import type { SeasonRecord } from './types';
 
 export type MomentTone = 'alto' | 'basso' | 'neutro';
@@ -15,6 +16,13 @@ export interface MomentsInput {
   playerName: string;
   /** Tutte le stagioni già giocate: servono a dire «mai così tanti» e non solo «tanti». */
   before?: readonly SeasonRecord[];
+  /** Il ruolo: un difensore non si racconta con i gol che non ha segnato. */
+  role?: Role;
+}
+
+/** «1 partite» non lo scrive nessuno: al singolare cambia tutto, articolo compreso. */
+function conta(quanti: number, singolare: string, plurale: string): string {
+  return quanti === 1 ? `una ${singolare}` : `${quanti} ${plurale}`;
 }
 
 const MAX_MOMENTS = 5;
@@ -33,6 +41,11 @@ export function seasonMoments(input: MomentsInput): Moment[] {
   const add = (weight: number, id: string, tone: MomentTone, text: string): void => {
     moments.push({ weight, moment: { id, tone, text } });
   };
+
+  // Il confronto con tutto quello che è venuto prima: «mai così» vale più di «tanti».
+  const passate = input.before ?? [];
+  const maiCosiTanti = (valore: number, prendi: (s: SeasonRecord) => number): boolean =>
+    passate.length >= 2 && valore > 0 && passate.every((stagione) => prendi(stagione) < valore);
 
   // Il salto di categoria è il fatto più grosso che possa capitare a un club.
   if (record.movement === 'promosso') {
@@ -58,7 +71,7 @@ export function seasonMoments(input: MomentsInput): Moment[] {
   }
 
   if (input.isFirstSeason) {
-    add(85, 'esordio', 'neutro', `Esordio con ${record.clubName}: ${stats.appearances} presenze da ragazzo in prima squadra.`);
+    add(85, 'esordio', 'neutro', `Esordio con ${record.clubName}: ${conta(stats.appearances, 'presenza', 'presenze')} da ragazzo in prima squadra.`);
   }
 
   if (record.injury) {
@@ -66,7 +79,7 @@ export function seasonMoments(input: MomentsInput): Moment[] {
     // «Infortunio seria» non lo scrive nessuno: l'aggettivo va concordato.
     const AL_MASCHILE: Record<string, string> = { lieve: 'lieve', seria: 'serio', grave: 'grave' };
     const quanto = AL_MASCHILE[record.injury.severity] ?? record.injury.severity;
-    add(80, 'infortunio', tone, `Infortunio ${quanto}: ${record.injury.matchesOut} partite a guardare gli altri.`);
+    add(80, 'infortunio', tone, `Infortunio ${quanto}: ${conta(record.injury.matchesOut, 'partita', 'partite')} a guardare gli altri.`);
   }
 
   const previousGoals = input.previous?.stats.goals ?? 0;
@@ -78,7 +91,7 @@ export function seasonMoments(input: MomentsInput): Moment[] {
     const tournament = record.national.tournament
       ? `, e col torneo internazionale fino a ${record.national.tournament.stageReached}`
       : '';
-    add(70, 'nazionale', 'alto', `Nazionale: ${record.national.caps} presenze${tournament}.`);
+    add(70, 'nazionale', 'alto', `Nazionale: ${conta(record.national.caps, 'presenza', 'presenze')}${tournament}.`);
   }
 
   if (record.position === 1) {
@@ -88,17 +101,29 @@ export function seasonMoments(input: MomentsInput): Moment[] {
   }
 
   if (record.minutesShare < 0.2) {
-    add(55, 'panchina', 'basso', `Un anno di panchina: ${stats.appearances} presenze e pochi minuti veri.`);
+    add(55, 'panchina', 'basso', `Un anno di panchina: ${conta(stats.appearances, 'presenza', 'presenze')} e pochi minuti veri.`);
   } else if (record.minutesShare > 0.75) {
     const forme = [
       `Titolare inamovibile: ${stats.appearances} presenze, ${stats.minutes} minuti.`,
-      `${stats.appearances} presenze: il mister non ti toglie mai.`,
+      `${conta(stats.appearances, 'presenza', 'presenze')}: il mister non ti toglie mai.`,
       `Sempre in campo: ${stats.minutes} minuti nelle gambe.`,
     ];
     add(40, 'titolare', 'neutro', forme[record.season % forme.length]!);
   }
 
-  if (stats.goals > 0 || stats.assists > 0) {
+  // Chi difende non si racconta coi gol che non ha segnato: la sua stagione sono
+  // le partite in cui non è entrato niente.
+  const dietro = input.role === 'GK' || input.role === 'DEF';
+
+  if (dietro && stats.cleanSheets > 0) {
+    const volte = conta(stats.cleanSheets, 'volta', 'volte');
+    const forme = [
+      `${conta(stats.cleanSheets, 'partita chiusa', 'partite chiuse')} senza subire gol, media ${stats.rating.toFixed(1)}.`,
+      `La porta è rimasta inviolata ${volte}: media ${stats.rating.toFixed(1)}.`,
+      `${volte} a porta inviolata, con ${stats.rating.toFixed(1)} di media.`,
+    ];
+    add(35, 'numeri', 'neutro', forme[record.season % forme.length]!);
+  } else if (stats.goals > 0 || stats.assists > 0) {
     // Tre modi di dire la stessa cosa, a rotazione: la stessa frase per vent'anni
     // fa sembrare una carriera un foglio di calcolo.
     const forme = [
@@ -109,8 +134,10 @@ export function seasonMoments(input: MomentsInput): Moment[] {
     add(35, 'numeri', 'neutro', forme[record.season % forme.length]!);
   }
 
-  if (stats.cleanSheets >= 10) {
-    add(45, 'porta-inviolata', 'alto', `${stats.cleanSheets} volte la porta è rimasta inviolata.`);
+  if (stats.cleanSheets >= 12) {
+    add(45, 'porta-inviolata', 'alto', `${stats.cleanSheets} volte la porta è rimasta inviolata: un muro.`);
+  } else if (dietro && maiCosiTanti(stats.cleanSheets, (s) => s.stats.cleanSheets) && stats.cleanSheets >= 6) {
+    add(69, 'record-porta', 'alto', `${stats.cleanSheets} porte inviolate: non ne avevi mai tenute così tante.`);
   }
 
   const growth = record.overallEnd - record.overallStart;
@@ -119,11 +146,6 @@ export function seasonMoments(input: MomentsInput): Moment[] {
   } else if (growth <= -3) {
     add(30, 'declino', 'basso', `Le gambe cominciano a dire qualcosa: ${growth} punti in un anno.`);
   }
-
-  // Il confronto con tutto quello che è venuto prima: «mai così» vale più di «tanti».
-  const passate = input.before ?? [];
-  const maiCosiTanti = (valore: number, prendi: (s: SeasonRecord) => number): boolean =>
-    passate.length >= 2 && valore > 0 && passate.every((stagione) => prendi(stagione) < valore);
 
   if (maiCosiTanti(stats.goals, (s) => s.stats.goals) && stats.goals >= 8) {
     add(72, 'record-gol', 'alto', `${stats.goals} gol: non ne avevi mai segnati così tanti in una stagione.`);
@@ -172,11 +194,16 @@ export function seasonMoments(input: MomentsInput): Moment[] {
   }
 
   if (moments.length < MIN_MOMENTS) {
-    add(10, 'ordinaria', 'neutro', `Una stagione senza scosse con ${record.clubName}: ${stats.appearances} presenze.`);
+    add(10, 'ordinaria', 'neutro', `Una stagione senza scosse con ${record.clubName}: ${conta(stats.appearances, 'presenza', 'presenze')}.`);
   }
 
   return moments
     .sort((a, b) => b.weight - a.weight)
     .slice(0, MAX_MOMENTS)
-    .map((entry) => entry.moment);
+    // Ogni momento è un capoverso a sé: comincia con la maiuscola anche quando la
+    // frase parte da un numero scritto in lettere («una partita chiusa…»).
+    .map((entry) => ({
+      ...entry.moment,
+      text: entry.moment.text.charAt(0).toUpperCase() + entry.moment.text.slice(1),
+    }));
 }
