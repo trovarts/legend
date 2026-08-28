@@ -362,3 +362,23 @@ spaziatrice** che manda avanti come in un gioco vero (ignorata quando si sta scr
 aveva portato il primo caricamento a 246 KB, oltre il limite. Ora si carica solo quando
 serve — cioè al primo passo di una carriera nuova, non a chi riprende una partita: siamo
 tornati a **201 KB contro i 1.199 del concorrente**.
+
+## D-018 — Una scommessa senza rivelazione non è una scommessa
+
+Il committente ha notato quello che mancava dopo aver messo le quote sulle scelte: si
+puntava, e il gioco tirava dritto. L'esito finiva in una riga della colonna «dal campo»
+del giornale, letta dopo, quando l'emozione era passata.
+
+Ora fra la scelta e il resto c'è **il momento della verità**: le facce restano tutte in
+campo, lampeggiano per nove decimi di secondo — il tempo di trattenere il fiato — e poi
+quella uscita si accende col bollino, le altre si spengono. Il riquadro diventa verde se
+è andata bene e rosso se è andata male, e sotto compare cosa è successo davvero.
+
+Vale sia per il vivaio («50% +3 OVR» contro «50% nessuna variazione») sia per i bivi in
+prima squadra («50% −15% minuti · rottura col mister»). Le opzioni a esito certo saltano
+il sorteggio: non c'è niente da rivelare.
+
+**Come funziona senza sporcare il motore:** la carriera è già decisa nel momento in cui
+si sceglie — il replay è deterministico. La rivelazione è solo interfaccia: confronta
+l'esito registrato nella stagione con le facce dichiarate dall'opzione, e mostra quale
+delle due è uscita. Nessuno stato di gioco in più.

@@ -462,3 +462,26 @@ select.bottone { appearance: none; }
 .scorciatoia b {
   border: 1px solid var(--bordo); border-radius: 5px; padding: .05rem .35rem; font-weight: 600;
 }
+
+/* ── L'esito della scommessa ─────────────────────────────────────────────── */
+.esito-blocco { border-color: var(--bordo); transition: border-color .3s ease, box-shadow .3s ease; }
+.esito-vinta { border-color: var(--verde); box-shadow: 0 0 0 1px rgba(47,191,107,.25), 0 0 40px rgba(47,191,107,.12); }
+.esito-persa { border-color: var(--rosso); box-shadow: 0 0 0 1px rgba(216,31,63,.25), 0 0 40px rgba(216,31,63,.12); }
+
+.esito-facce { display: flex; gap: .7rem; flex-wrap: wrap; justify-content: center; margin: 1.2rem 0; }
+.esito-faccia {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: .15rem;
+  border: 1px solid var(--bordo); border-radius: 14px; padding: 1rem 1.4rem; min-width: 9rem;
+  opacity: .5; transform: scale(.94);
+  transition: opacity .3s ease, transform .3s ease, box-shadow .3s ease;
+}
+.esito-faccia-testo { font-size: 1.5rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.esito-faccia-attiva { opacity: 1; transform: scale(1.06); }
+.esito-faccia-attiva.faccia-bene { box-shadow: 0 0 26px rgba(47,191,107,.35); }
+.esito-faccia-attiva.faccia-male { box-shadow: 0 0 26px rgba(216,31,63,.35); }
+.esito-faccia-spenta { opacity: .22; transform: scale(.9); }
+.esito-bollino {
+  position: absolute; top: -.6rem; font-size: .58rem; letter-spacing: .14em; text-transform: uppercase;
+  background: var(--carta-alta); border: 1px solid currentColor; border-radius: 99px; padding: .1rem .5rem;
+}
+.esito-racconto { text-align: center; font-size: 1.05rem; margin: 0 0 1rem; }

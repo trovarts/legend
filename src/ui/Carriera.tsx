@@ -15,6 +15,9 @@ import { Preparazione } from './Preparazione';
 import { Tessera } from './Tessera';
 import { Promozione, Vivaio } from './Vivaio';
 import { Bacheca, BarraSchede, Profilo, SchedaAgente, Statistiche, type Scheda } from './Schede';
+import { Esito, facceDaEffetti, type FacciaEsito } from './Esito';
+import { youthOption, type YouthApproach } from '../engine/youth';
+import type { Dilemma } from '../engine/types';
 import { posizioneById } from './Campo';
 import { PLAY_STYLES } from '../engine/playstyle';
 import { Verdetto } from './Verdetto';
@@ -38,6 +41,16 @@ export function Carriera({
   const [vista, setVista] = useState(0);
   const [vivaioVisto, setVivaioVisto] = useState(0);
   const [scheda, setScheda] = useState<Scheda>('carriera');
+  /**
+   * Una scommessa appena giocata di cui va ancora mostrato l'esito.
+   * Non è stato di gioco: la carriera è già decisa: è solo il momento in cui
+   * si guarda quale faccia è uscita.
+   */
+  const [attesa, setAttesa] = useState<
+    | { tipo: 'dilemma'; season: number; dilemma: Dilemma; optionId: string }
+    | { tipo: 'vivaio'; year: number; approach: YouthApproach }
+    | null
+  >(null);
 
   // Barra spaziatrice: manda avanti, come in un gioco vero.
   useEffect(() => {
@@ -56,6 +69,51 @@ export function Carriera({
   }, []);
   const daMostrare = last !== undefined && last.season > vista ? last : null;
   const annoVivaio = state.youth.find((anno) => anno.year > vivaioVisto) ?? null;
+
+  /** Ricava dai dati già calcolati quale faccia è uscita, per poterla mostrare. */
+  const rivelazione = (():
+    | { titolo: string; scelta: string; facce: FacciaEsito[]; uscita: number; racconto: string }
+    | null => {
+    if (attesa === null) return null;
+
+    if (attesa.tipo === 'vivaio') {
+      const anno = state.youth.find((item) => item.year === attesa.year);
+      if (!anno) return null;
+      const option = youthOption(attesa.approach);
+      const facce: FacciaEsito[] = option.outcomes.map((outcome) => ({
+        chance: outcome.chance,
+        testo: outcome.label,
+        dettaglio: '',
+        buona: outcome.overall > 0,
+      }));
+      const uscita = Math.max(0, option.outcomes.findIndex((outcome) => outcome.label === anno.outcomeLabel));
+      const salita = anno.overallEnd - anno.overallStart;
+      return {
+        titolo: `${anno.age} anni · vivaio`,
+        scelta: option.title,
+        facce,
+        uscita,
+        racconto:
+          salita > 0
+            ? `Un anno di lavoro ben speso: da ${anno.overallStart} a ${anno.overallEnd}.`
+            : 'Il fisico non ha risposto: nessun passo avanti, quest’anno.',
+      };
+    }
+
+    const stagione = seasons.find((item) => item.season === attesa.season);
+    const scelta = stagione?.choices.find((item) => item.dilemmaId === attesa.dilemma.id);
+    if (!stagione || !scelta) return null;
+    const option = attesa.dilemma.options.find((item) => item.id === attesa.optionId);
+    if (!option) return null;
+    const uscita = Math.max(0, option.outcomes.findIndex((outcome) => outcome.text === scelta.outcomeText));
+    return {
+      titolo: `${stagione.age} anni · ${stagione.clubName}`,
+      scelta: option.label,
+      facce: facceDaEffetti(option.outcomes),
+      uscita,
+      racconto: scelta.outcomeText,
+    };
+  })();
 
   const decide = (patch: Partial<CareerSave['decisions']>): void => {
     onChange({ ...save, decisions: { ...save.decisions, ...patch } });
@@ -107,35 +165,47 @@ export function Carriera({
       {scheda === 'statistiche' && <Statistiche seasons={seasons} />}
       {scheda === 'bacheca' && <Bacheca result={state.result} seasons={seasons} />}
 
-      {scheda === 'carriera' && pending?.kind === 'agent' && (
+      {scheda === 'carriera' && rivelazione !== null && (
+        <Esito
+          titolo={rivelazione.titolo}
+          scelta={rivelazione.scelta}
+          facce={rivelazione.facce}
+          uscita={rivelazione.uscita}
+          racconto={rivelazione.racconto}
+          onEnd={() => setAttesa(null)}
+        />
+      )}
+
+      {scheda === 'carriera' && rivelazione === null && pending?.kind === 'agent' && (
         <Agente
           options={pending.options}
           onChoose={(agentId) => onChange({ ...save, decisions: { ...save.decisions, agentId } })}
         />
       )}
 
-      {scheda === 'carriera' && annoVivaio !== null && pending?.kind !== 'agent' && (
+      {scheda === 'carriera' && rivelazione === null && annoVivaio !== null && pending?.kind !== 'agent' && (
         <AnnoVivaio key={annoVivaio.year} season={annoVivaio} onEnd={() => setVivaioVisto(annoVivaio.year)} />
       )}
 
-      {scheda === 'carriera' && annoVivaio === null && pending?.kind === 'youth' && (
+      {scheda === 'carriera' && rivelazione === null && annoVivaio === null && pending?.kind === 'youth' && (
         <Vivaio
           year={pending.year}
           age={pending.age}
           clubName={pending.clubName}
-          onChoose={(approach) =>
+          onChoose={(approach) => {
+            setAttesa({ tipo: 'vivaio', year: pending.year, approach });
             onChange({
               ...save,
               decisions: {
                 ...save.decisions,
                 youth: { ...save.decisions.youth, [String(pending.year)]: approach },
               },
-            })
-          }
+            });
+          }}
         />
       )}
 
-      {scheda === 'carriera' && annoVivaio === null && pending?.kind === 'promotion' && (
+      {scheda === 'carriera' && rivelazione === null && annoVivaio === null && pending?.kind === 'promotion' && (
         <Promozione
           age={pending.age}
           clubName={pending.clubName}
@@ -152,7 +222,7 @@ export function Carriera({
         />
       )}
 
-      {scheda === 'carriera' && (daMostrare !== null ? (
+      {scheda === 'carriera' && rivelazione === null && (daMostrare !== null ? (
         <FineStagione
           key={daMostrare.season}
           record={daMostrare}
@@ -186,14 +256,20 @@ export function Carriera({
             <Bivio
               dilemma={pending.dilemma}
               soFar={pending.soFar}
-              onChoose={(optionId) =>
+              onChoose={(optionId) => {
+                setAttesa({
+                  tipo: 'dilemma',
+                  season: pending.season,
+                  dilemma: pending.dilemma,
+                  optionId,
+                });
                 decide({
                   dilemmas: {
                     ...save.decisions.dilemmas,
                     [decisionKey(pending.season, pending.dilemma.id)]: optionId,
                   },
-                })
-              }
+                });
+              }}
             />
           )}
 
