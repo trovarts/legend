@@ -5,10 +5,11 @@ import { REQUEST_KINDS, type RequestKind } from '../engine/agentRequest';
 import type { CareerResult, SeasonRecord, Trophy } from '../engine/types';
 import type { YouthSeason } from '../engine/youth';
 
-export type Scheda = 'carriera' | 'profilo' | 'agente' | 'statistiche' | 'bacheca';
+export type Scheda = 'carriera' | 'profilo' | 'rosa' | 'agente' | 'statistiche' | 'bacheca';
 
 export const SCHEDE: readonly { id: Scheda; label: string }[] = [
   { id: 'profilo', label: 'Profilo' },
+  { id: 'rosa', label: 'Rosa' },
   { id: 'agente', label: 'Agente' },
   { id: 'carriera', label: 'Carriera' },
   { id: 'statistiche', label: 'Statistiche' },

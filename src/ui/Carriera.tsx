@@ -10,6 +10,7 @@ import { Bivio } from './Bivio';
 import { Contesto } from './Contesto';
 import { FineStagione } from './FineStagione';
 import { Gerarchia } from './Gerarchia';
+import { Rosa } from './Rosa';
 import { Giornale } from './Giornale';
 import { Mercato } from './Mercato';
 import { modoDi } from './preferenze';
@@ -211,6 +212,22 @@ export function Carriera({
           }
           onCambia={(agentId) => onChange({ ...save, decisions: { ...save.decisions, agentId } })}
         />
+      )}
+
+      {scheda === 'rosa' && (
+        clubCorrente ? (
+          <Rosa
+            squad={clubCorrente.club.squad}
+            clubName={clubCorrente.club.name}
+            leagueName={clubCorrente.leagueName}
+            playerName={save.create.name}
+            overall={last?.overallEnd ?? (pending?.kind === 'training' ? pending.overall : 0)}
+            age={last?.age ?? (pending?.kind === 'training' ? pending.age : 0)}
+            role={save.create.role}
+          />
+        ) : (
+          <p className="tenue">La prima squadra arriva dopo il vivaio.</p>
+        )
       )}
 
       {scheda === 'statistiche' && <Statistiche seasons={seasons} />}

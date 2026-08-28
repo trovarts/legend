@@ -8,7 +8,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildLowerLeagues, countriesWithPyramid } from '../src/engine/pyramid';
 import { leagueIdOf, toLevel, toRole } from '../src/world/importMapping';
-import type { Club, LeagueBundle, LeagueSummary, WorldPlayer } from '../src/world/types';
+import type { Club, LeagueBundle, LeagueSummary, Role, WorldPlayer } from '../src/world/types';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SOURCE = join(ROOT, 'data/raw/fc26-players.csv');
@@ -144,14 +144,16 @@ function main(): void {
   // vera comincia piu' in basso. Le generiamo qui, una volta, con lo stesso seed.
   // I nomi dei comprimari delle serie minori vengono dai calciatori veri di quel
   // paese: nelle categorie basse giocano i ragazzi di casa, non degli sconosciuti.
-  const nomiPerPaese = new Map<string, string[]>();
+  // Divisi per ruolo: un portiere di Serie C non si chiama come un centravanti noto.
+  const nomiPerPaese = new Map<string, Record<Role, string[]>>();
   for (const league of leagues.values()) {
     for (const club of league.clubs.values()) {
       for (const giocatore of club.squad) {
         if (giocatore.nationality === '') continue;
-        const elenco = nomiPerPaese.get(giocatore.nationality) ?? [];
-        if (elenco.length < 400) elenco.push(giocatore.name);
-        nomiPerPaese.set(giocatore.nationality, elenco);
+        const perRuolo = nomiPerPaese.get(giocatore.nationality)
+          ?? { GK: [], DEF: [], MID: [], FWD: [] };
+        if (perRuolo[giocatore.role].length < 200) perRuolo[giocatore.role].push(giocatore.name);
+        nomiPerPaese.set(giocatore.nationality, perRuolo);
       }
     }
   }
@@ -168,7 +170,13 @@ function main(): void {
     // Inghilterra e Germania hanno gia' la terza serie vera: li' non si inventa niente.
     const mancanti = [3, 4].filter((livello) => !gia.has(livello));
     if (mancanti.length === 0) continue;
-    const nomi = [...new Set(nomiPerPaese.get(country) ?? [])].sort();
+    const crudi = nomiPerPaese.get(country) ?? { GK: [], DEF: [], MID: [], FWD: [] };
+    const nomi: Record<Role, string[]> = {
+      GK: [...new Set(crudi.GK)].sort(),
+      DEF: [...new Set(crudi.DEF)].sort(),
+      MID: [...new Set(crudi.MID)].sort(),
+      FWD: [...new Set(crudi.FWD)].sort(),
+    };
     for (const generata of buildLowerLeagues(country, semeDelPaese(country), mancanti, nomi)) {
       const bundle: LeagueBundle = { league: generata.summary, clubs: generata.clubs };
       writeFileSync(join(OUT_DIR, 'leagues', `${generata.summary.id}.json`), JSON.stringify(bundle));

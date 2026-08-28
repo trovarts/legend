@@ -68,7 +68,7 @@ function rosaGenerata(
   clubId: string,
   forza: number,
   country: string,
-  nomi: readonly string[],
+  nomi: Partial<Record<Role, readonly string[]>>,
   rng: Rng,
 ): WorldPlayer[] {
   const RUOLI: readonly { role: Role; quanti: number }[] = [
@@ -86,16 +86,17 @@ function rosaGenerata(
       // Un compagno di reparto senza nome non è un ostacolo, è una riga vuota:
       // i nomi arrivano dai calciatori veri di quel paese.
       const nome = (() => {
-        if (nomi.length === 0) return `Giocatore ${rosa.length + 1}`;
-        const partenza = rng.int(0, nomi.length - 1);
-        for (let passo = 0; passo < nomi.length; passo += 1) {
-          const candidato = nomi[(partenza + passo) % nomi.length]!;
+        const urna = nomi[gruppo.role] ?? [];
+        if (urna.length === 0) return `Giocatore ${rosa.length + 1}`;
+        const partenza = rng.int(0, urna.length - 1);
+        for (let passo = 0; passo < urna.length; passo += 1) {
+          const candidato = urna[(partenza + passo) % urna.length]!;
           if (!presi.has(candidato)) {
             presi.add(candidato);
             return candidato;
           }
         }
-        return `${nomi[partenza]!} jr`;
+        return `Giocatore ${rosa.length + 1}`;
       })();
       rosa.push({
         id: `${clubId}-g${rosa.length}`,
@@ -104,8 +105,9 @@ function rosaGenerata(
         role: gruppo.role,
         overall,
         potential: Math.min(90, overall + Math.max(0, 26 - eta)),
-        // In queste categorie i cartellini valgono poco: decine di migliaia, non milioni.
-        valueEur: Math.max(10_000, Math.round((overall - 30) ** 2 * 900)),
+        // In queste categorie i cartellini valgono poco: qualche centinaio di
+        // migliaia al massimo, non i milioni della prima serie.
+        valueEur: Math.max(10_000, Math.round((overall - 30) ** 2 * 260)),
         nationality: country,
       });
     }
@@ -121,8 +123,8 @@ export function buildLowerLeagues(
   country: string,
   seed: number,
   livelli: readonly number[] = [3, 4],
-  /** Nomi veri di calciatori di quel paese, da cui pescare i comprimari. */
-  nomi: readonly string[] = [],
+  /** Nomi veri di calciatori di quel paese, per ruolo, da cui pescare i comprimari. */
+  nomi: Partial<Record<Role, readonly string[]>> = {},
 ): GeneratedLeague[] {
   const citta = CITTA[country];
   if (!citta || citta.length < 12) return [];

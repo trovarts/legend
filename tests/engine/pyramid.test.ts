@@ -59,7 +59,9 @@ describe('le divisioni minori', () => {
       'G. Grigi', 'H. Viola', 'I. Rosa', 'L. Aranci', 'M. Marroni', 'N. Argenti',
       'O. Oro', 'P. Bronzo', 'Q. Rame', 'R. Ferro', 'S. Acciaio', 'T. Zinco',
       'U. Piombo', 'V. Stagno', 'Z. Nichel', 'A. Cromo', 'B. Titanio', 'C. Platino'];
-    const lega = buildLowerLeagues('Italy', 3, [4], nomi)[0]!;
+    const lega = buildLowerLeagues('Italy', 3, [4], {
+      GK: nomi.slice(0, 6), DEF: nomi.slice(6, 12), MID: nomi.slice(12, 18), FWD: nomi.slice(18),
+    })[0]!;
     for (const club of lega.clubs) {
       const inRosa = club.squad.map((giocatore) => giocatore.name);
       expect(new Set(inRosa).size).toBe(inRosa.length);
