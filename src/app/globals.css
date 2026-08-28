@@ -993,3 +993,15 @@ select.bottone { appearance: none; }
   position: absolute; top: .35rem; right: .4rem; font-size: .66rem; font-weight: 800; color: var(--oro);
 }
 .coppa-premio { border-color: rgba(255,255,255,.14); background: linear-gradient(180deg, rgba(255,255,255,.06), color-mix(in srgb, var(--carta) 80%, transparent)); }
+
+/* ── Cosa c'è dentro: la porta d'ingresso deve dirlo ─────────────────────── */
+.dentro {
+  border: 1px solid var(--bordo); border-radius: var(--raggio);
+  background: color-mix(in srgb, var(--carta) 82%, transparent);
+  backdrop-filter: blur(10px); padding: 1rem; margin-bottom: .9rem;
+}
+.dentro-elenco { list-style: none; margin: .5rem 0 0; padding: 0; display: grid; gap: .45rem; }
+.dentro-elenco li { position: relative; padding-left: 1.1rem; font-size: .9rem; line-height: 1.4; }
+.dentro-elenco li::before { content: '→'; position: absolute; left: 0; color: var(--rosso); font-weight: 700; }
+.dentro-elenco b { color: var(--oro); }
+.modo[href^='#'] { cursor: pointer; }

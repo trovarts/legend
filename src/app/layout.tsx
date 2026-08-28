@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import { Avviso } from '../ui/Avviso';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -11,7 +12,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="it">
-      <body>{children}</body>
+      <body>
+        {/* Si legge una volta sola, e da qualunque pagina si entri. */}
+        <Avviso />
+        {children}
+      </body>
     </html>
   );
 }

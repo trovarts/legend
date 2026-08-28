@@ -3,7 +3,6 @@ import { join } from 'node:path';
 import Link from 'next/link';
 import { dailyChallenge } from '../engine/challenge';
 import { Albo } from '../ui/Albo';
-import { Avviso } from '../ui/Avviso';
 import { Sfida } from '../ui/Sfida';
 import { Traguardi } from '../ui/Traguardi';
 import type { LeagueSummary } from '../world/types';
@@ -33,23 +32,22 @@ export default function Home() {
 
   return (
     <main className="home">
-      <Avviso />
       <h1 className="marchio">LEGGENDA</h1>
       <p className="marchio-sotto">Il cammino verso la leggenda</p>
 
       <div className="modalita">
         <Link href="/gioca" className="modo modo-attivo">
-          <span className="modo-nome">Solo</span>
+          <span className="modo-nome">Gioca</span>
           <span className="tenue">La tua carriera, dal vivaio al ritiro</span>
         </Link>
-        <span className="modo modo-spento">
-          <span className="modo-nome">Online</span>
-          <span className="tenue">Sfida con amici · in arrivo</span>
-        </span>
-        <span className="modo modo-spento">
-          <span className="modo-nome">Classifica</span>
-          <span className="tenue">Il tabellone dei GOAT · in arrivo</span>
-        </span>
+        <a href="#albo" className="modo">
+          <span className="modo-nome">Albo</span>
+          <span className="tenue">Le tue carriere migliori</span>
+        </a>
+        <a href="#traguardi" className="modo">
+          <span className="modo-nome">Traguardi</span>
+          <span className="tenue">Quello che resta fra una carriera e l&apos;altra</span>
+        </a>
       </div>
 
       <Sfida sfida={sfida} oggi={oggi} />
@@ -66,8 +64,19 @@ export default function Home() {
         </Link>
       </section>
 
-      <Albo />
-      <Traguardi />
+      <section className="dentro">
+        <span className="contesto-etichetta">Cosa c&apos;è dentro</span>
+        <ul className="dentro-elenco">
+          <li><b>{mondo.campionati}</b> campionati veri in {mondo.paesi} nazioni, {mondo.club} squadre con le rose vere</li>
+          <li><b>Quattro divisioni</b> per paese: promozioni, retrocessioni, playoff, coppe nazionali e continentali</li>
+          <li><b>Venticinque bivi</b> con la posta dichiarata, e i Segni che restano addosso per anni</li>
+          <li><b>Un Rivale</b> che gioca la sua carriera accanto alla tua per vent&apos;anni</li>
+          <li><b>Un&apos;ambizione</b> da scegliere prima di cominciare, e un manifesto da mandare a chi ti sfida</li>
+        </ul>
+      </section>
+
+      <div id="albo"><Albo /></div>
+      <div id="traguardi"><Traguardi /></div>
 
       <p className="tenue" style={{ fontSize: '.78rem', textAlign: 'center', marginTop: '2rem' }}>
         {mondo.campionati} campionati veri in {mondo.paesi} nazioni · {mondo.club} squadre ·
