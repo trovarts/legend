@@ -78,3 +78,54 @@ fanno esordire i ragazzi in coppa e negli spezzoni.
 dati veri, non su rose costruite a mano. I test su dati inventati verificano la formula;
 solo quelli sulle rose reali verificano il gioco. `tests/engine/playingTimeReal.test.ts`
 è il modello da seguire.
+
+## D-006 — Fase 2 chiusa: D-004 è risolto
+
+Misurato su 5000 carriere alla fine della Fase 2, con mercato e trasferimenti attivi:
+
+| | Fase 1 | Fase 2 | Obiettivo D-004 |
+|---|---|---|---|
+| Minuti medi | 0,52 | **0,70** | — |
+| Carriere da riserva perenne | 15,6% | **1,5%** | sotto il 15% ✓ |
+| Carriere sopra 85 di picco | 0,6% | **1,5%** | almeno l'1% ✓ |
+| Club per carriera | 1 | **4,8** | — |
+
+Le due condizioni che la Fase 2 doveva rendere vere sono soddisfatte, e le invarianti
+corrispondenti sono ora attive nel Lab: se una regressione futura le rompe, `npm run lab`
+fallisce.
+
+**Cosa è servito davvero.** Il mercato da solo non bastava. Il Lab ha mostrato che un
+diciassettenne non riceveva **nessuna** offerta, e la causa non era quella che sembrava:
+nel dataset non esiste alcun club abbastanza debole perché un ragazzo da OVR 55 giochi
+titolare — il più scarso d'Italia ha forza 67,5. La condizione del prestito («scatta se
+giocheresti più del 45% dei minuti») era quindi irraggiungibile. Corretta in «scatta se
+giochi almeno dieci punti percentuali in più di adesso»: passare dall'8% al 22% è
+triplicare il campo, ed è esattamente ciò per cui esiste un prestito. In più la politica
+di trasferimento penalizzava i prestiti perché scendono di categoria e hanno cartellino
+zero: ora chi non gioca li valuta solo sui minuti.
+
+## D-007 — Trofei: la matematica era giusta, il gioco no
+
+Il primo Lab di Fase 2 diceva che il **90% delle carriere vince un trofeo**. Il campionato
+non c'entrava (solo il 2,9% delle stagioni si chiude al primo posto, ed è corretto per un
+torneo a venti squadre): era la coppa nazionale, vinta dal 72% delle carriere.
+
+Il calcolo era statisticamente coerente — 6% l'anno per vent'anni fa il 73% — ma per il
+gioco è un disastro: un trofeo che vincono quasi tutti non vale niente, e i trofei sono il
+cuore del punteggio GOAT. La probabilità è stata riscritta perché anche in coppa comandino
+i club forti (esponente al cubo, base bassa): una squadra di metà classifica la vince una
+volta ogni quarant'anni, non ogni venti. Le carriere con almeno un trofeo sono scese al 66%.
+
+**Regola che ne esce:** un modello statisticamente corretto può comunque essere sbagliato
+per il gioco. Il Lab misura, ma il giudizio su cosa deve essere raro resta una scelta di
+design, e va scritta.
+
+## D-008 — Limite noto: si cambia squadra troppo spesso
+
+Il Lab riporta una media di 4,8 club per carriera (realistica) ma un massimo di **21**:
+qualcuno cambia squadra ogni singola estate. Manca l'attrito che nella realtà danno i
+contratti pluriennali, che in Fase 2 non esistono.
+
+**Non corretto adesso di proposito:** i contratti servono comunque alla Fase 3, dove il
+rinnovo è uno dei bivi con posta dichiarata (spec §3.5). Introdurli lì, e non qui con una
+pezza nella politica di trasferimento.
