@@ -53,7 +53,17 @@ export function Esito({
   const vinta = facce[uscita]?.buona ?? true;
 
   return (
-    <section className={`giornale esito-blocco${rivelato ? (vinta ? ' esito-vinta' : ' esito-persa') : ''}`}>
+    /*
+     * L'esito della scommessa ferma il gioco: velo sopra tutto, niente altro da
+     * toccare. È il momento per cui si gioca, non una carta fra le altre.
+     */
+    <div className="velo velo-esito" role="presentation">
+    <section
+      className={`giornale esito-blocco modale-esito${rivelato ? (vinta ? ' esito-vinta' : ' esito-persa') : ''}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label={titolo}
+    >
       <header className="testata">
         <span className="testata-nome">{rivelato ? (vinta ? 'È ANDATA BENE' : 'È ANDATA MALE') : 'IL SORTEGGIO'}</span>
         <span className="testata-data">{titolo}</span>
@@ -89,6 +99,7 @@ export function Esito({
         </>
       )}
     </section>
+    </div>
   );
 }
 

@@ -849,3 +849,26 @@ select.bottone { appearance: none; }
 
 .mappa-zoom { aspect-ratio: auto; height: clamp(11rem, 34vh, 19rem); width: 100%; }
 .mappa-zoom .paese-attivo { stroke-width: .35; }
+
+/* L'esito della scommessa: stesso velo dei pop-up, ma la carta è quella del giornale. */
+.velo-esito { padding: 1rem .8rem; }
+.modale-esito {
+  width: min(34rem, 100%); max-height: min(88dvh, 46rem); overflow-y: auto;
+  margin: 0; animation: modale-entra .3s cubic-bezier(.2,.9,.3,1) both;
+  box-shadow: 0 30px 70px -30px #000;
+}
+
+/* ── La curva della carriera ─────────────────────────────────────────────── */
+.curva-blocco { margin: .9rem 0 .2rem; }
+.curva { width: 100%; height: auto; margin-top: .35rem; display: block; }
+.curva-area { fill: color-mix(in srgb, var(--rosso) 18%, transparent); }
+.curva-linea { fill: none; stroke: var(--rosso); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.curva-gol { fill: color-mix(in srgb, var(--oro) 55%, transparent); }
+.curva-picco { fill: var(--oro); stroke: var(--nero); stroke-width: 1; }
+.curva-etichetta { fill: var(--oro); font-size: 9px; font-weight: 800; }
+.curva-anno { fill: var(--tenue); font-size: 8px; }
+.curva-legenda { font-size: .72rem; display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; margin: .3rem 0 0; }
+.curva-punto { width: .7rem; height: .25rem; border-radius: 2px; display: inline-block; }
+.curva-punto-linea { background: var(--rosso); }
+.curva-punto-gol { background: color-mix(in srgb, var(--oro) 70%, transparent); margin-left: .5rem; }
+.curva-eta { margin-left: auto; }

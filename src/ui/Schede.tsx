@@ -5,6 +5,7 @@ import type { Agent } from '../engine/agent';
 import { REQUEST_KINDS, type RequestKind } from '../engine/agentRequest';
 import type { CareerResult, SeasonRecord, Trophy } from '../engine/types';
 import type { YouthSeason } from '../engine/youth';
+import { Curva } from './Curva';
 
 export type Scheda = 'carriera' | 'profilo' | 'rosa' | 'agente' | 'statistiche' | 'bacheca';
 
@@ -205,6 +206,8 @@ export function Statistiche({ seasons }: { seasons: readonly SeasonRecord[] }) {
           </div>
         ))}
       </div>
+
+      <Curva seasons={seasons} />
 
       <h3 style={{ marginTop: '1rem' }}>Stagione per stagione</h3>
       <div className="tabella">
