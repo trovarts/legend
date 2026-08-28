@@ -1,0 +1,4 @@
+node_modules/
+public/world/
+*.tsbuildinfo
+.DS_Store
