@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { playCareer, type CareerSave } from '../../engine/play';
 import { encodeSave } from '../../engine/save';
@@ -59,6 +60,27 @@ export default function Gioca() {
 
   return (
     <main>
+      <div className="barra-alta">
+        {save === null ? (
+          <Link href="/" className="torna">← Menu di gioco</Link>
+        ) : (
+          <button
+            type="button"
+            className="torna"
+            onClick={() => {
+              setSave(null);
+              setSlotId(null);
+              setSlots(refreshSlots());
+            }}
+          >
+            ← Menu di gioco
+          </button>
+        )}
+        <span className="tenue" style={{ fontSize: '.68rem' }}>
+          {save === null ? 'Nessuna carriera aperta' : 'Salvata da sola, a ogni scelta'}
+        </span>
+      </div>
+
       {save === null ? (
         <>
           <Creazione world={world} onStart={start} />
