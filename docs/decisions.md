@@ -202,3 +202,23 @@ ad alto livello vale più soldi che tornare a casa.
 
 **Lezione:** prima di credere a uno strumento di verifica, verificare lo strumento. Un
 100% netto non è un risultato, è un sintomo.
+
+## D-012 — I bivi non si ripetono, e i nomi dei club non prendono l'articolo
+
+Due difetti che il Simulation Lab non poteva vedere, perché guarda le medie e non legge
+le carriere. Sono saltati fuori stampando una carriera intera:
+
+1. **«Chiedi la cessione» tre anni di fila**, e «Aspetta la scadenza» sei volte in una
+   carriera. Ogni bivio era estratto senza memoria di quelli già affrontati: il risultato
+   non è una carriera, è un disco rotto. Ora un bivio resta «già visto» per quattro
+   stagioni (`DILEMMA_COOLDOWN` in `career.ts`), e il contesto porta con sé
+   `recentDilemmaIds`.
+
+2. **«Il Atalanta»**. I testi costruivano preposizioni articolate davanti a nomi di club
+   presi dal database: impossibile farlo bene in italiano per 619 nomi di tutto il mondo
+   (il Napoli, l'Inter, la Roma, lo Spezia). I testi ora usano il nome del club **come
+   etichetta iniziale** — «Atalanta. Il medico parla di dodici partite.» — che è sempre
+   corretto e ha anche un buon ritmo da cronaca.
+
+**Lezione:** il Lab misura le distribuzioni, non la leggibilità. Prima di chiudere una
+fase bisogna stampare una carriera intera e leggerla come la leggerebbe un giocatore.

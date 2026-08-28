@@ -62,6 +62,7 @@ async function main(): Promise<void> {
       season: 5, age: 26, overall: 74, minutesShare: 0.5,
       injury: { severity: 'seria', matchesOut: 12, season: 5 },
       marks: [], clubName: 'Club', leagueLevel: 1, contractYearsLeft: 0, wonSomething: false,
+      recentDilemmaIds: [],
     });
 
     const totals = new Map<string, number>();

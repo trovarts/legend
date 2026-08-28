@@ -59,6 +59,9 @@ export function runCareer(input: RunCareerInput): CareerResult {
   let qualified = false;
   let capped = false;
   let seasonsAheadOfRival = 0;
+  /** Per quante stagioni un bivio resta "già visto". */
+  const DILEMMA_COOLDOWN = 4;
+  let recentDilemmaIds: string[] = [];
 
   const strengthsByLeague = new Map<string, number[]>();
   for (const entry of input.world.clubs) {
@@ -94,6 +97,7 @@ export function runCareer(input: RunCareerInput): CareerResult {
         alreadyCapped: capped,
         marks,
         contractYearsLeft: contract.yearsLeft,
+        recentDilemmaIds,
         minutesBonus,
         dilemmaPolicy,
       },
@@ -112,6 +116,10 @@ export function runCareer(input: RunCareerInput): CareerResult {
     qualified = outcome.qualifiedNextSeason;
     capped = capped || outcome.record.national.capped;
     marks = outcome.marks;
+    recentDilemmaIds = [
+      ...outcome.record.choices.map((choice) => choice.dilemmaId),
+      ...recentDilemmaIds,
+    ].slice(0, DILEMMA_COOLDOWN * 2);
     minutesBonus = outcome.minutesBonusNext;
     retirementDelta += outcome.retirementDelta;
     player = outcome.grownPlayer;

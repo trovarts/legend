@@ -5,6 +5,7 @@ import { addMark } from '../../src/engine/marks.js';
 const base: DilemmaContext = {
   season: 5, age: 24, overall: 72, minutesShare: 0.7, injury: null, marks: [],
   clubName: 'Napoli', leagueLevel: 1, contractYearsLeft: 2, wonSomething: false,
+  recentDilemmaIds: [],
 };
 
 describe('catalogo dei bivi', () => {

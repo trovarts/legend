@@ -32,6 +32,7 @@ function input(over: Partial<SimulateSeasonInput> = {}): SimulateSeasonInput {
     alreadyCapped: false,
     marks: [],
     contractYearsLeft: 2,
+    recentDilemmaIds: [],
     minutesBonus: 0,
     dilemmaPolicy: boldPolicy,
     ...over,

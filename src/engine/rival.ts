@@ -108,6 +108,7 @@ export function advanceRival(
       alreadyCapped: state.capped,
       marks: [],
       contractYearsLeft: state.contract.yearsLeft,
+      recentDilemmaIds: [],
       minutesBonus: 0,
       dilemmaPolicy: boldPolicy,
     },

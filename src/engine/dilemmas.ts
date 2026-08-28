@@ -19,7 +19,11 @@ const MAX_PER_SEASON = 3;
  * I pesi decidono quanto spesso una situazione si presenta rispetto alle altre.
  */
 export function pickDilemmas(context: DilemmaContext, rng: Rng): Dilemma[] {
-  const available = DILEMMA_CATALOG.filter((entry) => entry.when(context));
+  // Un bivio già affrontato di recente non si ripropone: chiedere la cessione tre anni
+  // di fila non è una carriera, è un disco rotto (D-012).
+  const available = DILEMMA_CATALOG.filter(
+    (entry) => entry.when(context) && !context.recentDilemmaIds.includes(entry.id),
+  );
   const picked: Dilemma[] = [];
   const used = new Set<string>();
 

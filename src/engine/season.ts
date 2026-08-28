@@ -29,6 +29,8 @@ export interface SimulateSeasonInput {
   alreadyCapped: boolean;
   marks: readonly Mark[];
   contractYearsLeft: number;
+  /** Bivi affrontati nelle ultime stagioni: non si ripropongono. */
+  recentDilemmaIds: readonly string[];
   /** Minuti guadagnati o persi per effetto delle scelte della stagione precedente. */
   minutesBonus: number;
   dilemmaPolicy: DilemmaPolicy;
@@ -137,6 +139,7 @@ export function simulateSeason(input: SimulateSeasonInput, rng: Rng): SeasonOutc
     leagueLevel: league.level,
     contractYearsLeft: input.contractYearsLeft,
     wonSomething: trophies.length > 0,
+    recentDilemmaIds: input.recentDilemmaIds,
   };
 
   let state: DilemmaState = {

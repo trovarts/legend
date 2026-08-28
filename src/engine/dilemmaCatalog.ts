@@ -12,6 +12,8 @@ export interface DilemmaContext {
   leagueLevel: number;
   contractYearsLeft: number;
   wonSomething: boolean;
+  /** Bivi già affrontati di recente: non si ripropongono (vedi D-012). */
+  recentDilemmaIds: readonly string[];
 }
 
 export interface DilemmaEntry {
@@ -34,7 +36,7 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
     build: (context) => ({
       id: 'rientro-anticipato',
       title: 'Il ginocchio non tiene',
-      text: `Il medico del ${context.clubName} parla di ${context.injury?.matchesOut ?? 10} partite. L'agente ricorda che una stagione in bianco, a ${context.age} anni, la gente la nota.`,
+      text: `${context.clubName}. Il medico parla di ${context.injury?.matchesOut ?? 10} partite. L'agente ricorda che una stagione in bianco, a ${context.age} anni, la gente la nota.`,
       options: [
         {
           id: 'aspetta',
@@ -72,7 +74,7 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
     build: (context) => ({
       id: 'panchina-lunga',
       title: 'Non giochi più',
-      text: `Sono mesi che al ${context.clubName} entri nei finali. Il mister non ti guarda nemmeno più durante il riscaldamento.`,
+      text: `${context.clubName}. Sono mesi che entri solo nei finali: il mister non ti guarda nemmeno più durante il riscaldamento.`,
       options: [
         {
           id: 'lavora',
@@ -97,7 +99,7 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
           label: 'Chiedi la cessione',
           stake: 'Te ne vai a giocare, ma la piazza non perdona.',
           outcomes: [
-            { chance: 1, text: `Chiedi di andare via. Il ${context.clubName} ti mette sul mercato.`, effects: { addMark: { id: 'mercenario', intensity: 0.5 }, minutesDelta: 0.05 } },
+            { chance: 1, text: `Chiedi di andare via. ${context.clubName} ti mette sul mercato.`, effects: { addMark: { id: 'mercenario', intensity: 0.5 }, minutesDelta: 0.05 } },
           ],
         },
       ],
@@ -110,7 +112,7 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
     build: (context) => ({
       id: 'rinnovo-o-addio',
       title: 'Il contratto scade',
-      text: `Il ${context.clubName} mette sul tavolo il rinnovo. Il tuo agente dice che aspettando la scadenza guadagneresti il doppio altrove.`,
+      text: `${context.clubName} mette sul tavolo il rinnovo. Il tuo agente dice che aspettando la scadenza guadagneresti il doppio altrove.`,
       options: [
         {
           id: 'rinnova',
@@ -139,7 +141,7 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
     build: (context) => ({
       id: 'intervista-dopo-la-sconfitta',
       title: 'Il microfono davanti alla bocca',
-      text: `Un'altra sconfitta. Nel corridoio del ${context.clubName} ti mettono un microfono davanti mentre sei ancora arrabbiato.`,
+      text: `${context.clubName}. Un'altra sconfitta, e nel corridoio ti mettono un microfono davanti mentre sei ancora arrabbiato.`,
       options: [
         {
           id: 'difendi',
@@ -174,7 +176,7 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
     build: (context) => ({
       id: 'pace-col-mister',
       title: 'Quella frase pesa ancora',
-      text: `Da quando hai alzato la voce non sei più lo stesso agli occhi della panchina. Al ${context.clubName} qualcuno prova a ricucire.`,
+      text: `Da quando hai alzato la voce non sei più lo stesso agli occhi della panchina. A ${context.clubName} qualcuno prova a ricucire.`,
       options: [
         {
           id: 'scusati',
@@ -204,7 +206,7 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
     build: (context) => ({
       id: 'fascia-di-capitano',
       title: 'La fascia',
-      text: `Il capitano del ${context.clubName} ha chiuso. In sala video ti chiedono se te la senti di prendere la fascia.`,
+      text: `${context.clubName}. Il capitano ha chiuso, e in sala video ti chiedono se te la senti di prendere la fascia.`,
       options: [
         {
           id: 'accetta',
@@ -233,7 +235,7 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
     build: (context) => ({
       id: 'il-ragazzino',
       title: 'Il ragazzino del vivaio',
-      text: `Al ${context.clubName} è salito un diciottenne che nel tuo ruolo fa cose che tu a quell'età non facevi. Il posto è uno.`,
+      text: `${context.clubName}. Dal vivaio è salito un diciottenne che nel tuo ruolo fa cose che tu a quell'età non facevi. Il posto è uno.`,
       options: [
         {
           id: 'aiutalo',
@@ -262,7 +264,7 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
     build: (context) => ({
       id: 'ritorno-a-casa',
       title: 'La squadra di quando eri bambino',
-      text: `Ti cerca la squadra della tua città. Categoria più bassa, stipendio più basso, ma è casa. Al ${context.clubName} ti terrebbero ancora un anno.`,
+      text: `Ti cerca la squadra della tua città. Categoria più bassa, stipendio più basso, ma è casa. ${context.clubName} ti terrebbe ancora un anno.`,
       options: [
         {
           id: 'torna',
