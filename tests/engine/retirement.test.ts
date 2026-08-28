@@ -19,18 +19,34 @@ function retirementRate(age: number, overall: number, share: number): number {
 }
 
 describe('shouldRetire', () => {
-  it('sotto i 32 anni non ci si ritira mai', () => {
-    for (let age = 18; age < 32; age += 1) {
+  it('finché si è giovani gli anni non contano', () => {
+    for (let age = 18; age < 28; age += 1) {
       expect(retirementRate(age, 55, 0.05)).toBe(0);
     }
+  });
+
+  it('fra i 28 e i 31 si smette solo se il campo è finito', () => {
+    for (let age = 28; age <= 31; age += 1) {
+      // Chi gioca resta, anche se non è un fenomeno.
+      expect(retirementRate(age, 70, 0.8)).toBe(0);
+      // Chi non gioca più esce dal professionismo prima dei trenta: succede.
+      expect(retirementRate(age, 60, 0.03)).toBeGreaterThan(0.2);
+    }
+  });
+
+  it('la maggior parte delle carriere finisce fra i 33 e i 36', () => {
+    // Un titolare in salute non deve poter restare in campo per sempre: prima
+    // le tre voci si sottraevano e la probabilità restava a zero fino ai quaranta.
+    expect(retirementRate(33, 78, 0.85)).toBeGreaterThan(0.1);
+    expect(retirementRate(36, 78, 0.85)).toBeGreaterThan(0.4);
   });
 
   it('a 40 anni ci si ritira sempre', () => {
     expect(retirementRate(40, 88, 0.9)).toBe(1);
   });
 
-  it('un titolare forte a 33 anni quasi non si ritira', () => {
-    expect(retirementRate(33, 84, 0.9)).toBeLessThan(0.05);
+  it('un titolare forte a 33 anni di solito continua', () => {
+    expect(retirementRate(33, 84, 0.9)).toBeLessThan(0.3);
   });
 
   it('una riserva a 35 anni si ritira spesso', () => {

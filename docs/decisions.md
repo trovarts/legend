@@ -545,3 +545,30 @@ quando l'esito cambia rispetto all'anno prima. E le frasi ricorrenti hanno tre f
 
 **Da ricordare:** le statistiche aggregate sorvegliano il modello, non l'esperienza.
 Una volta ogni tanto bisogna sedersi e leggere una partita sola, dall'inizio alla fine.
+
+## D-025 — Tre ragioni per smettere che si annullavano a vicenda
+
+Metà delle carriere finiva **dopo i trentotto anni**, e nessuna prima dei trenta. La
+mediana era 38: un'età a cui nel calcio vero hanno smesso quasi tutti.
+
+La causa era nella forma della formula, non nei numeri. Le tre voci — gli anni, i
+minuti che non arrivano, il livello che non basta — si **sommavano con segno**, quindi
+i minuti alti producevano un termine molto negativo che azzerava tutto il resto:
+
+    (età - 31) * 0.08 + (0.25 - minuti) * 1.2 + (60 - overall) * 0.01
+
+Per un titolare da 0,8 di quota a trentotto anni il conto faceva `0,56 − 0,66 − 0,10`,
+cioè meno di zero. Chi giocava non poteva ritirarsi: restava in campo fino al limite
+d'ufficio dei quaranta. Le tre voci non erano tre ragioni che si sommano, erano una
+ragione che le altre due potevano cancellare.
+
+Ora ogni voce è indipendente e non negativa: gli anni pesano da soli dopo i trentuno,
+la panchina pesa quando i minuti scendono sotto il 30%, e il livello pesa **solo in
+proporzione a quanto il campo comincia a mancare** — finché uno gioca, gioca, anche in
+quarta serie a quarantacinque di overall. Mediana 34, p90 36, l'1% oltre i 38, e
+qualcuno che a ventotto anni esce dal professionismo perché non gioca più.
+
+**Da ricordare:** una probabilità composta da termini con segno può essere zero per
+costruzione senza che nessun test se ne accorga. Il Lab guardava le *stagioni per
+carriera* (20,4, dentro la forbice 12-24) e non l'*età al ritiro*: la stessa cosa
+vista da un'angolazione che nascondeva il problema. Adesso guarda quella.

@@ -86,11 +86,16 @@ describe('runCareer', () => {
       .toBeGreaterThan(average(big.seasons.map((s) => s.minutesShare)));
   });
 
-  it('non si ritira mai prima dei 30 anni', () => {
+  it('la carriera finisce a un\'età da calciatore', () => {
+    const eta: number[] = [];
     for (let seed = 0; seed < 100; seed += 1) {
       const result = runCareer({ create, world: world([70, 68]), seed });
-      expect(result.retiredAt).toBeGreaterThanOrEqual(30);
+      expect(result.retiredAt).toBeGreaterThanOrEqual(28);
       expect(result.retiredAt).toBeLessThanOrEqual(41);
+      eta.push(result.retiredAt);
     }
+    const mediana = eta.sort((a, b) => a - b)[Math.floor(eta.length / 2)]!;
+    expect(mediana).toBeGreaterThanOrEqual(32);
+    expect(mediana).toBeLessThanOrEqual(36);
   });
 });

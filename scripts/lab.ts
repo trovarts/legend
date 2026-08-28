@@ -77,12 +77,17 @@ async function main(): Promise<void> {
         failures.push(`carriera ${seed}: minuti incoerenti con le presenze`);
       }
     }
-    // Ritirarsi presto è legittimo se lo si è scelto: le infiltrazioni bruciano anni,
-    // ed è la posta dichiarata del bivio. Deve però restare spiegato, non arbitrario.
-    const earliest = Math.max(25, 30 + result.careerYearsBurned);
+    // Ritirarsi presto è legittimo, ma deve restare spiegato: o l'hai scelto tu ai
+    // bivi (le infiltrazioni bruciano anni, ed è la posta dichiarata), o il campo era
+    // finito da un pezzo. Quello che non deve capitare è smettere a ventotto anni da
+    // titolare e in salute.
+    const ultimaQuota = result.seasons.at(-1)?.minutesShare ?? 0;
+    // Sotto la metà dei minuti non si è più titolari: uscire di scena è spiegato.
+    const spiegato = result.careerYearsBurned < 0 || ultimaQuota < 0.5;
+    const earliest = spiegato ? 25 : 30;
     if (result.retiredAt < earliest || result.retiredAt > 41) {
       failures.push(
-        `carriera ${seed}: ritiro a ${result.retiredAt} anni con ${result.careerYearsBurned} anni bruciati`,
+        `carriera ${seed}: ritiro a ${result.retiredAt} anni da titolare (${(ultimaQuota * 100).toFixed(0)}% dei minuti, ${result.careerYearsBurned} anni bruciati)`,
       );
     }
     if (result.seasons.length === 0) {
@@ -160,6 +165,19 @@ async function main(): Promise<void> {
   console.log(`Valore di picco mediano: ${(percentile(values, 0.5) / 1e6).toFixed(1)}M | massimo ${(values.at(-1)! / 1e6).toFixed(0)}M`);
 
   console.log(`Punteggio GOAT: p10 ${percentile(goatScores, 0.1)} | p50 ${percentile(goatScores, 0.5)} | p90 ${percentile(goatScores, 0.9)} | max ${goatScores.at(-1)}`);
+  const etaRitiro = results.map((result) => result.retiredAt).sort((a, b) => a - b);
+  const oltre38 = etaRitiro.filter((eta) => eta > 38).length / etaRitiro.length;
+  console.log(
+    `Età al ritiro: p10 ${percentile(etaRitiro, 0.1)} | p50 ${percentile(etaRitiro, 0.5)}`
+    + ` | p90 ${percentile(etaRitiro, 0.9)} | oltre i 38: ${(oltre38 * 100).toFixed(0)}%`,
+  );
+  // Un titolare in salute non deve poter restare in campo per sempre.
+  if (percentile(etaRitiro, 0.5) < 31 || percentile(etaRitiro, 0.5) > 36) {
+    failures.push(`si smette a un'età sbagliata: mediana ${percentile(etaRitiro, 0.5)} anni (attesa 31-36)`);
+  }
+  if (oltre38 > 0.1) {
+    failures.push(`troppi quarantenni in campo: il ${(oltre38 * 100).toFixed(0)}% gioca oltre i 38`);
+  }
   console.log(`Il Rivale chiude davanti nel ${(rivalWins * 100).toFixed(1)}% delle carriere`);
   console.log(`Decisioni per carriera: ${choicesPerCareer.toFixed(1)} | infortuni: ${injuriesPerCareer.toFixed(1)} | con ginocchio fragile: ${(withPermanentMark * 100).toFixed(1)}%`);
   console.log(`Carriere con almeno uno scontro diretto: ${(showdownRate * 100).toFixed(1)}%`);
