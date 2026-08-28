@@ -40,7 +40,7 @@ for (const stagione of result.seasons) {
   );
   for (const momento of seasonMoments({
     record: stagione, previous: precedente, isFirstSeason: stagione.season === 1,
-    playerName: 'Diego Trovato',
+    playerName: 'Diego Trovato', before: result.seasons.slice(0, stagione.season - 1),
   })) {
     console.log(`   ${momento.tone === 'alto' ? '▲' : momento.tone === 'basso' ? '▼' : '·'} ${momento.text}`);
   }

@@ -53,17 +53,20 @@ function titoloDi(record: SeasonRecord, isFirst: boolean): string {
 export function Giornale({
   record,
   previous,
+  before,
   isFirst,
   playerName,
   rival,
 }: {
   record: SeasonRecord;
   previous: SeasonRecord | undefined;
+  /** Le stagioni già giocate prima di questa. */
+  before?: readonly SeasonRecord[];
   isFirst: boolean;
   playerName: string;
   rival: RivalSnapshot | null;
 }) {
-  const moments = seasonMoments({ record, previous, isFirstSeason: isFirst, playerName });
+  const moments = seasonMoments({ record, previous, isFirstSeason: isFirst, playerName, before });
   const testata = TESTATE[record.season % TESTATE.length]!;
   const data = dataDi('fine', record.season);
   const principale = moments[0]?.text ?? 'Una stagione da raccontare';

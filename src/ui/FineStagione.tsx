@@ -31,6 +31,7 @@ type Tappa = 'partita' | 'classifica' | 'playoff' | 'coppa' | 'trofeo' | 'mondia
 export function FineStagione({
   record,
   previous,
+  before,
   rival,
   clubs,
   playerName,
@@ -41,6 +42,8 @@ export function FineStagione({
 }: {
   record: SeasonRecord;
   previous: SeasonRecord | undefined;
+  /** Le stagioni già giocate: il racconto sa dire «mai così tanti». */
+  before?: readonly SeasonRecord[];
   rival: RivalSnapshot | null;
   clubs: readonly CandidateClub[];
   playerName: string;
@@ -249,6 +252,7 @@ export function FineStagione({
       <Giornale
         record={record}
         previous={previous}
+        before={before}
         isFirst={record.season === 1}
         playerName={playerName}
         rival={rival}

@@ -295,6 +295,7 @@ export function Carriera({
           key={daMostrare.season}
           record={daMostrare}
           previous={seasons[seasons.length - 2]}
+          before={seasons.slice(0, -1)}
           rival={lastRival}
           clubs={clubs}
           playerName={save.create.name}
@@ -372,6 +373,7 @@ export function Carriera({
             <Giornale
               record={last}
               previous={seasons[seasons.length - 2]}
+          before={seasons.slice(0, -1)}
               isFirst={last.season === 1}
               playerName={save.create.name}
               rival={lastRival}
