@@ -8,7 +8,7 @@
  * Uso: npm run check:bundle (dopo npm run build)
  */
 import { gzipSync } from 'node:zlib';
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 /**
@@ -17,7 +17,9 @@ import { join } from 'node:path';
  */
 const LIMIT_KB = 240;
 const CONCORRENTE_KB = 1199;
-const PAGE = 'out/gioca.html';
+// Ogni pagina è una cartella con dentro index.html: era `gioca.html` finché il sito
+// non è diventato pubblicabile su qualsiasi hosting.
+const PAGE = existsSync('out/gioca/index.html') ? 'out/gioca/index.html' : 'out/gioca.html';
 
 function kb(bytes: number): string {
   return `${(bytes / 1024).toFixed(0)} KB`;
