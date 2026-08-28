@@ -479,3 +479,44 @@ tocca mai. Il marchio resta `--rosso` e continua a cambiare colore con la maglia
 **Da ricordare:** una variabile che serve sia da marchio sia da semaforo prima o poi
 mente. Quando un colore vuol dire qualcosa, deve avere un nome che dice cosa vuol
 dire — non da dove viene.
+
+## D-023 — La piramide vera, e cosa ha rotto quando è entrata
+
+Il concorrente, aperto e giocato, mostrava una cosa che nessun video faceva vedere:
+l'Italia con **170 club su quattro divisioni**, con la terza e la quarta divise in
+gironi. Da noi erano 40 club su due serie. Non era una differenza estetica: le
+proposte di vivaio arrivavano tutte dalla stessa categoria, e non c'era nessuna
+scalata da fare.
+
+**Cos'è entrato:** terza e quarta divisione generate — ma solo dove mancano davvero
+(Inghilterra e Germania le hanno vere) — con città vere del paese, soprannomi
+cromatici e rose di calciatori con nomi veri di quel paese. L'Italia passa da 40 a
+154 club. E soprattutto **promozioni e retrocessioni che spostano davvero il club**:
+il tabellone dei playoff esisteva già, ma non muoveva nessuno.
+
+**Cosa si è rotto, ed è la parte utile:**
+
+1. **Il campionato aveva una posizione in più delle squadre.** Un girone da diciotto
+   poteva chiudersi con un diciannovesimo posto. La forza passata alla classifica
+   comprende il contributo del giocatore, quindi il club non si riconosceva
+   nell'elenco delle forze e restava in gara con se stesso. Era lì da sempre: si è
+   visto solo quando i gironi hanno smesso di avere tutti venti squadre.
+
+2. **Riprendere una carriera dalle serie minori la faceva esplodere.** Al ritorno si
+   caricavano i primi dodici campionati dell'indice, in ordine alfabetico: il club di
+   partenza non c'era, e la carriera non si poteva ricostruire.
+
+3. **Il vivaio non contava niente.** Si usciva a sedici anni con 40 di overall e la
+   prima stagione ripartiva da quattordici anni con 48: due giocatori diversi
+   attaccati l'uno all'altro. Adesso l'età e l'overall di uscita sono quelli con cui
+   si comincia, e i passi di crescita del vivaio sono tarati sulla scala della prima
+   squadra.
+
+4. **Il mercato non aveva un paese.** Pescava dodici club a caso dal mondo caricato:
+   a un ragazzo di quarta serie italiana arrivavano offerte dalla Cina.
+
+**Da ricordare:** tre bug su quattro erano già nel codice e nessun test li vedeva,
+perché tutti i test giocavano nello stesso mondo comodo — venti squadre per
+campionato, un solo paese, carriere che cominciano a diciassette anni. La feature non
+li ha creati: ha smesso di nasconderli. Per questo `lab:vivaio` gioca adesso come
+gioca l'utente, dal vivaio e in un mondo misto.
