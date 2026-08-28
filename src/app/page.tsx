@@ -1,17 +1,61 @@
 import Link from 'next/link';
+import { dailyChallenge } from '../engine/challenge';
 
 export default function Home() {
+  // La sfida cambia ogni giorno ed è la stessa per tutti: si calcola alla build,
+  // e il sito è statico, quindi si aggiorna a ogni pubblicazione.
+  const oggi = new Date().toISOString().slice(0, 10);
+  const sfida = dailyChallenge(oggi);
+
   return (
-    <main>
-      <h1>LEGGENDA</h1>
-      <p className="tenue">
-        Crea un calciatore e accompagnalo dal primo contratto al ritiro. Squadre vere,
-        decisioni con la posta dichiarata, e un rivale della tua generazione che non ti
-        molla per vent&apos;anni.
+    <main className="home">
+      <h1 className="marchio">LEGGENDA</h1>
+      <p className="marchio-sotto">Il cammino verso la leggenda</p>
+
+      <div className="modalita">
+        <Link href="/gioca" className="modo modo-attivo">
+          <span className="modo-nome">Solo</span>
+          <span className="tenue">La tua carriera, dal vivaio al ritiro</span>
+        </Link>
+        <span className="modo modo-spento">
+          <span className="modo-nome">Online</span>
+          <span className="tenue">Sfida con amici · in arrivo</span>
+        </span>
+        <span className="modo modo-spento">
+          <span className="modo-nome">Classifica</span>
+          <span className="tenue">Il tabellone dei GOAT · in arrivo</span>
+        </span>
+      </div>
+
+      <section className="sfida">
+        <span className="contesto-etichetta">Sfida di oggi</span>
+        <div className="riga" style={{ alignItems: 'flex-start' }}>
+          <div>
+            <h2 style={{ marginBottom: '.3rem' }}>{sfida.title}</h2>
+            <p className="tenue" style={{ margin: 0 }}>{sfida.text}</p>
+          </div>
+          <div className="sfida-target">
+            <b className="numero">{sfida.target}</b>
+            <span>{sfida.unit}</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="card">
+        <span className="contesto-etichetta">Nuova carriera</span>
+        <h2 style={{ fontSize: '2rem', margin: '.3rem 0 .4rem' }}>Sarai tu il predestinato?</h2>
+        <p className="tenue">
+          Si comincia a quattordici anni nel vivaio, con un agente che ci crede e una
+          squadra vera. Da lì in poi decidi tu quanto rischiare.
+        </p>
+        <Link href="/gioca" className="bottone bottone-forte" style={{ marginTop: '.8rem' }}>
+          Comincia dal vivaio
+        </Link>
+      </section>
+
+      <p className="tenue" style={{ fontSize: '.78rem', textAlign: 'center', marginTop: '2rem' }}>
+        36 campionati e 619 squadre vere · nessun account, nessuna installazione
       </p>
-      <Link href="/gioca" className="bottone bottone-forte" style={{ marginTop: '1rem' }}>
-        Comincia una carriera
-      </Link>
     </main>
   );
 }

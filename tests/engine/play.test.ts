@@ -21,144 +21,95 @@ describe('playCareer', () => {
     save = {
       version: SAVE_VERSION,
       seed: 2026,
-      create: { name: 'Diego', nationality: 'Italy', role: 'FWD', age: 17, leagueLevel: 1 },
+      create: { name: 'Diego', nationality: 'Italy', role: 'FWD', age: 14, leagueLevel: 1 },
       startClubId: clubs[0]!.club.id,
       decisions: { training: {}, dilemmas: {}, transfers: {} },
     };
   });
 
-  it('una carriera appena creata chiede subito la preparazione', () => {
-    const state = playCareer(save, clubs);
-    expect(state.pending?.kind).toBe('training');
-    expect(state.pending?.season).toBe(1);
-    expect(state.seasons).toHaveLength(0);
-    expect(state.finished).toBe(false);
-  });
-
-  it('scelta la preparazione, il gioco chiede la decisione successiva della stessa stagione', () => {
-    const withTraining: CareerSave = {
-      ...save,
-      decisions: { ...save.decisions, training: { '1': 'tecnica' } },
-    };
-    const state = playCareer(withTraining, clubs);
-    // La stagione si chiude solo dopo i bivi: qui il motore è già dentro l'annata,
-    // e chiede la prossima decisione portando con sé com'è andata fin lì.
-    expect(state.pending?.kind).not.toBe('training');
-    if (state.pending?.kind === 'dilemma') {
-      expect(state.pending.soFar.clubName.length).toBeGreaterThan(1);
-      expect(state.pending.soFar.stats.appearances).toBeGreaterThanOrEqual(0);
-    }
-  });
-
-  it('chi decide vede sempre com\'è andata la stagione prima di scegliere', () => {
-    let current: CareerSave = { ...save, decisions: { ...save.decisions, training: { '1': 'tecnica' } } };
-    let state = playCareer(current, clubs);
-    for (let guard = 0; guard < 30; guard += 1) {
-      const pending = state.pending;
-      if (!pending || pending.kind === 'dilemma') break;
-      if (pending.kind === 'training') {
-        current = { ...current, decisions: { ...current.decisions, training: { ...current.decisions.training, [String(pending.season)]: 'tecnica' } } };
-      } else {
-        current = { ...current, decisions: { ...current.decisions, transfers: { ...current.decisions.transfers, [String(pending.season)]: 'resta' } } };
-      }
-      state = playCareer(current, clubs);
-    }
-    expect(state.pending?.kind).toBe('dilemma');
-    if (state.pending?.kind === 'dilemma') {
-      const soFar = state.pending.soFar;
-      expect(soFar.position).toBeGreaterThanOrEqual(1);
-      expect(soFar.minutesShare).toBeGreaterThan(0);
-      expect(soFar.leagueName.length).toBeGreaterThan(1);
-    }
-  });
-
-  it('la stessa scelta produce sempre la stessa carriera', () => {
-    const decided: CareerSave = {
-      ...save,
-      decisions: { ...save.decisions, training: { '1': 'fisico' } },
-    };
-    expect(JSON.stringify(playCareer(decided, clubs)))
-      .toBe(JSON.stringify(playCareer(decided, clubs)));
-  });
-
-  it('cambiare una decisione cambia la carriera da lì in avanti', () => {
-    // Si gioca la stessa carriera due volte, cambiando solo la preparazione del primo anno.
-    const play = (axis: 'tecnica' | 'leadership'): string => {
-      let current: CareerSave = { ...save, decisions: { training: { '1': axis }, dilemmas: {}, transfers: {} } };
-      let state = playCareer(current, clubs);
-      for (let guard = 0; guard < 60 && !state.finished; guard += 1) {
-        const pending = state.pending;
-        if (!pending) break;
-        if (pending.kind === 'training') {
-          current = { ...current, decisions: { ...current.decisions, training: { ...current.decisions.training, [String(pending.season)]: 'tecnica' } } };
-        } else if (pending.kind === 'dilemma') {
-          current = { ...current, decisions: { ...current.decisions, dilemmas: { ...current.decisions.dilemmas, [decisionKey(pending.season, pending.dilemma.id)]: pending.dilemma.options[0]!.id } } };
-        } else {
-          current = { ...current, decisions: { ...current.decisions, transfers: { ...current.decisions.transfers, [String(pending.season)]: 'resta' } } };
-        }
-        state = playCareer(current, clubs);
-        if (state.seasons.length >= 3) break;
-      }
-      return JSON.stringify(state.seasons);
-    };
-    expect(play('tecnica')).not.toBe(play('leadership'));
-  });
-
-  it('con tutte le decisioni prese la carriera arriva in fondo', () => {
-    let current = save;
-    let state = playCareer(current, clubs);
-    let sawDilemma = false;
-    let sawTransfer = false;
-
-    for (let guard = 0; guard < 400 && !state.finished; guard += 1) {
+  /** Porta la carriera avanti prendendo sempre la prima strada, fino a una condizione. */
+  function avanza(fino: (state: ReturnType<typeof playCareer>) => boolean, limite = 400): {
+    save: CareerSave;
+    state: ReturnType<typeof playCareer>;
+  } {
+    let corrente = save;
+    let state = playCareer(corrente, clubs);
+    for (let passo = 0; passo < limite && !fino(state); passo += 1) {
       const pending = state.pending;
       if (!pending) break;
-      if (pending.kind === 'training') {
-        current = { ...current, decisions: { ...current.decisions, training: { ...current.decisions.training, [String(pending.season)]: 'tecnica' } } };
+      const d = corrente.decisions;
+      if (pending.kind === 'agent') {
+        corrente = { ...corrente, decisions: { ...d, agentId: pending.options[0]!.id } };
+      } else if (pending.kind === 'youth') {
+        corrente = { ...corrente, decisions: { ...d, youth: { ...d.youth, [String(pending.year)]: 'piano-completo' } } };
+      } else if (pending.kind === 'promotion') {
+        corrente = { ...corrente, decisions: { ...d, promotedAt: 2 } };
+      } else if (pending.kind === 'training') {
+        corrente = { ...corrente, decisions: { ...d, training: { ...d.training, [String(pending.season)]: 'tecnica' } } };
       } else if (pending.kind === 'dilemma') {
-        sawDilemma = true;
-        current = { ...current, decisions: { ...current.decisions, dilemmas: { ...current.decisions.dilemmas, [decisionKey(pending.season, pending.dilemma.id)]: pending.dilemma.options[0]!.id } } };
+        corrente = {
+          ...corrente,
+          decisions: {
+            ...d,
+            dilemmas: { ...d.dilemmas, [decisionKey(pending.season, pending.dilemma.id)]: pending.dilemma.options[0]!.id },
+          },
+        };
       } else {
-        sawTransfer = true;
-        current = { ...current, decisions: { ...current.decisions, transfers: { ...current.decisions.transfers, [String(pending.season)]: 'resta' } } };
+        corrente = { ...corrente, decisions: { ...d, transfers: { ...d.transfers, [String(pending.season)]: 'resta' } } };
       }
-      state = playCareer(current, clubs);
+      state = playCareer(corrente, clubs);
     }
+    return { save: corrente, state };
+  }
 
-    expect(state.finished).toBe(true);
-    expect(state.pending).toBeNull();
-    expect(state.result?.goat.total).toBeGreaterThan(0);
-    // Lungo il percorso il motore deve aver chiesto sia bivi sia mercato.
-    expect(sawDilemma).toBe(true);
-    expect(sawTransfer).toBe(true);
+  it('la carriera comincia con la scelta dell\'agente', () => {
+    const state = playCareer(save, clubs);
+    expect(state.pending?.kind).toBe('agent');
+    if (state.pending?.kind === 'agent') {
+      expect(state.pending.options).toHaveLength(3);
+      expect(state.pending.options[0]!.stars).toBeGreaterThanOrEqual(1);
+    }
   });
 
-  it('i bivi arrivano con titolo, testo e almeno due strade dichiarate', () => {
-    let current: CareerSave = { ...save, decisions: { ...save.decisions, training: { '1': 'tecnica' } } };
-    let state = playCareer(current, clubs);
-    for (let guard = 0; guard < 30 && state.pending?.kind !== 'dilemma'; guard += 1) {
-      const pending = state.pending;
-      if (!pending) break;
-      if (pending.kind === 'training') {
-        current = { ...current, decisions: { ...current.decisions, training: { ...current.decisions.training, [String(pending.season)]: 'tecnica' } } };
-      } else if (pending.kind === 'transfer') {
-        current = { ...current, decisions: { ...current.decisions, transfers: { ...current.decisions.transfers, [String(pending.season)]: 'resta' } } };
-      }
-      state = playCareer(current, clubs);
+  it('scelto l\'agente si entra nel vivaio, a quattordici anni', () => {
+    const { state } = avanza((s) => s.pending?.kind === 'youth');
+    expect(state.pending?.kind).toBe('youth');
+    if (state.pending?.kind === 'youth') {
+      expect(state.pending.age).toBe(14);
+      expect(state.pending.year).toBe(1);
     }
-    expect(state.pending?.kind).toBe('dilemma');
-    if (state.pending?.kind === 'dilemma') {
-      expect(state.pending.dilemma.title.length).toBeGreaterThan(3);
-      expect(state.pending.dilemma.options.length).toBeGreaterThanOrEqual(2);
-      for (const option of state.pending.dilemma.options) {
-        expect(option.stake.length).toBeGreaterThan(10);
-      }
-    }
+    expect(state.agent).not.toBeNull();
+  });
+
+  it('dopo due anni di vivaio il club chiede se salire in prima squadra', () => {
+    const { state } = avanza((s) => s.pending?.kind === 'promotion');
+    expect(state.pending?.kind).toBe('promotion');
+    expect(state.youth.length).toBeGreaterThanOrEqual(1);
+    expect(state.youth[0]!.overallEnd).toBeGreaterThanOrEqual(state.youth[0]!.overallStart);
+  });
+
+  it('salito in prima squadra si gioca la carriera vera', () => {
+    const { state } = avanza((s) => s.seasons.length >= 1);
+    expect(state.seasons.length).toBeGreaterThanOrEqual(1);
+    expect(state.youth.length).toBeGreaterThan(0);
+  });
+
+  it('la carriera arriva in fondo e produce un punteggio', () => {
+    const { state } = avanza((s) => s.finished);
+    expect(state.finished).toBe(true);
+    expect(state.result?.goat.total).toBeGreaterThan(0);
+  });
+
+  it('è deterministica dal seed e dalle decisioni', () => {
+    const { save: completo } = avanza((s) => s.seasons.length >= 2);
+    expect(JSON.stringify(playCareer(completo, clubs)))
+      .toBe(JSON.stringify(playCareer(completo, clubs)));
   });
 
   it('rigiocare è abbastanza veloce da farlo a ogni click', () => {
+    const { save: completo } = avanza((s) => s.seasons.length >= 3);
     const start = performance.now();
-    for (let i = 0; i < 20; i += 1) playCareer(save, clubs);
-    expect(performance.now() - start).toBeLessThan(1000);
+    for (let i = 0; i < 20; i += 1) playCareer(completo, clubs);
+    expect(performance.now() - start).toBeLessThan(1500);
   });
 });

@@ -302,3 +302,31 @@ uno scambio esplicito — tornare a casa dà **+18% di minuti ma −2 di overall
 **Lezione:** prima di credere a un numero, guarda su quante osservazioni è calcolato. E
 prima di ribilanciare, controlla che le due strade offrano davvero cose diverse: se danno
 lo stesso, la percentuale non si sposta mai.
+
+## D-016 — La carriera comincia a quattordici anni, non a diciassette
+
+Le schermate del concorrente hanno mostrato cinque cose che non erano estetica ma
+struttura di gioco, e che ci mancavano tutte:
+
+1. **Si parte dal vivaio a 14 anni.** Due o tre stagioni lontano dai riflettori in cui
+   l'unica decisione è *come* crescere: «Forza il ritmo» (50% +3 OVR, 50% niente),
+   «Segui il piano completo» (60% +2), «Proteggi la crescita» (+1 certo). Poi il club
+   chiede se è ora di salire in prima squadra. È il momento in cui il giocatore impara
+   a scommettere, prima ancora di giocare una partita vera.
+2. **L'agente si sceglie all'inizio** e resta per tutta la carriera: stelle, quante
+   offerte porta ogni estate, il club più forte a cui arriva, con quanti anni di
+   contratto residui riesce a farti partire.
+3. **Gli obiettivi del club** («chiudere almeno al 14° posto», «ottavi di coppa»): danno
+   uno scopo alla stagione prima che cominci.
+4. **La home** con le modalità, la **sfida di oggi** (uguale per tutti, ricavata dalla
+   data: «Bomber da 300», «Dalla gavetta») e le carriere salvate.
+5. **La tessera** con i punti GOAT sempre in vista, non solo alla fine.
+
+Il vivaio è entrato nel salvataggio come le altre decisioni (`youth`, `agentId`,
+`promotedAt`), quindi resta tutto deterministico e condivisibile con un codice.
+
+**Cosa non abbiamo ancora, e si vede:** la mappa del mondo interattiva al posto della
+griglia di bandiere, il campo da calcio con i ruoli cliccabili al posto delle quattro
+card, l'avatar del giocatore, lo stile di gioco («punta ai gol» / «preferisci gli
+assist»), le schede Profilo/Agente/Statistiche/Bacheca e la scorciatoia da tastiera.
+Sono tutte cose fattibili: nessuna richiede di toccare il motore.

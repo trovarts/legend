@@ -1,6 +1,7 @@
 'use client';
 
 import type { RivalSnapshot, SeasonRecord } from '../engine/types';
+import { bandiera } from './bandiere';
 
 function soldi(valore: number): string {
   return valore >= 1_000_000 ? `${(valore / 1_000_000).toFixed(1)}M` : `${Math.round(valore / 1000)}K`;
@@ -15,12 +16,17 @@ export function Tessera({
   last,
   rival,
   ora,
+  goat,
+  nationality,
 }: {
   name: string;
   last: SeasonRecord | undefined;
   rival: RivalSnapshot | null;
   /** Dati della decisione in corso: prima che la stagione si chiuda, `last` non esiste ancora. */
   ora?: { age?: number; overall?: number; clubName?: string };
+  /** Punti GOAT maturati finora: si vedono anche prima della prima squadra. */
+  goat?: number;
+  nationality?: string;
 }) {
   const age = last?.age ?? ora?.age;
   const overall = last?.overallEnd ?? ora?.overall;
@@ -29,10 +35,15 @@ export function Tessera({
     <>
       <div className="tessera">
         <span className="tessera-nome">
+          {nationality !== undefined && <span aria-hidden="true">{bandiera(nationality)} </span>}
           {name}
           {club !== undefined && <span className="tenue" style={{ fontWeight: 400 }}> · {club}</span>}
         </span>
         <span className="tessera-dati">
+          <span className="tessera-dato">
+            <b>{goat ?? 0}</b>
+            <span>goat pt</span>
+          </span>
           <span className="tessera-dato">
             <b>{age ?? '—'}</b>
             <span>anni</span>

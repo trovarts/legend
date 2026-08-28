@@ -4,6 +4,8 @@ import { useMemo, useState } from 'react';
 import { clubStrength } from '../engine/clubStrength';
 import type { CandidateClub } from '../engine/market';
 import { decisionKey, playCareer, type CareerSave } from '../engine/play';
+import { Agente } from './Agente';
+import { AnnoVivaio } from './AnnoVivaio';
 import { Bivio } from './Bivio';
 import { Contesto } from './Contesto';
 import { FineStagione } from './FineStagione';
@@ -11,6 +13,7 @@ import { Giornale } from './Giornale';
 import { Mercato } from './Mercato';
 import { Preparazione } from './Preparazione';
 import { Tessera } from './Tessera';
+import { Promozione, Vivaio } from './Vivaio';
 import { Verdetto } from './Verdetto';
 
 export function Carriera({
@@ -30,7 +33,9 @@ export function Carriera({
 
   /** Fin dove l'utente ha già guardato: serve solo alla messa in scena, non al gioco. */
   const [vista, setVista] = useState(0);
+  const [vivaioVisto, setVivaioVisto] = useState(0);
   const daMostrare = last !== undefined && last.season > vista ? last : null;
+  const annoVivaio = state.youth.find((anno) => anno.year > vivaioVisto) ?? null;
 
   const decide = (patch: Partial<CareerSave['decisions']>): void => {
     onChange({ ...save, decisions: { ...save.decisions, ...patch } });
@@ -43,6 +48,8 @@ export function Carriera({
     <>
       <Tessera
         name={save.create.name}
+        nationality={save.create.nationality}
+        goat={state.result?.goat.total ?? 0}
         last={last}
         rival={lastRival}
         ora={
@@ -50,9 +57,58 @@ export function Carriera({
             ? { age: pending.age, overall: pending.overall, clubName: pending.clubName }
             : pending?.kind === 'dilemma'
               ? { clubName: pending.soFar.clubName }
-              : undefined
+              : pending?.kind === 'youth' || pending?.kind === 'promotion'
+                ? { age: pending.age, overall: pending.overall, clubName: pending.clubName }
+                : annoVivaio !== null
+                  ? { age: annoVivaio.age, overall: annoVivaio.overallEnd, clubName: annoVivaio.clubName }
+                  : undefined
         }
       />
+
+      {pending?.kind === 'agent' && (
+        <Agente
+          options={pending.options}
+          onChoose={(agentId) => onChange({ ...save, decisions: { ...save.decisions, agentId } })}
+        />
+      )}
+
+      {annoVivaio !== null && pending?.kind !== 'agent' && (
+        <AnnoVivaio key={annoVivaio.year} season={annoVivaio} onEnd={() => setVivaioVisto(annoVivaio.year)} />
+      )}
+
+      {annoVivaio === null && pending?.kind === 'youth' && (
+        <Vivaio
+          year={pending.year}
+          age={pending.age}
+          clubName={pending.clubName}
+          onChoose={(approach) =>
+            onChange({
+              ...save,
+              decisions: {
+                ...save.decisions,
+                youth: { ...save.decisions.youth, [String(pending.year)]: approach },
+              },
+            })
+          }
+        />
+      )}
+
+      {annoVivaio === null && pending?.kind === 'promotion' && (
+        <Promozione
+          age={pending.age}
+          clubName={pending.clubName}
+          overall={pending.overall}
+          onChoose={(sali) =>
+            onChange({
+              ...save,
+              decisions: {
+                ...save.decisions,
+                promotedAt: sali ? state.youth.length : state.youth.length + 1,
+              },
+            })
+          }
+        />
+      )}
 
       {daMostrare !== null ? (
         <FineStagione
