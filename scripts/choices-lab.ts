@@ -95,6 +95,16 @@ async function main(): Promise<void> {
       totals.set(best.id, (totals.get(best.id) ?? 0) + 1);
     }
 
+    // Sotto una ventina di osservazioni il verdetto è rumore, non misura.
+    const MINIMO = 20;
+    if (counted > 0 && counted < MINIMO) {
+      const line = [...totals.entries()]
+        .map(([id, wins]) => `${id} ${((wins / counted) * 100).toFixed(0)}%`)
+        .join(' | ');
+      console.log(`${entry.id}: ${line}  (solo ${counted} carriere: campione troppo piccolo per giudicare)`);
+      continue;
+    }
+
     if (counted === 0) {
       console.log(`${entry.id}: mai incontrato in ${careers} carriere — impossibile giudicarlo`);
       failures.push(`${entry.id}: non si presenta mai, quindi non è verificabile`);

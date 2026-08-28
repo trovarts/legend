@@ -257,3 +257,48 @@ ricca. `npm run check:bundle` fallisce se superiamo i 240 KB.
 
 **Lezione:** un'interfaccia può passare tutti i test e non essere un gioco. I test dicono
 se funziona; solo guardarla dice se qualcuno ha voglia di usarla.
+
+## D-014 — Le scelte diventano scommesse, e la stagione si guarda
+
+Il committente ha detto che eravamo «ancora lontani dal concetto», e ha indicato due cose:
+la scommessa nelle scelte e la creazione della carriera. Aveva ragione su entrambe, e la
+seconda parte del video del concorrente ha spiegato perché.
+
+**La scommessa.** Il loro gioco mostra ogni opzione così: «Battaglia per la maglia —
+`50%` **+3 OVR** · `50%` **−1 OVR**» contro «Lavoro costante — `+2 OVR`, certo». Due badge
+affiancati, la quota sopra, verde e rosso. Noi avevamo gli stessi dati — ogni opzione del
+motore ha `outcomes` con probabilità ed effetti — e li appiattivamo in una frase di testo.
+Ora `Puntata.tsx` traduce gli effetti in badge: sono gli stessi numeri con cui il motore
+risolverà la scelta, non un'etichetta scritta a parte. Le opzioni senza rischio dicono
+**esito certo** invece di fingere una percentuale.
+
+**La creazione.** Quattro menu a tendina erano un modulo, non un gioco. Ora è un flusso
+di schermate con la stessa forma di tutto il resto: nome, ruolo, età, una griglia di
+bandiere, la categoria (col bonus difficoltà in chiaro) e le squadre — **con l'overall
+vero calcolato dalla rosa reale**: Inter 86, Napoli 83, Milan 82, e l'avvertenza «una
+corazzata: giocare qui da ragazzo è quasi impossibile». Qui siamo più forti del
+concorrente, che ha club inventati come «Milano Nerazzurri» e «Piemonte Bianconeri».
+
+**E la stagione si guarda.** Dal video mancavano tre pezzi, ora ci sono: la **partita in
+diretta** (cronometro, punteggio, statistiche che si muovono, velocità da 0,75× a 8×,
+`match.ts`), la **classifica** completa del campionato (`standings.ts`) e il **tabellone
+di coppa** (`cup.ts`), più il **resoconto** con l'overall che sale davanti agli occhi
+(59 → 60). Nessuno di questi decide niente: mettono in scena un risultato che il motore
+ha già stabilito, e restano deterministici come tutto il resto.
+
+## D-015 — Un verdetto su venti carriere non è un verdetto
+
+Aggiungendo cinque bivi nuovi (tredici in tutto), il `choices-lab` ha bocciato
+`ritorno-a-casa` al 92%. Ma era comparso in **12 carriere**: su un campione così il
+risultato è rumore travestito da misura. Ora lo strumento lo dice — sotto le venti
+osservazioni stampa «campione troppo piccolo per giudicare» invece di emettere una
+sentenza.
+
+Misurato poi davvero, con 50 osservazioni, il bivio era **realmente** sbilanciato (78%):
+le due strade davano quasi la stessa cosa, quindi ne vinceva una per inerzia. È diventato
+uno scambio esplicito — tornare a casa dà **+18% di minuti ma −2 di overall**, restare dà
+**+1 overall** e meno campo — e su 553 osservazioni sta a 40/60.
+
+**Lezione:** prima di credere a un numero, guarda su quante osservazioni è calcolato. E
+prima di ribilanciare, controlla che le due strade offrano davvero cose diverse: se danno
+lo stesso, la percentuale non si sposta mai.
