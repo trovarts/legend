@@ -14,6 +14,7 @@ import { nationalSeason } from './national.js';
 import { playingTimeShare } from './playingTime.js';
 import type { Rng } from './rng.js';
 import { seasonStats } from './stats.js';
+import { trainingEffect, type TrainingAxis } from './training.js';
 import type { CareerPlayer, DilemmaChoice, Mark, SeasonRecord } from './types.js';
 import { marketValue } from './value.js';
 
@@ -34,6 +35,8 @@ export interface SimulateSeasonInput {
   /** Minuti guadagnati o persi per effetto delle scelte della stagione precedente. */
   minutesBonus: number;
   dilemmaPolicy: DilemmaPolicy;
+  /** Su cosa ha scelto di lavorare quest'anno (spec §3.2). */
+  training: TrainingAxis;
 }
 
 export interface SeasonOutcome {
@@ -63,17 +66,20 @@ export function simulateSeason(input: SimulateSeasonInput, rng: Rng): SeasonOutc
     Math.max(0.02, baseShare + minutesModifier(input.marks) + input.minutesBonus),
   );
 
+  const training = trainingEffect(input.training);
+  const trainedShare = Math.min(0.95, Math.max(0.02, adjustedShare + training.minutesDelta));
+
   const injury = rollInjury(
     {
       season: input.season,
       age: player.age,
       physique: player.physique,
-      minutesShare: adjustedShare,
+      minutesShare: trainedShare,
       marks: input.marks,
     },
     rng,
   );
-  const minutesShare = Math.max(0.02, adjustedShare * (1 - injuryMinutesPenalty(injury)));
+  const minutesShare = Math.max(0.02, trainedShare * (1 - injuryMinutesPenalty(injury)));
 
   const strength = clubStrengthWith(club, player.overall, player.role, minutesShare);
   const position = leaguePosition(strength, input.leagueStrengths, rng);
@@ -164,14 +170,19 @@ export function simulateSeason(input: SimulateSeasonInput, rng: Rng): SeasonOutc
     });
   }
 
+  if (training.leadershipChance > 0 && rng.chance(training.leadershipChance)) {
+    state = applyEffects(state, { addMark: { id: 'leader-riconosciuto', intensity: 0.5 } }, input.season);
+  }
+
   const afterChoices: CareerPlayer = {
     ...player,
     overall: Math.min(99, Math.max(1, state.overall)),
+    physique: Math.min(99, player.physique + training.physiqueDelta),
   };
   // Chi salta partite per infortunio continua comunque ad allenarsi: la crescita risente
   // dell'assenza, ma non si azzera come per chi resta fuori per scelta tecnica.
-  const growthShare = (minutesShare + adjustedShare) / 2;
-  const grownPlayer = growPlayer(afterChoices, growthShare, rng);
+  const growthShare = (minutesShare + trainedShare) / 2;
+  const grownPlayer = growPlayer(afterChoices, growthShare * training.growthMultiplier, rng);
   const valueEur = Math.round(
     marketValue(grownPlayer.overall, grownPlayer.age, grownPlayer.potential) *
       state.valueMultiplier,

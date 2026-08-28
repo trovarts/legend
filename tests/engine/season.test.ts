@@ -35,6 +35,7 @@ function input(over: Partial<SimulateSeasonInput> = {}): SimulateSeasonInput {
     recentDilemmaIds: [],
     minutesBonus: 0,
     dilemmaPolicy: boldPolicy,
+    training: 'tecnica',
     ...over,
   };
 }
