@@ -15,6 +15,18 @@ export interface CareerPlayer {
   retired: boolean;
 }
 
+/** Quello che resta di una stagione sul tabellino. */
+export interface SeasonStats {
+  appearances: number;
+  minutes: number;
+  goals: number;
+  assists: number;
+  /** Solo per portieri e difensori; zero per gli altri. */
+  cleanSheets: number;
+  /** Voto medio, fra 5.0 e 9.0, con una cifra decimale. */
+  rating: number;
+}
+
 /** Una riga della timeline di carriera. La Fase 2 aggiungerà gol, assist e trofei. */
 export interface SeasonRecord {
   season: number;
