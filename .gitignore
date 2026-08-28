@@ -2,3 +2,7 @@ node_modules/
 public/world/
 *.tsbuildinfo
 .DS_Store
+
+# Output di build: si rigenera con npm run build, non va in cronologia.
+.next/
+out/
