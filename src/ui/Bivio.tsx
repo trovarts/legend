@@ -2,10 +2,11 @@
 
 import type { SeasonSoFar } from '../engine/career';
 import type { Dilemma } from '../engine/types';
+import { Scelta, Scelte } from './Scelte';
 
 /**
- * La schermata che ci distingue dal concorrente: ogni strada dichiara cosa mette
- * in gioco, e le probabilità mostrate sono quelle che il motore usa davvero (spec §3.5).
+ * La schermata che ci distingue dal concorrente: ogni strada dichiara cosa mette in
+ * gioco, e le probabilità mostrate sono quelle che il motore usa davvero (spec §3.5).
  */
 export function Bivio({
   dilemma,
@@ -17,25 +18,37 @@ export function Bivio({
   onChoose: (optionId: string) => void;
 }) {
   return (
-    <div className="card" style={{ borderColor: 'var(--tabellone)' }}>
-      <p className="tenue numero">
-        {soFar.clubName} · {soFar.leagueName} · {soFar.stats.appearances} presenze,{' '}
-        {soFar.stats.goals} gol, voto {soFar.stats.rating.toFixed(1)}
+    <section className="giornale">
+      <header className="testata">
+        <span className="testata-nome">SPOGLIATOIO</span>
+        <span className="testata-data">
+          {soFar.clubName} · {soFar.leagueName}
+        </span>
+      </header>
+
+      <span className="occhiello">Una decisione</span>
+      <h2 className="titolone">{dilemma.title}</h2>
+      <p className="sommario numero">
+        {soFar.stats.appearances} presenze · {soFar.stats.goals} gol · media{' '}
+        {soFar.stats.rating.toFixed(1)} · {Math.round(soFar.minutesShare * 100)}% dei minuti
+        {soFar.injury && ` · infortunio ${soFar.injury.severity}`}
       </p>
-      <h2>{dilemma.title}</h2>
-      <p>{dilemma.text}</p>
-      {dilemma.options.map((option) => (
-        <button
-          key={option.id}
-          type="button"
-          className="bottone"
-          style={{ marginTop: '.6rem' }}
-          onClick={() => onChoose(option.id)}
-        >
-          <strong>{option.label}</strong>
-          <span className="posta">{option.stake}</span>
-        </button>
-      ))}
-    </div>
+
+      <p style={{ marginBottom: '1rem' }}>{dilemma.text}</p>
+
+      <Scelte>
+        {dilemma.options.map((option, index) => (
+          <Scelta
+            key={option.id}
+            sigla={String(index + 1)}
+            titolo={option.label}
+            nota=""
+            badge={option.stake}
+            rischio={option.outcomes.length > 1}
+            onClick={() => onChoose(option.id)}
+          />
+        ))}
+      </Scelte>
+    </section>
   );
 }

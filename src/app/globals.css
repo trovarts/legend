@@ -1,18 +1,20 @@
 /*
- * Il colore del gioco: notte da stadio. Fondo profondo, verde campo, giallo tabellone.
- * Tutto in variabili: il tema si cambia in un punto solo.
+ * Notte da stadio: nero profondo con un alone bordeaux, come le luci di uno stadio
+ * viste da fuori. Accenti rossi per l'urgenza, verdi per ciò che guadagni.
  */
 :root {
-  --fondo: #0b1015;
-  --fondo-alto: #131b23;
-  --bordo: #223040;
-  --testo: #eef3f7;
-  --testo-tenue: #93a4b5;
-  --campo: #1f9d55;
-  --tabellone: #f5c518;
-  --allarme: #e05252;
-  --raggio: 12px;
-  --colonna: 34rem;
+  --nero: #08070a;
+  --carta: #12101a;
+  --carta-alta: #1a1620;
+  --bordo: #2c2632;
+  --testo: #f2eef5;
+  --tenue: #9b93a8;
+  --rosso: #d81f3f;
+  --rosso-scuro: #6d1226;
+  --verde: #2fbf6b;
+  --oro: #f5c518;
+  --raggio: 14px;
+  --colonna: 46rem;
 }
 
 * { box-sizing: border-box; }
@@ -20,61 +22,167 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: var(--fondo);
+  background: var(--nero);
   color: var(--testo);
   font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  font-size: 17px;
-  line-height: 1.5;
+  font-size: 16px;
+  line-height: 1.55;
   -webkit-text-size-adjust: 100%;
 }
 
-main { max-width: var(--colonna); margin: 0 auto; padding: 1.25rem 1rem 4rem; }
+/* L'alone dello stadio dietro tutto. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(216, 31, 63, .22), transparent 60%),
+    radial-gradient(90% 60% at 50% 110%, rgba(109, 18, 38, .18), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
 
-h1, h2, h3 { line-height: 1.15; margin: 0 0 .5rem; letter-spacing: -.02em; }
-h1 { font-size: 1.9rem; }
-h2 { font-size: 1.3rem; }
+main { position: relative; z-index: 1; max-width: var(--colonna); margin: 0 auto; padding: 1rem .9rem 4rem; }
 
-.tenue { color: var(--testo-tenue); }
+h1, h2, h3 { line-height: 1.08; margin: 0 0 .5rem; letter-spacing: -.025em; }
+.tenue { color: var(--tenue); }
 .numero { font-variant-numeric: tabular-nums; }
 
+/* ── Tessera del giocatore, sempre in alto ───────────────────────────────── */
+.tessera {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; align-items: center; gap: .9rem;
+  background: linear-gradient(180deg, rgba(26,22,32,.98), rgba(18,16,26,.94));
+  border: 1px solid var(--bordo); border-radius: var(--raggio);
+  padding: .6rem .9rem; margin-bottom: 1rem;
+  backdrop-filter: blur(8px);
+}
+.tessera-nome { font-weight: 700; font-size: 1.05rem; letter-spacing: -.01em; }
+.tessera-dati { margin-left: auto; display: flex; gap: 1.1rem; text-align: right; }
+.tessera-dato { display: flex; flex-direction: column; line-height: 1.1; }
+.tessera-dato b { font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+.tessera-dato span { font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: var(--tenue); }
+
+/* ── Il giornale: la stagione raccontata ─────────────────────────────────── */
+.giornale {
+  background: linear-gradient(165deg, var(--carta-alta), var(--carta));
+  border: 1px solid var(--bordo); border-radius: var(--raggio);
+  padding: 1.4rem 1.2rem; margin-bottom: 1rem;
+  animation: entra .45s ease both;
+}
+.testata {
+  display: flex; align-items: baseline; justify-content: space-between;
+  border-bottom: 1px solid var(--bordo); padding-bottom: .6rem; margin-bottom: .5rem;
+}
+.testata-nome {
+  font-weight: 800; letter-spacing: .06em; font-size: 1.05rem;
+  border-left: 4px solid var(--rosso); padding-left: .5rem;
+}
+.testata-data { font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--tenue); }
+.occhiello {
+  display: inline-block; font-size: .6rem; letter-spacing: .16em; text-transform: uppercase;
+  background: var(--rosso-scuro); color: #ffd9e0; border-radius: 99px; padding: .22rem .6rem;
+  margin-bottom: .6rem;
+}
+.titolone {
+  font-size: clamp(1.6rem, 6vw, 2.5rem); font-weight: 800; text-transform: uppercase;
+  letter-spacing: -.03em; line-height: .98; margin: 0 0 .45rem;
+}
+.sommario { color: var(--tenue); font-size: .88rem; margin: 0 0 1rem; }
+.corpo { display: grid; gap: 1rem; }
+@media (min-width: 44rem) { .corpo { grid-template-columns: 1.6fr 1fr; } }
+.pezzo p { margin: 0 0 .6rem; }
+.pezzo > p:first-child::first-letter {
+  float: left; font-size: 3rem; line-height: .82; font-weight: 800;
+  padding: .1rem .5rem .1rem 0; color: var(--rosso);
+}
+.etichetta { font-size: .58rem; letter-spacing: .18em; text-transform: uppercase; color: var(--rosso); margin-bottom: .4rem; }
+.spalla {
+  background: rgba(216, 31, 63, .07); border: 1px solid rgba(216, 31, 63, .25);
+  border-radius: 10px; padding: .8rem; font-size: .82rem;
+}
+.spalla p { margin: 0 0 .55rem; color: #e8dfe6; }
+.spalla p:last-child { margin: 0; }
+
+/* ── Le scelte: card grandi, con quello che ci guadagni in chiaro ────────── */
+.scelte { display: grid; gap: .8rem; margin-top: .4rem; }
+@media (min-width: 38rem) { .scelte { grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); } }
+.scelta {
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: .5rem;
+  background: linear-gradient(165deg, rgba(216,31,63,.10), var(--carta));
+  border: 1px solid var(--bordo); border-radius: var(--raggio);
+  padding: 1.1rem .9rem; color: var(--testo); font: inherit; cursor: pointer;
+  transition: transform .18s ease, border-color .18s ease;
+}
+.scelta:hover, .scelta:focus-visible { transform: translateY(-3px); border-color: var(--rosso); }
+.scelta-stemma {
+  width: 2.6rem; height: 2.6rem; border-radius: 8px; display: grid; place-items: center;
+  background: var(--rosso-scuro); color: #ffd9e0; font-weight: 800; font-size: .8rem;
+}
+.scelta-titolo { font-size: 1.05rem; font-weight: 700; letter-spacing: -.01em; }
+.scelta-nota { color: var(--tenue); font-size: .82rem; }
+.scelta-badge {
+  margin-top: auto; background: rgba(47,191,107,.14); color: var(--verde);
+  border: 1px solid rgba(47,191,107,.35); border-radius: 99px;
+  padding: .25rem .7rem; font-size: .78rem; font-weight: 600;
+}
+.scelta-badge-rischio { background: rgba(245,197,24,.12); color: var(--oro); border-color: rgba(245,197,24,.3); }
+
+/* ── Avanti ──────────────────────────────────────────────────────────────── */
+.avanti {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: .95rem 1.1rem; margin-top: .4rem;
+  background: var(--carta-alta); border: 1px solid var(--bordo); border-radius: var(--raggio);
+  color: var(--testo); font: inherit; font-weight: 600; cursor: pointer;
+  transition: background .18s ease;
+}
+.avanti:hover { background: var(--rosso-scuro); }
+
+/* ── Elementi comuni ─────────────────────────────────────────────────────── */
 .card {
-  background: var(--fondo-alto);
-  border: 1px solid var(--bordo);
-  border-radius: var(--raggio);
-  padding: 1rem;
-  margin-bottom: .9rem;
+  background: var(--carta); border: 1px solid var(--bordo);
+  border-radius: var(--raggio); padding: 1rem; margin-bottom: .9rem;
 }
-
 .bottone {
-  display: block;
-  width: 100%;
-  padding: .85rem 1rem;
-  border: 1px solid var(--bordo);
-  border-radius: var(--raggio);
-  background: var(--fondo-alto);
-  color: var(--testo);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
+  display: block; width: 100%; padding: .8rem 1rem;
+  border: 1px solid var(--bordo); border-radius: 10px;
+  background: var(--carta-alta); color: var(--testo); font: inherit; text-align: left; cursor: pointer;
 }
-.bottone:hover, .bottone:focus-visible { border-color: var(--campo); }
-.bottone[disabled] { opacity: .45; cursor: not-allowed; }
-.bottone-forte { background: var(--campo); border-color: var(--campo); font-weight: 600; text-align: center; }
-.bottone-forte:hover { filter: brightness(1.08); }
-.bottone-scelto { border-color: var(--campo); }
-
-/* La posta dichiarata di ogni scelta: è il cuore del gioco, si vede. */
-.posta { display: block; margin-top: .35rem; color: var(--tabellone); font-size: .92rem; }
-
-.momento { border-left: 3px solid var(--bordo); padding: .1rem 0 .1rem .8rem; margin: .55rem 0; }
-.momento-alto { border-left-color: var(--campo); }
-.momento-basso { border-left-color: var(--allarme); }
-
-.riga { display: flex; justify-content: space-between; gap: 1rem; padding: .3rem 0; flex-wrap: wrap; }
+.bottone:hover, .bottone:focus-visible { border-color: var(--rosso); }
+.bottone[disabled] { opacity: .4; cursor: not-allowed; }
+.bottone-scelto { border-color: var(--rosso); background: rgba(216,31,63,.12); }
+.bottone-forte { background: var(--rosso); border-color: var(--rosso); font-weight: 700; text-align: center; }
+.bottone-forte:hover { filter: brightness(1.1); }
+.posta { display: block; margin-top: .3rem; color: var(--oro); font-size: .85rem; }
 .griglia { display: grid; grid-template-columns: repeat(2, 1fr); gap: .6rem; }
-
+@media (min-width: 40rem) { .griglia { grid-template-columns: repeat(4, 1fr); } }
+.riga { display: flex; justify-content: space-between; gap: .8rem; padding: .3rem 0; flex-wrap: wrap; }
 select.bottone { appearance: none; }
 
-@media (min-width: 40rem) {
-  .griglia { grid-template-columns: repeat(4, 1fr); }
+/* ── Il rivale: presente, non nascosto in fondo ──────────────────────────── */
+.rivale {
+  display: flex; align-items: center; gap: .7rem; flex-wrap: wrap;
+  border: 1px solid var(--bordo); border-left: 3px solid var(--oro);
+  border-radius: 10px; padding: .55rem .8rem; margin-bottom: 1rem;
+  background: var(--carta); font-size: .86rem;
+}
+.rivale-avanti { border-left-color: var(--rosso); }
+.rivale-dietro { border-left-color: var(--verde); }
+.rivale-verdetto { margin-left: auto; font-weight: 700; }
+
+/* ── Archivio delle stagioni passate ─────────────────────────────────────── */
+.archivio summary { cursor: pointer; color: var(--tenue); padding: .6rem 0; }
+.archivio-riga {
+  display: flex; justify-content: space-between; gap: .6rem; align-items: baseline;
+  padding: .5rem .2rem; border-bottom: 1px solid var(--bordo); font-size: .86rem;
+}
+
+@keyframes entra { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.entra { animation: entra .4s ease both; }
+.ritardo-1 { animation-delay: .07s; }
+.ritardo-2 { animation-delay: .14s; }
+.ritardo-3 { animation-delay: .21s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .entra, .giornale, .scelta { animation: none; transition: none; }
 }

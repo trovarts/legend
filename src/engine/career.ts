@@ -10,8 +10,8 @@ import { shouldRetire } from './retirement';
 import { createRng } from './rng';
 import { simulateSeason } from './season';
 import type {
-  Award, CareerResult, Dilemma, DilemmaChoice, Injury, Mark, Offer, SeasonRecord, SeasonStats,
-  Showdown, Trophy,
+  Award, CareerResult, Dilemma, DilemmaChoice, Injury, Mark, Offer, RivalSnapshot, SeasonRecord,
+  SeasonStats, Showdown, Trophy,
 } from './types';
 
 /** Cosa il motore sta aspettando dall'utente. */
@@ -55,8 +55,11 @@ export interface RunCareerInput {
   dilemmaPolicy?: DilemmaPolicy;
   /** Su cosa lavora in preparazione; in Fase 4 lo sceglie l'utente. */
   trainingPolicy?: (season: number, snapshot: { age: number; overall: number; clubName: string }) => TrainingAxis;
-  /** Chiamata a ogni stagione conclusa: raccoglie lo stato anche se poi si sospende. */
-  onSeason?: (record: SeasonRecord) => void;
+  /**
+   * Chiamata a ogni stagione conclusa: raccoglie lo stato anche se poi si sospende.
+   * Porta con sé il Rivale, che altrimenti si vedrebbe solo alla fine della carriera.
+   */
+  onSeason?: (record: SeasonRecord, rival: RivalSnapshot | null) => void;
 }
 
 const MAX_SEASONS = 30;
@@ -147,9 +150,9 @@ export function runCareer(input: RunCareerInput): CareerResult {
     if (snapshot && !snapshot.aheadOfYou) seasonsAheadOfRival += 1;
     const showdown = rollShowdown(outcome.record, rivalSeason, rng);
     if (showdown) showdowns.push(showdown);
+    input.onSeason?.(outcome.record, snapshot);
 
     seasons.push(outcome.record);
-    input.onSeason?.(outcome.record);
     qualified = outcome.qualifiedNextSeason;
     capped = capped || outcome.record.national.capped;
     marks = outcome.marks;

@@ -2,7 +2,7 @@ import { DecisionRequired, runCareer, type PendingDecision } from './career';
 import type { CreatePlayerInput } from './create';
 import type { CandidateClub } from './market';
 import type { TrainingAxis } from './training';
-import type { CareerResult, SeasonRecord } from './types';
+import type { CareerResult, RivalSnapshot, SeasonRecord } from './types';
 
 /** Le decisioni prese dall'utente. Chiavi stringa: finiscono in JSON. */
 export interface CareerDecisions {
@@ -28,6 +28,8 @@ export type Pending = PendingDecision | null;
 
 export interface PlayState {
   seasons: SeasonRecord[];
+  /** Come stava andando il Rivale a ogni stagione, nello stesso ordine. */
+  rivals: (RivalSnapshot | null)[];
   pending: Pending;
   finished: boolean;
   result: CareerResult | null;
@@ -44,13 +46,17 @@ export function decisionKey(season: number, dilemmaId: string): string {
  */
 export function playCareer(save: CareerSave, clubs: readonly CandidateClub[]): PlayState {
   const seasons: SeasonRecord[] = [];
+  const rivals: (RivalSnapshot | null)[] = [];
 
   try {
     const result = runCareer({
       create: save.create,
       world: { clubs, startClubId: save.startClubId },
       seed: save.seed,
-      onSeason: (record) => seasons.push(record),
+      onSeason: (record, rival) => {
+        seasons.push(record);
+        rivals.push(rival);
+      },
       trainingPolicy: (season, snapshot) => {
         const chosen = save.decisions.training[String(season)];
         if (!chosen) {
@@ -94,10 +100,10 @@ export function playCareer(save: CareerSave, clubs: readonly CandidateClub[]): P
       },
     });
 
-    return { seasons, pending: null, finished: true, result };
+    return { seasons, rivals, pending: null, finished: true, result };
   } catch (error) {
     if (error instanceof DecisionRequired) {
-      return { seasons, pending: error.pending, finished: false, result: null };
+      return { seasons, rivals, pending: error.pending, finished: false, result: null };
     }
     throw error;
   }

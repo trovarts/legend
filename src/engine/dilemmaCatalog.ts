@@ -185,7 +185,7 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
     build: (context) => ({
       id: 'pace-col-mister',
       title: 'Quella frase pesa ancora',
-      text: `Da quando hai alzato la voce non sei più lo stesso agli occhi della panchina. A ${context.clubName} qualcuno prova a ricucire.`,
+      text: `${context.clubName}. Da quando hai alzato la voce non sei più lo stesso agli occhi della panchina, e qualcuno prova a ricucire.`,
       options: [
         {
           id: 'scusati',
