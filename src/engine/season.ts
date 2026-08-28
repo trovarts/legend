@@ -157,8 +157,18 @@ export function simulateSeason(input: SimulateSeasonInput, rng: Rng): SeasonOutc
   };
   const choices: DilemmaChoice[] = [];
 
+  // Il riassunto viaggia col contesto: chi deve chiedere all'utente sa già com'è andata.
+  const soFar = {
+    clubName: club.name,
+    leagueName: league.name,
+    position,
+    stats,
+    injury,
+    minutesShare,
+  };
+
   for (const dilemma of pickDilemmas(context, rng)) {
-    const option = input.dilemmaPolicy(dilemma, context);
+    const option = input.dilemmaPolicy(dilemma, { ...context, soFar });
     const outcome = resolveOption(option, rng);
     state = applyEffects(state, outcome.effects, input.season);
     choices.push({

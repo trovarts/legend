@@ -14,6 +14,15 @@ export interface DilemmaContext {
   wonSomething: boolean;
   /** Bivi già affrontati di recente: non si ripropongono (vedi D-012). */
   recentDilemmaIds: readonly string[];
+  /** Com'è andata la stagione fin qui. Lo usa l'interfaccia, non il catalogo. */
+  soFar?: {
+    clubName: string;
+    leagueName: string;
+    position: number;
+    stats: import('./types.js').SeasonStats;
+    injury: Injury | null;
+    minutesShare: number;
+  };
 }
 
 export interface DilemmaEntry {

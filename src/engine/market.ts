@@ -98,6 +98,8 @@ export interface TransferContext {
   currentMinutesShare: number;
   currentLeagueLevel: number;
   age: number;
+  /** Serve a chi indicizza le decisioni per stagione (il replay della Fase 4). */
+  season: number;
 }
 
 /**

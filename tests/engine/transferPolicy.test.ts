@@ -10,7 +10,7 @@ function offer(over: Partial<Offer>): Offer {
   };
 }
 
-const context = { currentMinutesShare: 0.5, currentLeagueLevel: 1, age: 24 };
+const context = { currentMinutesShare: 0.5, currentLeagueLevel: 1, age: 24, season: 5 };
 
 describe('ambitiousPolicy', () => {
   it('senza offerte si resta dove si è', () => {

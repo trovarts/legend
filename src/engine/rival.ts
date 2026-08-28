@@ -124,6 +124,7 @@ export function advanceRival(
       currentMinutesShare: outcome.record.minutesShare,
       currentLeagueLevel: state.club.leagueLevel,
       age: outcome.grownPlayer.age,
+      season,
     });
     const destination = chosen ? clubs.find((entry) => entry.club.id === chosen.clubId) : undefined;
     if (destination) {

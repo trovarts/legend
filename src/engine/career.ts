@@ -10,8 +10,36 @@ import { shouldRetire } from './retirement.js';
 import { createRng } from './rng.js';
 import { simulateSeason } from './season.js';
 import type {
-  Award, CareerResult, DilemmaChoice, Injury, Mark, SeasonRecord, Showdown, Trophy,
+  Award, CareerResult, Dilemma, DilemmaChoice, Injury, Mark, Offer, SeasonRecord, SeasonStats,
+  Showdown, Trophy,
 } from './types.js';
+
+/** Cosa il motore sta aspettando dall'utente. */
+/** Com'è andata la stagione fino al momento della decisione: senza, l'utente sceglie al buio. */
+export interface SeasonSoFar {
+  clubName: string;
+  leagueName: string;
+  position: number;
+  stats: SeasonStats;
+  injury: Injury | null;
+  minutesShare: number;
+}
+
+export type PendingDecision =
+  | { kind: 'training'; season: number; age: number; overall: number; clubName: string }
+  | { kind: 'dilemma'; season: number; dilemma: Dilemma; soFar: SeasonSoFar }
+  | { kind: 'transfer'; season: number; offers: Offer[] };
+
+/**
+ * Lanciata dalle politiche quando la decisione non è ancora stata presa.
+ * Interrompe la carriera in un punto ben definito, senza stato mutabile di mezzo.
+ */
+export class DecisionRequired extends Error {
+  constructor(readonly pending: PendingDecision) {
+    super(`decisione richiesta: ${pending.kind}`);
+    this.name = 'DecisionRequired';
+  }
+}
 
 export interface CareerWorld {
   clubs: readonly CandidateClub[];
@@ -26,7 +54,9 @@ export interface RunCareerInput {
   /** In Fase 4 sarà l'utente a scegliere ai bivi. */
   dilemmaPolicy?: DilemmaPolicy;
   /** Su cosa lavora in preparazione; in Fase 4 lo sceglie l'utente. */
-  trainingPolicy?: (season: number) => TrainingAxis;
+  trainingPolicy?: (season: number, snapshot: { age: number; overall: number; clubName: string }) => TrainingAxis;
+  /** Chiamata a ogni stagione conclusa: raccoglie lo stato anche se poi si sospende. */
+  onSeason?: (record: SeasonRecord) => void;
 }
 
 const MAX_SEASONS = 30;
@@ -103,7 +133,9 @@ export function runCareer(input: RunCareerInput): CareerResult {
         recentDilemmaIds,
         minutesBonus,
         dilemmaPolicy,
-        training: (input.trainingPolicy ?? (() => 'tecnica' as const))(season),
+        training: (input.trainingPolicy ?? (() => 'tecnica' as const))(season, {
+          age: player.age, overall: player.overall, clubName: club.club.name,
+        }),
       },
       rng,
     );
@@ -117,6 +149,7 @@ export function runCareer(input: RunCareerInput): CareerResult {
     if (showdown) showdowns.push(showdown);
 
     seasons.push(outcome.record);
+    input.onSeason?.(outcome.record);
     qualified = outcome.qualifiedNextSeason;
     capped = capped || outcome.record.national.capped;
     marks = outcome.marks;
@@ -141,6 +174,7 @@ export function runCareer(input: RunCareerInput): CareerResult {
         currentMinutesShare: outcome.record.minutesShare,
         currentLeagueLevel: club.leagueLevel,
         age: player.age,
+        season,
       });
       if (chosen) {
         const destination = input.world.clubs.find((entry) => entry.club.id === chosen.clubId);
