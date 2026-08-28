@@ -32,12 +32,16 @@ jobs:
 
       - run: npm ci
 
+      # Il mondo va costruito per primo: i test giocano carriere vere sulle rose vere,
+      # e i dati non stanno in cronologia perché si rigenerano dal CSV.
+      - name: Costruisci il mondo dai dati veri
+        run: npm run import:world
+
       # Le stesse porte che tengono il gioco in piedi in locale.
       - run: npm run typecheck
       - run: npm test
-
-      - name: Costruisci il mondo dai dati veri
-        run: npm run import:world
+      - run: npm run lab
+      - run: npm run lab:choices -- --careers=100
 
       - name: Costruisci il sito
         run: npm run build
