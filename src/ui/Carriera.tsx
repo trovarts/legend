@@ -428,6 +428,10 @@ export function Carriera({
           result={state.result}
           ambizioneId={save.decisions.ambizione}
           paeseDelClub={paeseDelClub}
+          nome={save.create.name}
+          nazionalita={save.create.nationality}
+          look={save.decisions.look}
+          numero={save.decisions.numero}
         />
       )}
 

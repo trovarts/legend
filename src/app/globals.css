@@ -915,3 +915,43 @@ select.bottone { appearance: none; }
   border: 1px solid var(--bordo); background: rgba(255,255,255,.03);
 }
 .ambizione-verdetto.ambizione-centrata { border-color: var(--positivo); color: var(--positivo); }
+
+/* ── Il manifesto della carriera ─────────────────────────────────────────────
+ *
+ * Disegnato per essere fotografato: proporzione da schermo di telefono, contrasto
+ * alto, e in fondo l'indirizzo — se qualcuno lo guarda deve sapere dove si gioca.
+ */
+.poster {
+  position: relative; margin-top: .4rem; padding: 1.1rem 1rem 2.2rem;
+  border-radius: 16px; border: 1px solid var(--bordo);
+  background:
+    radial-gradient(110% 60% at 50% 0%, color-mix(in srgb, var(--rosso) 40%, transparent), transparent 62%),
+    linear-gradient(180deg, #14111b, #08070a);
+  overflow: hidden;
+}
+.poster-alto { display: flex; align-items: baseline; justify-content: space-between; gap: .6rem; }
+.poster-marchio { font-weight: 800; letter-spacing: .16em; font-size: .78rem; }
+.poster-anni { font-size: .64rem; letter-spacing: .1em; color: var(--tenue); }
+.poster-centro { display: flex; align-items: center; gap: .8rem; margin: .7rem 0 .5rem; }
+.poster-avatar { width: 3.4rem; flex: 0 0 3.4rem; }
+.poster-avatar .avatar { width: 100%; height: auto; display: block; }
+.poster-bandiera { font-size: 1.1rem; }
+.poster-nome { font-size: 1.5rem; font-weight: 800; letter-spacing: -.02em; margin: .05rem 0 .1rem; line-height: 1.05; }
+.poster-club { font-size: .72rem; color: var(--tenue); margin: 0; line-height: 1.3; }
+.poster-punteggio { display: flex; align-items: baseline; gap: .5rem; margin: .5rem 0 .2rem; }
+.poster-punteggio b { font-size: 2.6rem; font-weight: 800; color: var(--oro); line-height: 1; }
+.poster-punteggio span { font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: var(--tenue); }
+.poster-cifre { display: grid; grid-template-columns: repeat(4, 1fr); gap: .4rem; margin: .6rem 0 .4rem; }
+.poster-cifra {
+  display: flex; flex-direction: column; align-items: center; gap: .05rem;
+  border: 1px solid var(--bordo); border-radius: 9px; padding: .35rem .2rem;
+  background: rgba(255,255,255,.03);
+}
+.poster-cifra b { font-size: 1.05rem; font-weight: 800; }
+.poster-cifra span { font-size: .56rem; letter-spacing: .08em; text-transform: uppercase; color: var(--tenue); }
+.poster-trofei { font-size: .68rem; color: var(--oro); margin: .3rem 0 0; line-height: 1.35; }
+.poster-ambizione { font-size: .68rem; color: var(--tenue); margin: .25rem 0 0; font-style: italic; }
+.poster-basso {
+  position: absolute; left: 0; right: 0; bottom: .7rem; text-align: center;
+  font-size: .6rem; letter-spacing: .12em; color: var(--tenue);
+}

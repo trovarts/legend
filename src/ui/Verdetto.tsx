@@ -5,6 +5,8 @@ import { ambizioneById, progressoAmbizione } from '../engine/ambizione';
 import { dailyChallenge } from '../engine/challenge';
 import type { CareerResult, GoatComponent } from '../engine/types';
 import { Albo } from './Albo';
+import type { Aspetto } from './Avatar';
+import { Poster } from './Poster';
 import { registraNellAlbo } from './alboSalvato';
 import { Traguardi } from './Traguardi';
 import { registraSfida } from './sfidaSalvata';
@@ -26,11 +28,20 @@ export function Verdetto({
   result,
   ambizioneId,
   paeseDelClub,
+  nome,
+  nazionalita,
+  look,
+  numero,
 }: {
   result: CareerResult;
   /** Cosa aveva promesso questa carriera quando è cominciata. */
   ambizioneId?: string;
   paeseDelClub?: (clubId: string) => string | undefined;
+  /** Serve solo al manifesto: nome, bandiera e faccia. */
+  nome?: string;
+  nazionalita?: string;
+  look?: Aspetto;
+  numero?: string;
 }) {
   const ambizione = ambizioneById(ambizioneId);
   const promessa = progressoAmbizione(ambizione, result.seasons, paeseDelClub ?? (() => undefined));
@@ -127,6 +138,17 @@ export function Verdetto({
       <p className="trofeo" style={{ margin: 0 }}>
         ★ È la carriera più forte che hai chiuso finora.
       </p>
+    )}
+
+    {nome !== undefined && nazionalita !== undefined && (
+      <Poster
+        result={result}
+        nome={nome}
+        nazionalita={nazionalita}
+        look={look}
+        numero={numero}
+        ambizioneId={ambizioneId}
+      />
     )}
 
     <Albo evidenzia={posto} />
