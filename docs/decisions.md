@@ -44,3 +44,37 @@ troppo generoso.
 scendere sotto il 15% e almeno l'1% delle carriere deve superare 85 di picco — altrimenti
 il gioco non produce leggende, e un simulatore in cui nessuno diventa un fuoriclasse non
 ha vetta. Il Lab stampa entrambi i numeri a ogni esecuzione.
+
+## D-005 — I minuti si calcolano sul divario, non sul conteggio
+
+**Bug trovato giocando, non dai test.** Un diciassettenne al Napoli giocava il 2% dei
+minuti per sedici stagioni. Alla Carrarese in Serie B: identico, 2%. La carriera era la
+stessa ovunque, e la scelta del club — che la spec §3.1 vuole decisiva — non contava nulla.
+
+**Perché i test non l'avevano visto:** erano scritti su rose inventate da 4-5 giocatori,
+mentre le rose vere ne hanno 28. Testavano un giocatore già competitivo, mai un ragazzo.
+
+**Causa:** `playingTimeShare` contava *quanti* compagni erano più forti e sottraeva 0,12
+per posizione: dopo quattro posizioni la quota si azzerava. In una rosa reale ci sono
+4-5 attaccanti per club, quindi qualunque giovane finiva sempre al minimo assoluto.
+Un rookie da 64 con davanti gente da 65 veniva trattato come uno da 52 con davanti
+Lukaku da 84. E chi non gioca non cresce: trappola senza uscita.
+
+**Correzione:** la quota si calcola sul **divario** dall'ultimo posto da titolare del
+reparto. Sopra la soglia sei titolare (0,72 più un piccolo margine); sotto si scende di
+0,05 per punto. In più un pavimento dell'8% per chi ha 21 anni o meno, perché i club
+fanno esordire i ragazzi in coppa e negli spezzoni.
+
+**Effetto misurato su 3000 carriere:**
+
+| | prima | dopo |
+|---|---|---|
+| Minuti medi | 0,35 | 0,52 |
+| Carriere da riserva perenne | 39,9% | 15,6% |
+| Carriere sopra 80 di picco | 7,4% | 12,5% |
+| Picco mediano | 68 | 71 |
+
+**Lezione, da applicare al resto del progetto:** ogni sistema del motore va testato sui
+dati veri, non su rose costruite a mano. I test su dati inventati verificano la formula;
+solo quelli sulle rose reali verificano il gioco. `tests/engine/playingTimeReal.test.ts`
+è il modello da seguire.

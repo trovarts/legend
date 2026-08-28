@@ -26,7 +26,10 @@ export function runCareer(input: RunCareerInput): CareerResult {
   const seasons: SeasonRecord[] = [];
 
   while (!player.retired && seasons.length < MAX_SEASONS) {
-    const minutesShare = playingTimeShare(player.overall, player.role, input.club.squad);
+    const minutesShare = playingTimeShare(
+      { overall: player.overall, age: player.age, role: player.role },
+      input.club.squad,
+    );
     const overallStart = player.overall;
     const age = player.age;
 
