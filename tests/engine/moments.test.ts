@@ -137,7 +137,9 @@ describe('seasonMoments', () => {
       stats: { appearances: 34, minutes: 3000, goals: 0, assists: 1, cleanSheets: 9, rating: 6.4 },
     });
     const dietro = seasonMoments({ ...base, record: stagione, role: 'DEF' });
-    expect(dietro.some((m) => /porta|inviolat/i.test(m.text))).toBe(true);
+    // Le tre forme a rotazione dicono la stessa cosa in modi diversi.
+    expect(dietro.some((m) => /porta inviolata|inviolata|senza subire gol/i.test(m.text))).toBe(true);
+    expect(dietro.some((m) => /0 gol/.test(m.text))).toBe(false);
 
     const davanti = seasonMoments({ ...base, record: stagione, role: 'FWD' });
     expect(davanti.some((m) => /0 gol/.test(m.text))).toBe(true);
