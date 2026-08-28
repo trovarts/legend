@@ -22,7 +22,7 @@ describe('newSave', () => {
   });
 
   it("rifiuta un'età fuori dai limiti", () => {
-    for (const age of [15, 20]) {
+    for (const age of [13, 20]) {
       expect(() =>
         newSave({ name: 'Diego', nationality: 'Italy', role: 'FWD', age, leagueLevel: 1, startClubId: 'c1', seed: 1 }),
       ).toThrow('età');

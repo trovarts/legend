@@ -370,3 +370,95 @@ select.bottone { appearance: none; }
 }
 .sfida-target b { font-size: 1.7rem; line-height: 1; }
 .sfida-target span { font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; color: var(--tenue); }
+
+/* ── Il campo su cui si sceglie il ruolo ─────────────────────────────────── */
+.campo { position: relative; aspect-ratio: 3 / 4; border-radius: var(--raggio); overflow: hidden; }
+.campo-erba {
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(180deg, #14512c 0 8%, #17603299 8% 16%);
+}
+.campo-linea { position: absolute; left: 0; right: 0; top: 50%; height: 2px; background: rgba(255,255,255,.25); }
+.campo-cerchio {
+  position: absolute; left: 50%; top: 50%; width: 34%; aspect-ratio: 1;
+  transform: translate(-50%, -50%); border: 2px solid rgba(255,255,255,.25); border-radius: 50%;
+}
+.campo-area { position: absolute; left: 22%; width: 56%; height: 14%; border: 2px solid rgba(255,255,255,.25); }
+.campo-area-alta { top: 0; border-top: none; }
+.campo-area-bassa { bottom: 0; border-bottom: none; }
+.ruolo {
+  position: absolute; transform: translate(-50%, -50%);
+  width: 2.6rem; height: 2.6rem; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.35); background: rgba(10,12,14,.82);
+  color: var(--testo); font: inherit; font-size: .68rem; font-weight: 700; cursor: pointer;
+  transition: transform .15s ease, background .15s ease;
+}
+.ruolo:hover, .ruolo:focus-visible { transform: translate(-50%, -50%) scale(1.12); }
+.ruolo-scelto { background: #fff; color: #111; border-color: #fff; }
+
+/* ── Avatar ──────────────────────────────────────────────────────────────── */
+.avatar { width: 100%; max-width: 8rem; height: auto; display: block; margin: 0 auto; }
+.aspetto-riga {
+  display: grid; grid-template-columns: 5.5rem 1.6rem 1fr 1.6rem; align-items: center;
+  gap: .4rem; font-size: .78rem; padding: .22rem 0;
+}
+.aspetto-riga .contesto-etichetta { text-align: right; }
+.aspetto-freccia {
+  border: 1px solid var(--bordo); background: var(--carta-alta); color: var(--testo);
+  border-radius: 6px; cursor: pointer; font: inherit; line-height: 1; padding: .2rem 0;
+}
+.aspetto-valore { text-align: center; }
+
+/* ── Mappa del mondo ─────────────────────────────────────────────────────── */
+.mappa {
+  width: 100%; height: auto; display: block;
+  background: #0a0d10; border: 1px solid var(--bordo); border-radius: var(--raggio);
+}
+.paese-mappa { fill: #1b1f24; stroke: #0a0d10; stroke-width: .6; }
+.paese-attivo { fill: #b4681f; cursor: pointer; transition: fill .15s ease; }
+.paese-attivo:hover { fill: var(--oro); }
+
+/* ── Creazione a tre passi ───────────────────────────────────────────────── */
+.passo {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.35rem; height: 1.35rem; border-radius: 50%; margin-left: .25rem;
+  border: 1px solid var(--bordo); font-size: .68rem; color: var(--tenue);
+}
+.passo-attivo { border-color: var(--oro); color: var(--oro); }
+.identita { display: grid; gap: 1rem; }
+@media (min-width: 44rem) { .identita { grid-template-columns: 1fr 1fr; } }
+.stili { display: flex; flex-direction: column; gap: .45rem; margin: .5rem 0 .8rem; }
+.stile {
+  display: flex; align-items: center; justify-content: space-between; gap: .8rem;
+  border: 1px solid var(--bordo); border-radius: 10px; padding: .65rem .85rem;
+  background: var(--carta); color: var(--testo); font: inherit; text-align: left; cursor: pointer;
+}
+.stile:hover { border-color: var(--rosso); }
+.stile-scelto { border-color: var(--oro); background: rgba(245,197,24,.08); }
+.stile-spunta {
+  width: 1.4rem; height: 1.4rem; border-radius: 50%; flex: 0 0 auto;
+  border: 1px solid var(--bordo); display: grid; place-items: center;
+  color: var(--oro); font-size: .8rem;
+}
+
+/* ── Schede ──────────────────────────────────────────────────────────────── */
+.schede {
+  display: flex; gap: .35rem; overflow-x: auto; padding-bottom: .3rem; margin-bottom: .8rem;
+  scrollbar-width: none;
+}
+.schede::-webkit-scrollbar { display: none; }
+.scheda {
+  flex: 0 0 auto; border: 1px solid var(--bordo); border-radius: 99px;
+  background: var(--carta); color: var(--tenue); font: inherit; font-size: .72rem;
+  letter-spacing: .12em; text-transform: uppercase; padding: .45rem .95rem; cursor: pointer;
+}
+.scheda:hover { color: var(--testo); }
+.scheda-attiva { border-color: var(--oro); color: var(--oro); background: rgba(245,197,24,.08); }
+
+.scorciatoia {
+  display: inline-flex; align-items: center; gap: .3rem;
+  font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; color: var(--tenue);
+}
+.scorciatoia b {
+  border: 1px solid var(--bordo); border-radius: 5px; padding: .05rem .35rem; font-weight: 600;
+}

@@ -2,6 +2,7 @@ import { clubStrength } from './clubStrength';
 import { canLeave, signContract, tickContract } from './contract';
 import { createPlayer, type CreatePlayerInput } from './create';
 import { boldPolicy, type DilemmaPolicy } from './dilemmas';
+import type { PlayStyle } from './playstyle';
 import type { TrainingAxis } from './training';
 import { computeGoatScore } from './goatScore';
 import { ambitiousPolicy, type CandidateClub, type TransferPolicy } from './market';
@@ -53,6 +54,8 @@ export interface RunCareerInput {
   policy?: TransferPolicy;
   /** In Fase 4 sarà l'utente a scegliere ai bivi. */
   dilemmaPolicy?: DilemmaPolicy;
+  /** Come interpreta il ruolo: scelto alla creazione. */
+  style?: PlayStyle;
   /** Su cosa lavora in preparazione; in Fase 4 lo sceglie l'utente. */
   trainingPolicy?: (season: number, snapshot: { age: number; overall: number; clubName: string }) => TrainingAxis;
   /**
@@ -136,6 +139,7 @@ export function runCareer(input: RunCareerInput): CareerResult {
         recentDilemmaIds,
         minutesBonus,
         dilemmaPolicy,
+        style: input.style,
         training: (input.trainingPolicy ?? (() => 'tecnica' as const))(season, {
           age: player.age, overall: player.overall, clubName: club.club.name,
         }),

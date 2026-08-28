@@ -12,7 +12,8 @@ export interface NewSaveInput {
   seed: number;
 }
 
-const MIN_AGE = 16;
+// Si comincia dal vivaio a quattordici anni (D-016).
+const MIN_AGE = 14;
 const MAX_AGE = 19;
 
 export function newSave(input: NewSaveInput): CareerSave {

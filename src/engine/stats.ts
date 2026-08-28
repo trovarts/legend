@@ -1,4 +1,5 @@
 import type { Role } from '../world/types';
+import { playStyleEffect, type PlayStyle } from './playstyle';
 import type { Rng } from './rng';
 import type { SeasonStats } from './types';
 
@@ -9,6 +10,11 @@ export interface SeasonStatsInput {
   clubStrength: number;
   /** 1 = massima serie. Più si scende, più è facile incidere. */
   leagueLevel: number;
+  /** Come interpreti il ruolo: sposta gol e assist senza cambiare quanto sei forte. */
+  style?: PlayStyle;
+  /** Posizione del club in campionato: serve a chi è giudicato sul risultato. */
+  teamPosition?: number;
+  clubCount?: number;
 }
 
 const MATCHES_PER_SEASON = 38;
@@ -50,8 +56,9 @@ export function seasonStats(input: SeasonStatsInput, rng: Rng): SeasonStats {
   const seasonFraction = minutes / (MATCHES_PER_SEASON * MINUTES_PER_MATCH);
   const output = OUTPUT_BY_ROLE[input.role];
 
-  const goals = around(output.goals * talent * levelBonus * seasonFraction, rng);
-  const assists = around(output.assists * talent * levelBonus * seasonFraction, rng);
+  const style = playStyleEffect(input.style ?? 'equilibrato');
+  const goals = around(output.goals * talent * levelBonus * seasonFraction * style.goals, rng);
+  const assists = around(output.assists * talent * levelBonus * seasonFraction * style.assists, rng);
 
   const cleanSheets = CLEAN_SHEET_ROLES.includes(input.role)
     ? around(appearances * (0.05 + Math.max(0, input.clubStrength - 60) * 0.012), rng)
@@ -60,8 +67,13 @@ export function seasonStats(input: SeasonStatsInput, rng: Rng): SeasonStats {
   const contribution = input.role === 'GK'
     ? cleanSheets / Math.max(1, appearances)
     : (goals + assists) / Math.max(1, appearances);
+  // Chi gioca per vincere viene giudicato anche su dove chiude la squadra.
+  const squadra =
+    style.teamWeight > 0 && input.teamPosition !== undefined && input.clubCount !== undefined
+      ? (1 - (input.teamPosition - 1) / Math.max(1, input.clubCount - 1) - 0.5) * style.teamWeight
+      : 0;
   const rawRating =
-    6 + (input.overall - 70) * 0.025 + contribution * 0.8 + (rng.next() - 0.5) * 0.4;
+    6 + (input.overall - 70) * 0.025 + contribution * 0.8 + squadra + (rng.next() - 0.5) * 0.4;
   const rating = Math.round(Math.min(9, Math.max(5, rawRating)) * 10) / 10;
 
   return {

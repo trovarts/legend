@@ -83,7 +83,7 @@ export function Resoconto({
 
       <button type="button" className="avanti" onClick={onEnd}>
         <span>Continua</span>
-        <span aria-hidden="true">→</span>
+        <span className="scorciatoia"><b>Spazio</b> →</span>
       </button>
     </section>
   );

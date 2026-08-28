@@ -18,7 +18,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "check:bundle": "tsx scripts/check-bundle.ts"
+    "check:bundle": "tsx scripts/check-bundle.ts",
+    "build:map": "tsx scripts/build-map.ts"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

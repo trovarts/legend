@@ -330,3 +330,35 @@ griglia di bandiere, il campo da calcio con i ruoli cliccabili al posto delle qu
 card, l'avatar del giocatore, lo stile di gioco («punta ai gol» / «preferisci gli
 assist»), le schede Profilo/Agente/Statistiche/Bacheca e la scorciatoia da tastiera.
 Sono tutte cose fattibili: nessuna richiede di toccare il motore.
+
+## D-017 — Identità: mappa, campo, avatar, stile, schede
+
+Chiusi gli ultimi cinque punti di distanza dalle schermate del concorrente. Nessuno
+richiedeva di cambiare il motore, tranne uno.
+
+**La mappa del mondo.** I 176 paesi arrivano dal TopoJSON di Natural Earth (pubblico
+dominio) e vengono convertiti in path SVG **a build-time** da `scripts/build-map.ts`:
+a runtime non c'è nessuna libreria di mappe, solo forme già proiettate. I paesi giocabili
+sono accesi, gli altri spenti, e sotto resta l'elenco con le bandiere per chi arriva da
+tastiera o da telefono.
+
+**Il campo.** Dodici posizioni (ST, LW, RW, CAM, LM, CM, RM, CDM, LB, CB, RB, GK) disegnate
+su un campo, ognuna con la sua descrizione. Il motore continua a ragionare in quattro
+famiglie di ruolo: la posizione precisa è per il racconto e per il profilo.
+
+**L'avatar.** Disegnato in SVG con cinque parametri (pelle, capelli, espressione, divisa,
+scarpini) e il numero di maglia: nessuna immagine da scaricare, e cambia davanti agli occhi
+mentre si sceglie.
+
+**Lo stile di gioco** — l'unico che tocca la simulazione. «Punta ai gol» moltiplica i gol
+per 1,35 e taglia gli assist a 0,65; «preferisci gli assist» fa il contrario; «giochi per
+vincere» pesa il voto anche su dove chiude la squadra. Un test verifica che nessuno stile
+sia gratis: chi guadagna da una parte perde dall'altra.
+
+**Le schede** Profilo · Agente · Carriera · Statistiche · Bacheca, e la **barra
+spaziatrice** che manda avanti come in un gioco vero (ignorata quando si sta scrivendo).
+
+**Il peso, e come l'abbiamo tenuto.** La mappa da sola pesava più di tutto il resto e
+aveva portato il primo caricamento a 246 KB, oltre il limite. Ora si carica solo quando
+serve — cioè al primo passo di una carriera nuova, non a chi riprende una partita: siamo
+tornati a **201 KB contro i 1.199 del concorrente**.

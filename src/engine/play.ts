@@ -4,6 +4,7 @@ import type { CandidateClub } from './market';
 import type { Agent } from './agent';
 import { agentById, offerAgents } from './agent';
 import { createRng } from './rng';
+import type { PlayStyle } from './playstyle';
 import type { TrainingAxis } from './training';
 import type { CareerResult, RivalSnapshot, SeasonRecord } from './types';
 import type { YouthApproach, YouthSeason } from './youth';
@@ -21,6 +22,10 @@ export interface CareerDecisions {
   youth?: Record<string, YouthApproach>;
   /** L'anno in cui si è deciso di salire in prima squadra. */
   promotedAt?: number;
+  /** Come interpreta il ruolo. */
+  style?: PlayStyle;
+  /** La posizione precisa in campo, per il racconto: ST, CAM, CB... */
+  position?: string;
 }
 
 /**
@@ -123,6 +128,7 @@ export function playCareer(save: CareerSave, clubs: readonly CandidateClub[]): P
       create: save.create,
       world: { clubs, startClubId: save.startClubId },
       seed: save.seed,
+      style: save.decisions.style,
       onSeason: (record, rival) => {
         seasons.push(record);
         rivals.push(rival);

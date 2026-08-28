@@ -14,6 +14,7 @@ import { nationalSeason } from './national';
 import { playingTimeShare } from './playingTime';
 import type { Rng } from './rng';
 import { seasonStats } from './stats';
+import type { PlayStyle } from './playstyle';
 import { trainingEffect, type TrainingAxis } from './training';
 import type { CareerPlayer, DilemmaChoice, Mark, SeasonRecord } from './types';
 import { marketValue } from './value';
@@ -37,6 +38,8 @@ export interface SimulateSeasonInput {
   dilemmaPolicy: DilemmaPolicy;
   /** Su cosa ha scelto di lavorare quest'anno (spec §3.2). */
   training: TrainingAxis;
+  /** Come interpreta il ruolo. */
+  style?: PlayStyle;
 }
 
 export interface SeasonOutcome {
@@ -91,6 +94,9 @@ export function simulateSeason(input: SimulateSeasonInput, rng: Rng): SeasonOutc
       minutesShare,
       clubStrength: strength,
       leagueLevel: league.level,
+      style: input.style,
+      teamPosition: position,
+      clubCount: league.clubCount,
     },
     rng,
   );

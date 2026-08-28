@@ -1,29 +1,32 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useState, type ReactElement } from 'react';
 import { clubStrength } from '../engine/clubStrength';
 import type { CareerSave } from '../engine/play';
-import type { Role } from '../world/types';
-import { bandiera, inItaliano } from './bandiere';
+import { PLAY_STYLES, type PlayStyle } from '../engine/playstyle';
+import { ASPETTO_INIZIALE, Avatar, NOMI_CAPELLI, NOMI_DIVISA, NOMI_ESPRESSIONE, NOMI_PELLE, NOMI_SCARPINI, type Aspetto } from './Avatar';
+import { Campo, posizioneById } from './Campo';
+import { inItaliano } from './bandiere';
+// La mappa del mondo pesa più di tutto il resto: si scarica solo quando serve
+// davvero, cioè al primo passo di una carriera nuova (D-017).
+const Mappa = dynamic(() => import('./Mappa').then((modulo) => modulo.Mappa), {
+  ssr: false,
+  loading: () => <p className="tenue">Sto aprendo il planisfero…</p>,
+});
 import { newSave, randomSeed } from './newSave';
 import { Scelta, Scelte, sigla } from './Scelte';
 import type { useWorld } from './useWorld';
 
-const RUOLI: readonly { id: Role; label: string; nota: string; promessa: string }[] = [
-  { id: 'GK', label: 'Portiere', nota: 'Un posto solo, e te lo devi prendere', promessa: 'parate e porta inviolata' },
-  { id: 'DEF', label: 'Difensore', nota: 'Ti giudicano su quello che non succede', promessa: 'clean sheet e continuità' },
-  { id: 'MID', label: 'Centrocampista', nota: 'Il gioco passa da te, nel bene e nel male', promessa: 'assist e regia' },
-  { id: 'FWD', label: 'Attaccante', nota: 'Nessuno ricorda un attaccante che non segna', promessa: 'gol, sempre' },
-];
+type Passo = 1 | 2 | 3 | 4;
 
-const ETA: readonly { value: number; nota: string; promessa: string }[] = [
-  { value: 16, nota: 'Un ragazzino in prima squadra', promessa: 'più anni davanti' },
-  { value: 17, nota: "L'età in cui di solito si esordisce", promessa: 'equilibrio' },
-  { value: 18, nota: 'Un anno di vivaio in più alle spalle', promessa: 'parti più pronto' },
-  { value: 19, nota: 'O adesso o mai più', promessa: 'meno margine' },
+const OPZIONI_ASPETTO = [
+  { chiave: 'pelle' as const, nome: 'Pelle', valori: NOMI_PELLE },
+  { chiave: 'capelli' as const, nome: 'Capelli', valori: NOMI_CAPELLI },
+  { chiave: 'espressione' as const, nome: 'Espressione', valori: NOMI_ESPRESSIONE },
+  { chiave: 'divisa' as const, nome: 'Divisa', valori: NOMI_DIVISA },
+  { chiave: 'scarpini' as const, nome: 'Scarpini', valori: NOMI_SCARPINI },
 ];
-
-type Passo = 'nome' | 'ruolo' | 'eta' | 'paese' | 'campionato' | 'club';
 
 export function Creazione({
   world,
@@ -32,13 +35,18 @@ export function Creazione({
   world: ReturnType<typeof useWorld>;
   onStart: (save: CareerSave) => void;
 }) {
-  const [passo, setPasso] = useState<Passo>('nome');
-  const [name, setName] = useState('');
-  const [role, setRole] = useState<Role>('FWD');
-  const [age, setAge] = useState(17);
+  const [passo, setPasso] = useState<Passo>(1);
   const [country, setCountry] = useState('');
+  const [posizione, setPosizione] = useState('ST');
+  const [style, setStyle] = useState<PlayStyle>('equilibrato');
+  const [aspetto, setAspetto] = useState<Aspetto>(ASPETTO_INIZIALE);
+  const [name, setName] = useState('');
+  const [numero, setNumero] = useState('10');
+  const [piede, setPiede] = useState<'Destro' | 'Sinistro'>('Destro');
+  const [sceltaClub, setSceltaClub] = useState<'sorpresa' | 'io'>('sorpresa');
   const [leagueId, setLeagueId] = useState('');
 
+  const ruolo = posizioneById(posizione);
   const campionati = world.leagues
     .filter((league) => league.country === country)
     .sort((a, b) => a.level - b.level);
@@ -47,183 +55,271 @@ export function Creazione({
     .filter((entry) => entry.leagueId === leagueId)
     .sort((a, b) => clubStrength(b.club) - clubStrength(a.club));
 
-  const testata = (etichetta: string, titolo: string, sommario: string): ReactElement => (
+  const testata = (titolo: string, sommario: string, numeroPasso: Passo): ReactElement => (
     <>
       <header className="testata">
-        <span className="testata-nome">{etichetta}</span>
-        <span className="testata-data">nuova carriera</span>
+        <span className="testata-nome">DEFINISCI LA TUA IDENTITÀ</span>
+        <span className="testata-data">
+          {[1, 2, 3].map((n) => (
+            <span key={n} className={`passo${numeroPasso === n ? ' passo-attivo' : ''}`}>{n}</span>
+          ))}
+        </span>
       </header>
       <h2 className="titolone">{titolo}</h2>
       <p className="sommario">{sommario}</p>
     </>
   );
 
-  const puntataSemplice = (testo: string, segno: 'bene' | 'neutro' = 'neutro'): ReactElement => (
-    <span className="puntata">
-      <span className={`faccia faccia-${segno}`}>
-        <span className="faccia-esito">{testo}</span>
-      </span>
-    </span>
-  );
+  function avvia(startClubId: string, leagueLevel: number, paese: string): void {
+    const base = newSave({
+      name: name.trim() === '' ? 'Il tuo giocatore' : name,
+      nationality: paese,
+      role: ruolo.role,
+      age: 14,
+      leagueLevel,
+      startClubId,
+      seed: randomSeed(),
+    });
+    onStart({
+      ...base,
+      decisions: { ...base.decisions, style, position: posizione },
+    });
+  }
 
   return (
     <section className="giornale">
-      {passo === 'nome' && (
+      {passo === 1 && (
         <>
-          {testata('CARTELLINO', 'Come ti chiami', 'Il nome che i telecronisti diranno per vent’anni.')}
-          <input
-            id="nome"
-            className="bottone"
-            autoFocus
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' && name.trim() !== '') setPasso('ruolo');
+          {testata('Da dove vieni', 'Tre passi: nazione, ruolo e maglia, poi le opzioni di carriera.', 1)}
+          <Mappa
+            giocabili={world.countries}
+            onChoose={(paese) => {
+              setCountry(paese);
+              setPasso(2);
             }}
-            placeholder="Nome e cognome"
-            style={{ fontSize: '1.2rem', textAlign: 'center' }}
           />
-          <button
-            type="button"
-            className="avanti"
-            disabled={name.trim() === ''}
-            onClick={() => setPasso('ruolo')}
-          >
+        </>
+      )}
+
+      {passo === 2 && (
+        <>
+          {testata('Ruolo e maglia', `${inItaliano(country)}. Dove giochi, e che giocatore vuoi essere.`, 2)}
+          <div className="identita">
+            <div>
+              <span className="contesto-etichetta">Ruolo</span>
+              <Campo scelta={posizione} onChoose={setPosizione} />
+              <div className="card" style={{ marginTop: '.6rem', marginBottom: 0 }}>
+                <strong>{ruolo.label}</strong>
+                <p className="tenue" style={{ margin: '.2rem 0 0', fontSize: '.85rem' }}>{ruolo.text}</p>
+              </div>
+            </div>
+
+            <div>
+              <span className="contesto-etichetta">Aspetto</span>
+              <div className="card" style={{ marginTop: '.35rem' }}>
+                <Avatar aspetto={aspetto} numero={numero} />
+                {OPZIONI_ASPETTO.map((opzione) => (
+                  <div key={opzione.chiave} className="aspetto-riga">
+                    <span className="contesto-etichetta">{opzione.nome}</span>
+                    <button
+                      type="button"
+                      className="aspetto-freccia"
+                      aria-label={`${opzione.nome} precedente`}
+                      onClick={() =>
+                        setAspetto((corrente) => ({
+                          ...corrente,
+                          [opzione.chiave]: (corrente[opzione.chiave] + opzione.valori.length - 1) % opzione.valori.length,
+                        }))
+                      }
+                    >
+                      ‹
+                    </button>
+                    <span className="aspetto-valore">{opzione.valori[aspetto[opzione.chiave] % opzione.valori.length]}</span>
+                    <button
+                      type="button"
+                      className="aspetto-freccia"
+                      aria-label={`${opzione.nome} successivo`}
+                      onClick={() =>
+                        setAspetto((corrente) => ({
+                          ...corrente,
+                          [opzione.chiave]: (corrente[opzione.chiave] + 1) % opzione.valori.length,
+                        }))
+                      }
+                    >
+                      ›
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="card" style={{ marginBottom: 0 }}>
+                <label htmlFor="nome" className="contesto-etichetta">Nome</label>
+                <input
+                  id="nome"
+                  className="bottone"
+                  style={{ marginTop: '.3rem' }}
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  placeholder="Il tuo giocatore"
+                />
+                <div className="riga" style={{ marginTop: '.5rem' }}>
+                  <span style={{ flex: 1 }}>
+                    <label htmlFor="numero" className="contesto-etichetta">Numero</label>
+                    <input
+                      id="numero"
+                      className="bottone"
+                      style={{ marginTop: '.3rem' }}
+                      inputMode="numeric"
+                      value={numero}
+                      onChange={(event) => setNumero(event.target.value.replace(/\D/g, '').slice(0, 2))}
+                    />
+                  </span>
+                  <span style={{ flex: 1 }}>
+                    <span className="contesto-etichetta">Piede preferito</span>
+                    <div className="riga" style={{ gap: '.4rem', marginTop: '.3rem' }}>
+                      {(['Sinistro', 'Destro'] as const).map((valore) => (
+                        <button
+                          key={valore}
+                          type="button"
+                          className={`bottone${piede === valore ? ' bottone-scelto' : ''}`}
+                          style={{ textAlign: 'center' }}
+                          onClick={() => setPiede(valore)}
+                        >
+                          {valore}
+                        </button>
+                      ))}
+                    </div>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <span className="contesto-etichetta" style={{ display: 'block', marginTop: '.8rem' }}>Gioco</span>
+          <div className="stili">
+            {PLAY_STYLES.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={`stile${style === item.id ? ' stile-scelto' : ''}`}
+                onClick={() => setStyle(item.id)}
+              >
+                <span>
+                  <strong>{item.label}</strong>
+                  <span className="tenue" style={{ display: 'block', fontSize: '.82rem' }}>{item.text}</span>
+                </span>
+                <span className="stile-spunta" aria-hidden="true">{style === item.id ? '✓' : ''}</span>
+              </button>
+            ))}
+          </div>
+
+          <button type="button" className="avanti" onClick={() => setPasso(3)}>
             <span>Avanti</span>
             <span aria-hidden="true">→</span>
           </button>
         </>
       )}
 
-      {passo === 'ruolo' && (
+      {passo === 3 && (
         <>
-          {testata('RUOLO', 'In che ruolo giochi', `${name}, dove ti mettiamo in campo? Cambia tutto quello che verrà dopo.`)}
-          <Scelte>
-            {RUOLI.map((item) => (
-              <Scelta
-                key={item.id}
-                sigla={item.id}
-                titolo={item.label}
-                nota={item.nota}
-                etichetta="ti giudicheranno su"
-                sicura
-                puntata={puntataSemplice(item.promessa, 'bene')}
-                onClick={() => {
-                  setRole(item.id);
-                  setPasso('eta');
-                }}
-              />
-            ))}
-          </Scelte>
-        </>
-      )}
-
-      {passo === 'eta' && (
-        <>
-          {testata('ANAGRAFE', 'Quanti anni hai', 'Da che punto comincia la storia.')}
-          <Scelte>
-            {ETA.map((item) => (
-              <Scelta
-                key={item.value}
-                sigla={String(item.value)}
-                titolo={`${item.value} anni`}
-                nota={item.nota}
-                etichetta="cosa comporta"
-                sicura
-                puntata={puntataSemplice(item.promessa, 'bene')}
-                onClick={() => {
-                  setAge(item.value);
-                  setPasso('paese');
-                }}
-              />
-            ))}
-          </Scelte>
-        </>
-      )}
-
-      {passo === 'paese' && (
-        <>
-          {testata('IL MONDO', 'Dove cominci', 'Trentasei campionati veri, con le squadre e le rose di oggi.')}
-          <div className="paesi">
-            {world.countries.map((item) => (
-              <button
-                key={item}
-                type="button"
-                className="paese"
-                onClick={() => {
-                  setCountry(item);
-                  setLeagueId('');
-                  setPasso('campionato');
-                }}
-              >
-                <span className="paese-bandiera" aria-hidden="true">{bandiera(item)}</span>
-                <span>{inItaliano(item)}</span>
-              </button>
-            ))}
+          {testata('Opzioni carriera', 'Come vuoi cominciare: con una sorpresa o scegliendo tu.', 3)}
+          <div className="stili">
+            <button
+              type="button"
+              className={`stile${sceltaClub === 'sorpresa' ? ' stile-scelto' : ''}`}
+              onClick={() => setSceltaClub('sorpresa')}
+            >
+              <span>
+                <strong>Offerte a sorpresa</strong>
+                <span className="tenue" style={{ display: 'block', fontSize: '.82rem' }}>
+                  Tre club del tuo paese ti offrono un posto nel vivaio: scegli fra quelli.
+                </span>
+              </span>
+              <span className="stile-spunta" aria-hidden="true">{sceltaClub === 'sorpresa' ? '✓' : ''}</span>
+            </button>
+            <button
+              type="button"
+              className={`stile${sceltaClub === 'io' ? ' stile-scelto' : ''}`}
+              onClick={() => setSceltaClub('io')}
+            >
+              <span>
+                <strong>Scegli tu</strong>
+                <span className="tenue" style={{ display: 'block', fontSize: '.82rem' }}>
+                  Categoria e club: parti esattamente dove vuoi.
+                </span>
+              </span>
+              <span className="stile-spunta" aria-hidden="true">{sceltaClub === 'io' ? '✓' : ''}</span>
+            </button>
           </div>
-        </>
-      )}
 
-      {passo === 'campionato' && (
-        <>
-          {testata(
-            inItaliano(country).toUpperCase(),
-            'Da che categoria parti',
-            'Più in basso cominci, più dura è la salita — e più vale alla fine.',
-          )}
-          <Scelte>
-            {campionati.map((item) => (
-              <Scelta
-                key={item.id}
-                sigla={String(item.level)}
-                titolo={item.name}
-                sottotitolo={`${item.level}ª divisione · ${item.clubCount} squadre`}
-                nota={
-                  item.level === 1
-                    ? 'Il palcoscenico più alto: qui si gioca poco da ragazzi.'
-                    : 'Più spazio per giocare, meno vetrina.'
+          <button
+            type="button"
+            className="avanti"
+            onClick={() => {
+              const primaLega = campionati[campionati.length - 1] ?? campionati[0];
+              if (sceltaClub === 'io') {
+                setPasso(4);
+                if (primaLega) {
+                  setLeagueId(primaLega.id);
+                  void world.loadLeagues([primaLega.id]);
                 }
-                etichetta="nel punteggio finale"
-                sicura={item.level === 1}
-                puntata={puntataSemplice(
-                  item.level === 1 ? 'nessun bonus' : `+${(item.level - 1) * 30} difficoltà`,
-                  item.level === 1 ? 'neutro' : 'bene',
-                )}
-                onClick={() => {
-                  setLeagueId(item.id);
-                  void world.loadLeagues([item.id]);
-                  setPasso('club');
-                }}
-              />
-            ))}
-          </Scelte>
+                return;
+              }
+              // A sorpresa: si parte dal fondo della piramide del proprio paese.
+              if (primaLega) {
+                setLeagueId(primaLega.id);
+                void world.loadLeagues([primaLega.id]).then(() => setPasso(4));
+              }
+            }}
+          >
+            <span>Conferma identità</span>
+            <span aria-hidden="true">→</span>
+          </button>
         </>
       )}
 
-      {passo === 'club' && (
+      {passo === 4 && (
         <>
           {testata(
-            lega?.name.toUpperCase() ?? 'SQUADRE',
-            'Chi ti fa firmare',
-            'La squadra decide quanto giocherai: nelle grandi si fa panchina.',
+            sceltaClub === 'sorpresa' ? 'Primo contratto' : 'Scegli il club',
+            sceltaClub === 'sorpresa'
+              ? `Tre club in ${inItaliano(country)} ti offrono un posto nel settore giovanile. A quattordici anni, si comincia da qui.`
+              : 'Categoria e squadra: più in basso parti, più vale alla fine.',
+            3,
           )}
+
+          {sceltaClub === 'io' && campionati.length > 1 && (
+            <div className="riga" style={{ marginBottom: '.7rem' }}>
+              {campionati.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={`bottone${leagueId === item.id ? ' bottone-scelto' : ''}`}
+                  style={{ textAlign: 'center' }}
+                  onClick={() => {
+                    setLeagueId(item.id);
+                    void world.loadLeagues([item.id]);
+                  }}
+                >
+                  {item.name}
+                  <span className="posta">{item.level}ª divisione</span>
+                </button>
+              ))}
+            </div>
+          )}
+
           {club.length === 0 && <p className="tenue">Sto caricando le squadre…</p>}
+
           <Scelte>
-            {club.map((entry) => {
+            {(sceltaClub === 'sorpresa' ? club.slice(-3) : club).map((entry) => {
               const forza = clubStrength(entry.club);
               return (
                 <Scelta
                   key={entry.club.id}
                   sigla={sigla(entry.club.name)}
-                  titolo={entry.club.name}
-                  sottotitolo={`${entry.club.squad.length} in rosa`}
-                  nota={
-                    forza >= 78
-                      ? 'Una corazzata: giocare qui da ragazzo è quasi impossibile.'
-                      : forza >= 70
-                        ? 'Squadra solida: ti tocca guadagnartelo.'
-                        : 'Qui uno bravo trova subito spazio.'
-                  }
+                  titolo={sceltaClub === 'sorpresa' ? `Firma per ${entry.club.name}` : entry.club.name}
+                  sottotitolo={inItaliano(country).toUpperCase()}
+                  nota={`${lega?.name ?? ''} · ${entry.club.squad.length} in rosa`}
                   etichetta="forza della rosa"
                   sicura={forza < 72}
                   puntata={
@@ -232,21 +328,12 @@ export function Creazione({
                         <b className="faccia-quota">overall</b>
                         <span className="faccia-esito">{forza.toFixed(0)}</span>
                       </span>
+                      <span className="faccia faccia-bene">
+                        <span className="faccia-esito">inizio nel vivaio</span>
+                      </span>
                     </span>
                   }
-                  onClick={() =>
-                    onStart(
-                      newSave({
-                        name,
-                        nationality: country,
-                        role,
-                        age,
-                        leagueLevel: lega?.level ?? 1,
-                        startClubId: entry.club.id,
-                        seed: randomSeed(),
-                      }),
-                    )
-                  }
+                  onClick={() => avvia(entry.club.id, lega?.level ?? 1, country)}
                 />
               );
             })}
@@ -254,20 +341,12 @@ export function Creazione({
         </>
       )}
 
-      {passo !== 'nome' && (
+      {passo > 1 && (
         <button
           type="button"
           className="bottone"
           style={{ marginTop: '1rem', textAlign: 'center' }}
-          onClick={() =>
-            setPasso(
-              passo === 'ruolo' ? 'nome'
-              : passo === 'eta' ? 'ruolo'
-              : passo === 'paese' ? 'eta'
-              : passo === 'campionato' ? 'paese'
-              : 'campionato',
-            )
-          }
+          onClick={() => setPasso((corrente) => (corrente - 1) as Passo)}
         >
           ← Torna indietro
         </button>

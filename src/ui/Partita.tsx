@@ -148,7 +148,7 @@ export function Partita({
 
       <button type="button" className="avanti" onClick={finita ? onEnd : () => setMinuto(90)}>
         <span>{finita ? 'Vai al resoconto' : 'Salta al risultato'}</span>
-        <span aria-hidden="true">→</span>
+        <span className="scorciatoia"><b>Spazio</b> →</span>
       </button>
     </section>
   );

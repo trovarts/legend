@@ -113,6 +113,7 @@ export function advanceRival(
       dilemmaPolicy: boldPolicy,
       // Il Rivale si allena da solo: tecnica finché è giovane, fisico quando invecchia.
       training: state.player.age >= 30 ? 'fisico' : 'tecnica',
+      style: 'equilibrato',
     },
     rng,
   );

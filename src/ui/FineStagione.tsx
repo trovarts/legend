@@ -117,7 +117,7 @@ export function FineStagione({
         <Classifica rows={classifica} leagueName={record.leagueName} />
         <button type="button" className="avanti" onClick={avanti}>
           <span>{bracket ? 'Vai alla coppa' : 'Vai al resoconto'}</span>
-          <span aria-hidden="true">→</span>
+          <span className="scorciatoia"><b>Spazio</b> →</span>
         </button>
       </>
     );
@@ -129,7 +129,7 @@ export function FineStagione({
         <Tabellone bracket={bracket} />
         <button type="button" className="avanti" onClick={avanti}>
           <span>Vai al resoconto</span>
-          <span aria-hidden="true">→</span>
+          <span className="scorciatoia"><b>Spazio</b> →</span>
         </button>
       </>
     );
@@ -150,7 +150,7 @@ export function FineStagione({
       />
       <button type="button" className="avanti" onClick={onEnd}>
         <span>Avanti alla prossima decisione</span>
-        <span aria-hidden="true">→</span>
+        <span className="scorciatoia"><b>Spazio</b> →</span>
       </button>
     </>
   );
