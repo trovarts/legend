@@ -186,3 +186,41 @@ select.bottone { appearance: none; }
 @media (prefers-reduced-motion: reduce) {
   .entra, .giornale, .scelta { animation: none; transition: none; }
 }
+
+/* ── La puntata: due facce con la quota sopra, come un tabellone ─────────── */
+.puntata { display: flex; gap: .45rem; flex-wrap: wrap; justify-content: center; margin-top: auto; }
+.faccia {
+  display: flex; flex-direction: column; align-items: center; gap: .1rem;
+  border-radius: 10px; padding: .4rem .7rem; min-width: 5.4rem;
+  border: 1px solid var(--bordo); background: rgba(255,255,255,.03);
+}
+.faccia-quota { font-size: .68rem; letter-spacing: .06em; opacity: .75; font-variant-numeric: tabular-nums; }
+.faccia-esito { font-weight: 700; font-size: .88rem; font-variant-numeric: tabular-nums; }
+.faccia-bene { border-color: rgba(47,191,107,.45); background: rgba(47,191,107,.12); color: #7ce3a8; }
+.faccia-male { border-color: rgba(216,31,63,.45); background: rgba(216,31,63,.12); color: #ff97a9; }
+.faccia-neutro { color: var(--tenue); }
+
+.scelta-rischio {
+  font-size: .62rem; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--oro); margin-top: .1rem;
+}
+.scelta-sicura { color: var(--verde); }
+.scelta-sottotitolo { font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--tenue); margin-top: -.3rem; }
+
+/* ── Scelta del paese: una griglia di bandiere, non un menu a tendina ────── */
+.paesi { display: grid; grid-template-columns: repeat(auto-fill, minmax(8.2rem, 1fr)); gap: .5rem; }
+.paese {
+  display: flex; align-items: center; gap: .5rem;
+  padding: .6rem .7rem; border: 1px solid var(--bordo); border-radius: 10px;
+  background: var(--carta-alta); color: var(--testo); font: inherit; cursor: pointer;
+  transition: border-color .16s ease, transform .16s ease;
+}
+.paese:hover, .paese:focus-visible { border-color: var(--rosso); transform: translateY(-2px); }
+.paese-bandiera { font-size: 1.3rem; line-height: 1; }
+
+.slot-riga { display: flex; gap: .5rem; align-items: stretch; margin-bottom: .5rem; }
+.slot-elimina { width: 3rem; flex: 0 0 auto; text-align: center; color: var(--tenue); }
+.slot-elimina:hover { color: var(--rosso); border-color: var(--rosso); }
+
+.faccia { min-width: 6.6rem; max-width: 11rem; }
+.faccia-extra { font-size: .68rem; opacity: .82; line-height: 1.25; margin-top: .05rem; }

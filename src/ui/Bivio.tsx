@@ -2,6 +2,7 @@
 
 import type { SeasonSoFar } from '../engine/career';
 import type { Dilemma } from '../engine/types';
+import { Puntata } from './Puntata';
 import { Scelta, Scelte } from './Scelte';
 
 /**
@@ -42,9 +43,10 @@ export function Bivio({
             key={option.id}
             sigla={String(index + 1)}
             titolo={option.label}
-            nota=""
-            badge={option.stake}
-            rischio={option.outcomes.length > 1}
+            nota={option.stake}
+            etichetta={option.outcomes.length > 1 ? 'una scommessa' : 'esito certo'}
+            sicura={option.outcomes.length === 1}
+            puntata={<Puntata option={option} />}
             onClick={() => onChoose(option.id)}
           />
         ))}

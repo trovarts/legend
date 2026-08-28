@@ -11,12 +11,25 @@ const SIGLE: Record<TrainingAxis, string> = {
   leadership: 'CAP',
 };
 
-function badgeDi(axis: TrainingAxis): { testo: string; rischio: boolean } {
+interface Facce { quota: number | null; testo: string; segno: 'bene' | 'male' }
+
+function facceDi(axis: TrainingAxis): Facce[] {
   const effect = trainingEffect(axis);
-  if (effect.growthMultiplier > 1) return { testo: `crescita +${Math.round((effect.growthMultiplier - 1) * 100)}%`, rischio: false };
-  if (effect.physiqueDelta > 0) return { testo: `+${effect.physiqueDelta} fisico`, rischio: false };
-  if (effect.minutesDelta > 0) return { testo: `+${Math.round(effect.minutesDelta * 100)}% minuti`, rischio: false };
-  return { testo: `${Math.round(effect.leadershipChance * 100)}% leader`, rischio: true };
+  if (effect.growthMultiplier > 1) {
+    return [{ quota: null, testo: `crescita +${Math.round((effect.growthMultiplier - 1) * 100)}%`, segno: 'bene' }];
+  }
+  if (effect.physiqueDelta > 0) {
+    return [{ quota: null, testo: `+${effect.physiqueDelta} fisico`, segno: 'bene' }];
+  }
+  if (effect.minutesDelta > 0) {
+    return [{ quota: null, testo: `+${Math.round(effect.minutesDelta * 100)}% minuti`, segno: 'bene' }];
+  }
+  // La leadership è l'unica puntata dell'estate: o esce, o l'anno è passato invano.
+  const quota = Math.round(effect.leadershipChance * 100);
+  return [
+    { quota, testo: 'leader', segno: 'bene' },
+    { quota: 100 - quota, testo: 'niente', segno: 'male' },
+  ];
 }
 
 export function Preparazione({
@@ -42,15 +55,26 @@ export function Preparazione({
       </p>
       <Scelte>
         {TRAINING_AXES.map((axis) => {
-          const badge = badgeDi(axis.id);
+          const facce = facceDi(axis.id);
+          const scommessa = facce.length > 1;
           return (
             <Scelta
               key={axis.id}
               sigla={SIGLE[axis.id]}
               titolo={axis.label}
               nota={axis.promise}
-              badge={badge.testo}
-              rischio={badge.rischio}
+              etichetta={scommessa ? 'una scommessa' : 'esito certo'}
+              sicura={!scommessa}
+              puntata={
+                <span className="puntata">
+                  {facce.map((faccia) => (
+                    <span key={faccia.testo} className={`faccia faccia-${faccia.segno}`}>
+                      {faccia.quota !== null && <b className="faccia-quota">{faccia.quota}%</b>}
+                      <span className="faccia-esito">{faccia.testo}</span>
+                    </span>
+                  ))}
+                </span>
+              }
               onClick={() => onChoose(axis.id)}
             />
           );

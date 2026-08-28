@@ -38,9 +38,18 @@ export function Mercato({
             key={offer.clubId}
             sigla={sigla(offer.clubName)}
             titolo={offer.clubName}
-            nota={`${offer.leagueName}${offer.isLoan ? ' · prestito' : ''} · ${soldi(offer.weeklyWageEur * 52)} l'anno`}
-            badge={`giocheresti il ${Math.round(offer.expectedMinutesShare * 100)}%`}
-            rischio={offer.expectedMinutesShare < 0.4}
+            sottotitolo={`${offer.leagueName}${offer.isLoan ? ' · prestito' : ''}`}
+            nota={`${soldi(offer.weeklyWageEur * 52)} l'anno${offer.isLoan ? '' : ` · cartellino ${soldi(offer.feeEur)}`}`}
+            etichetta={offer.expectedMinutesShare < 0.4 ? 'rischi la panchina' : 'giocheresti'}
+            sicura={offer.expectedMinutesShare >= 0.6}
+            puntata={
+              <span className="puntata">
+                <span className={`faccia faccia-${offer.expectedMinutesShare >= 0.5 ? 'bene' : 'male'}`}>
+                  <b className="faccia-quota">minuti attesi</b>
+                  <span className="faccia-esito">{Math.round(offer.expectedMinutesShare * 100)}%</span>
+                </span>
+              </span>
+            }
             onClick={() => onChoose(offer.clubId)}
           />
         ))}
@@ -48,7 +57,15 @@ export function Mercato({
           sigla={sigla(clubName)}
           titolo="Resta dove sei"
           nota={`Un altro anno con ${clubName}.`}
-          badge="nessun cambiamento"
+          etichetta="esito certo"
+          sicura
+          puntata={
+            <span className="puntata">
+              <span className="faccia faccia-neutro">
+                <span className="faccia-esito">niente cambia</span>
+              </span>
+            </span>
+          }
           onClick={() => onChoose('resta')}
         />
       </Scelte>

@@ -30,7 +30,7 @@ export function Salvataggi({
     <div className="card">
       <h2>Riprendi una carriera</h2>
       {slots.map((slot) => (
-        <div key={slot.id} className="riga">
+        <div key={slot.id} className="slot-riga">
           <button
             type="button"
             className="bottone"
@@ -44,8 +44,7 @@ export function Salvataggi({
           </button>
           <button
             type="button"
-            className="bottone"
-            style={{ width: 'auto' }}
+            className="bottone slot-elimina"
             aria-label={`Cancella la carriera di ${slot.name}`}
             onClick={() => {
               deleteSlot(window.localStorage, slot.id);
