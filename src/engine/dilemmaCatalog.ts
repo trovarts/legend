@@ -548,7 +548,9 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
   {
     id: 'ritorno-a-casa',
     weight: 2,
-    when: (context) => context.age >= 31 && context.leagueLevel <= 2,
+    // Con le carriere che finiscono verso i trentaquattro, a trentuno non restava
+    // abbastanza tempo perché tornare a casa potesse ripagare: era una scelta finta.
+    when: (context) => context.age >= 29 && context.leagueLevel <= 2,
     build: (context) => ({
       id: 'ritorno-a-casa',
       title: 'La squadra di quando eri bambino',
@@ -559,7 +561,7 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
           label: 'Torna a casa',
           stake: 'Giochi molto di più, ma in una categoria che ti arrugginisce.',
           outcomes: [
-            { chance: 1, text: 'Firmi dove hai imparato a giocare. Lo stadio si alza in piedi.', effects: { addMark: { id: 'tornato-a-casa', intensity: 1 }, minutesDelta: 0.18, overall: -2, valueMultiplier: 0.6 } },
+            { chance: 1, text: 'Firmi dove hai imparato a giocare. Lo stadio si alza in piedi.', effects: { addMark: { id: 'tornato-a-casa', intensity: 1 }, minutesDelta: 0.24, overall: -1, valueMultiplier: 0.75 } },
           ],
         },
         {
