@@ -10,6 +10,13 @@
   --testo: #f2eef5;
   --tenue: #9b93a8;
   --rosso: #d81f3f;
+  /*
+   * Il rosso del marchio lo ridipinge il tema del club: giocare nel Napoli tinge
+   * l'interfaccia di azzurro. Questi due no — «è andata male» deve restare rosso
+   * anche quando la maglia è azzurra.
+   */
+  --negativo: #d81f3f;
+  --positivo: #2fbf6b;
   --rosso-scuro: #6d1226;
   --verde: #2fbf6b;
   --oro: #f5c518;
@@ -166,8 +173,8 @@ select.bottone { appearance: none; }
   border-radius: 10px; padding: .55rem .8rem; margin-bottom: 1rem;
   background: var(--carta); font-size: .86rem;
 }
-.rivale-avanti { border-left-color: var(--rosso); }
-.rivale-dietro { border-left-color: var(--verde); }
+.rivale-avanti { border-left-color: var(--negativo); }
+.rivale-dietro { border-left-color: var(--positivo); }
 .rivale-verdetto { margin-left: auto; font-weight: 700; }
 
 /* ── Archivio delle stagioni passate ─────────────────────────────────────── */
@@ -204,7 +211,7 @@ select.bottone { appearance: none; }
   font-size: .62rem; letter-spacing: .14em; text-transform: uppercase;
   color: var(--oro); margin-top: .1rem;
 }
-.scelta-sicura { color: var(--verde); }
+.scelta-sicura { color: var(--positivo); }
 .scelta-sottotitolo { font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--tenue); margin-top: -.3rem; }
 
 /* ── Scelta del paese: una griglia di bandiere, non un menu a tendina ────── */
@@ -347,8 +354,8 @@ select.bottone { appearance: none; }
 }
 .rigori-riga { display: flex; align-items: center; gap: .5rem; }
 .rigore-segno { font-size: 1.1rem; animation: entra .3s ease both; }
-.rigore-dentro { color: var(--verde); }
-.rigore-fuori { color: var(--rosso); }
+.rigore-dentro { color: var(--positivo); }
+.rigore-fuori { color: var(--negativo); }
 
 /* ── Resoconto: il numero che sale ───────────────────────────────────────── */
 .resoconto-cifre { display: grid; gap: .8rem; margin: 1rem 0; }
@@ -360,8 +367,8 @@ select.bottone { appearance: none; }
 .salita { display: flex; align-items: baseline; gap: .5rem; font-size: 1.1rem; color: var(--tenue); }
 .salita-da { font-size: 1.4rem; }
 .salita-a { font-size: 2.6rem; font-weight: 800; color: var(--testo); }
-.salita-su { color: var(--verde); }
-.salita-giu { color: var(--rosso); }
+.salita-su { color: var(--positivo); }
+.salita-giu { color: var(--negativo); }
 
 /* ── Agente: la prima scelta della carriera ──────────────────────────────── */
 .agente { gap: .35rem; }
@@ -516,8 +523,8 @@ select.bottone { appearance: none; }
 
 /* ── L'esito della scommessa ─────────────────────────────────────────────── */
 .esito-blocco { border-color: var(--bordo); transition: border-color .3s ease, box-shadow .3s ease; }
-.esito-vinta { border-color: var(--verde); box-shadow: 0 0 0 1px rgba(47,191,107,.25), 0 0 40px rgba(47,191,107,.12); }
-.esito-persa { border-color: var(--rosso); box-shadow: 0 0 0 1px rgba(216,31,63,.25), 0 0 40px rgba(216,31,63,.12); }
+.esito-vinta { border-color: var(--positivo); box-shadow: 0 0 0 1px rgba(47,191,107,.25), 0 0 40px rgba(47,191,107,.12); }
+.esito-persa { border-color: var(--negativo); box-shadow: 0 0 0 1px rgba(216,31,63,.25), 0 0 40px rgba(216,31,63,.12); }
 
 .esito-facce { display: flex; gap: .7rem; flex-wrap: wrap; justify-content: center; margin: 1.2rem 0; }
 .esito-faccia {
@@ -593,8 +600,8 @@ select.bottone { appearance: none; }
 .obiettivo-grado-minore { color: var(--tenue); }
 .obiettivo-testo { flex: 1; font-size: .9rem; }
 .obiettivo-esito { font-weight: 800; }
-.obiettivo-fatto .obiettivo-esito { color: var(--verde); }
-.obiettivo-mancato .obiettivo-esito { color: var(--rosso); }
+.obiettivo-fatto .obiettivo-esito { color: var(--positivo); }
+.obiettivo-mancato .obiettivo-esito { color: var(--negativo); }
 
 .a-caso { margin-left: .5rem; border: 1px solid var(--bordo); background: var(--carta-alta); color: var(--testo); border-radius: 999px; padding: .12rem .5rem; font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
 .a-caso:hover { border-color: var(--oro); color: var(--oro); }

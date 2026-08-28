@@ -464,3 +464,18 @@ su tre coppe diverse): a essere invecchiata era la domanda, non il modello.
 **Da ricordare:** quando un'invariante salta subito dopo una feature, prima di
 ricalibrare il modello chiedersi se la feature ha cambiato il significato di quello che
 l'invariante misurava.
+
+## D-022 — Il tema del club non deve poter dire «è andata bene»
+
+**Il fatto:** l'obiettivo mancato compariva con una ✕ azzurra. Il tema del club
+ridipinge `--rosso` con il colore della maglia — è la cosa che fa sentire il
+trasferimento — ma quel rosso serviva anche a dire *male*: rigore sbagliato, overall
+in calo, scommessa persa, obiettivo fallito. Al Fano Azzurri il fallimento diventava
+azzurro come tutto il resto, cioè non diceva più niente.
+
+**La decisione:** due variabili nuove, `--negativo` e `--positivo`, che il tema non
+tocca mai. Il marchio resta `--rosso` e continua a cambiare colore con la maglia.
+
+**Da ricordare:** una variabile che serve sia da marchio sia da semaforo prima o poi
+mente. Quando un colore vuol dire qualcosa, deve avere un nome che dice cosa vuol
+dire — non da dove viene.
