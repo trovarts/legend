@@ -13,6 +13,8 @@ export interface CandidateClub {
   leagueId: string;
   leagueName: string;
   leagueLevel: number;
+  /** Il paese del campionato: decide coppe nazionali e continentali. */
+  country?: string;
 }
 
 export interface OffersInput {

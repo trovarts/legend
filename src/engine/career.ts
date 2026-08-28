@@ -3,6 +3,7 @@ import { canLeave, signContract, tickContract } from './contract';
 import { createPlayer, type CreatePlayerInput } from './create';
 import { boldPolicy, type DilemmaPolicy } from './dilemmas';
 import type { Agent } from './agent';
+import type { ContinentalTier } from './competitionsMap';
 import type { AgentRequest } from './agentRequest';
 import type { PlayStyle } from './playstyle';
 import type { TrainingAxis } from './training';
@@ -101,7 +102,7 @@ export function runCareer(input: RunCareerInput): CareerResult {
   let marks: Mark[] = [];
   let minutesBonus = 0;
   let retirementDelta = 0;
-  let qualified = false;
+  let qualified: ContinentalTier | null = null;
   let capped = false;
   let seasonsAheadOfRival = 0;
   /** Per quante stagioni un bivio resta "già visto". */
@@ -117,6 +118,8 @@ export function runCareer(input: RunCareerInput): CareerResult {
 
   while (!player.retired && seasons.length < MAX_SEASONS) {
     const club = current;
+    // Il paese serve a sapere quali coppe si giocano: viene dal campionato.
+    const paeseDelClub = club.country ?? 'Italy';
     const season = seasons.length + 1;
     const leagueStrengths = strengthsByLeague.get(club.leagueId) ?? [clubStrength(club.club)];
 
@@ -137,7 +140,8 @@ export function runCareer(input: RunCareerInput): CareerResult {
           level: club.leagueLevel, clubCount: leagueStrengths.length,
         },
         leagueStrengths,
-        qualifiedToContinental: qualified,
+        continentalTier: qualified,
+        country: paeseDelClub,
         candidates,
         agent: input.agent,
         request: input.requestFor?.(season),

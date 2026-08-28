@@ -27,7 +27,8 @@ function input(over: Partial<SimulateSeasonInput> = {}): SimulateSeasonInput {
     club: home,
     league: { id: 'lg', name: 'Lega', level: 1, clubCount: 20 },
     leagueStrengths: [78, 76, 74, 72, 70, 68, 66, 64],
-    qualifiedToContinental: false,
+    continentalTier: null,
+    country: 'Italy',
     candidates: [{ club: rival, leagueId: 'lg', leagueName: 'Lega', leagueLevel: 1 }],
     alreadyCapped: false,
     marks: [],
@@ -68,10 +69,12 @@ describe('simulateSeason', () => {
     }
   });
 
-  it('arrivare nei primi quattro qualifica alla coppa continentale', () => {
+  it('il piazzamento decide quale coppa continentale si gioca', () => {
     for (let seed = 0; seed < 100; seed += 1) {
       const outcome = simulateSeason(input(), createRng(seed));
-      expect(outcome.qualifiedNextSeason).toBe(outcome.record.position <= 4);
+      const pos = outcome.record.position;
+      const atteso = pos <= 4 ? 'prima' : pos <= 6 ? 'seconda' : pos === 7 ? 'terza' : null;
+      expect(outcome.qualifiedNextSeason).toBe(atteso);
     }
   });
 

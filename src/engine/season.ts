@@ -8,6 +8,7 @@ import { injuryMinutesPenalty, rollInjury } from './injuries';
 import { ageMarks, minutesModifier } from './marks';
 import { clubStrengthWith, leaguePosition } from './clubStrength';
 import { resolveTrophies } from './competitions';
+import { competitionsOf, continentalTierFor, type ContinentalTier } from './competitionsMap';
 import { growPlayer } from './growth';
 import type { Agent } from './agent';
 import type { AgentRequest } from './agentRequest';
@@ -28,7 +29,10 @@ export interface SimulateSeasonInput {
   league: { id: string; name: string; level: number; clubCount: number };
   /** Forza di tutti i club del campionato, per la classifica. */
   leagueStrengths: readonly number[];
-  qualifiedToContinental: boolean;
+  /** In quale coppa continentale si è qualificata la squadra l'anno prima. */
+  continentalTier: ContinentalTier | null;
+  /** Il paese del campionato: decide coppe e nazionale. */
+  country: string;
   candidates: readonly CandidateClub[];
   /** Chi rappresenta il giocatore sul mercato. */
   agent?: Agent;
@@ -51,15 +55,13 @@ export interface SimulateSeasonInput {
 export interface SeasonOutcome {
   record: SeasonRecord;
   grownPlayer: CareerPlayer;
-  /** I primi quattro giocano la coppa continentale l'anno dopo. */
-  qualifiedNextSeason: boolean;
+  /** In quale coppa continentale si è qualificata la squadra per l'anno prossimo. */
+  qualifiedNextSeason: ContinentalTier | null;
   marks: Mark[];
   retirementDelta: number;
   /** Bonus minuti da applicare alla stagione successiva. */
   minutesBonusNext: number;
 }
-
-const CONTINENTAL_SPOTS = 4;
 
 /** Risolve una stagione intera: campo, classifica, trofei, premi, nazionale, mercato. */
 export function simulateSeason(input: SimulateSeasonInput, rng: Rng): SeasonOutcome {
@@ -107,13 +109,15 @@ export function simulateSeason(input: SimulateSeasonInput, rng: Rng): SeasonOutc
     rng,
   );
 
+  const competitions = competitionsOf(input.country);
   const trophies = resolveTrophies(
     {
       season: input.season,
       leagueName: league.name,
       position,
       clubCount: league.clubCount,
-      qualifiedToContinental: input.qualifiedToContinental,
+      continentalTier: input.continentalTier,
+      competitions,
       minutesShare,
     },
     rng,
@@ -254,7 +258,7 @@ export function simulateSeason(input: SimulateSeasonInput, rng: Rng): SeasonOutc
       marks,
     },
     grownPlayer,
-    qualifiedNextSeason: position <= CONTINENTAL_SPOTS,
+    qualifiedNextSeason: continentalTierFor(position, competitions),
     marks,
     retirementDelta: state.retirementDelta,
     minutesBonusNext: state.minutesDelta,

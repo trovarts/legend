@@ -11,6 +11,8 @@ export interface NationalInput {
   leagueLevel: number;
   /** Chi è già nel giro della nazionale ci resta più facilmente. */
   alreadyCapped: boolean;
+  /** Le competizioni del paese: Europei, Coppa America, Coppa d'Asia... */
+  competitions?: { national: { major: string; minor: string } };
 }
 
 const TOURNAMENT_STAGES: readonly string[] = [
@@ -34,7 +36,11 @@ export function nationalSeason(input: NationalInput, rng: Rng): NationalSeason {
     input.role === 'FWD' ? 0.4 : input.role === 'MID' ? 0.2 : input.role === 'DEF' ? 0.06 : 0;
   const goals = Math.round(caps * scoringRate * (0.5 + rng.next()));
 
+  // Un torneo grande ogni due anni; negli anni dispari c'è la competizione minore.
   const isTournamentYear = input.season % 2 === 0;
+  const nomeTorneo = isTournamentYear
+    ? input.competitions?.national.major ?? 'Torneo Internazionale'
+    : input.competitions?.national.minor ?? 'Lega delle Nazioni';
   if (!isTournamentYear) return { capped: true, caps, goals, tournament: null };
 
   // Più sei forte, più lontano arriva la tua nazionale: ma è comunque una lotteria.
@@ -49,6 +55,6 @@ export function nationalSeason(input: NationalInput, rng: Rng): NationalSeason {
     capped: true,
     caps: caps + 3,
     goals,
-    tournament: { name: 'Torneo Internazionale', stageReached: TOURNAMENT_STAGES[stageIndex]! },
+    tournament: { name: nomeTorneo, stageReached: TOURNAMENT_STAGES[stageIndex]! },
   };
 }

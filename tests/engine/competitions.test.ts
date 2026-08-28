@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { resolveTrophies, type TrophiesInput } from '../../src/engine/competitions';
+import { competitionsOf } from '../../src/engine/competitionsMap';
 import { createRng } from '../../src/engine/rng';
 
 const champion: TrophiesInput = {
   season: 5, leagueName: 'Serie A', position: 1, clubCount: 20,
-  qualifiedToContinental: true, minutesShare: 0.8,
+  continentalTier: 'prima', minutesShare: 0.8, competitions: competitionsOf('Italy'),
 };
 
 function rate(input: TrophiesInput, kind: string): number {
@@ -44,7 +45,17 @@ describe('resolveTrophies', () => {
   });
 
   it('senza qualificazione non si vince la coppa continentale', () => {
-    expect(rate({ ...champion, qualifiedToContinental: false }, 'continental')).toBe(0);
+    expect(rate({ ...champion, continentalTier: null }, 'continental')).toBe(0);
+  });
+
+  it('la coppa porta il nome vero del paese', () => {
+    const trofei = resolveTrophies({ ...champion, position: 1 }, createRng(4));
+    const league = trofei.find((t) => t.kind === 'league');
+    expect(league?.competitionName).toBe('Serie A');
+    for (const trofeo of trofei) {
+      if (trofeo.kind === 'nationalCup') expect(trofeo.competitionName).toBe('Coppa Italiana');
+      if (trofeo.kind === 'continental') expect(trofeo.competitionName).toBe('Coppa Europea');
+    }
   });
 
   it('la coppa continentale è rara anche per chi vince il campionato', () => {

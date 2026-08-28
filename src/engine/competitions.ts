@@ -1,3 +1,5 @@
+import type { CountryCompetitions } from './competitionsMap';
+import { continentalTierFor } from './competitionsMap';
 import type { Rng } from './rng';
 import type { Trophy } from './types';
 
@@ -7,9 +9,11 @@ export interface TrophiesInput {
   /** Posizione finale in campionato, 1-based. */
   position: number;
   clubCount: number;
-  /** Qualificata alla coppa continentale grazie alla stagione precedente. */
-  qualifiedToContinental: boolean;
+  /** In quale coppa continentale si è qualificata la squadra l'anno prima. */
+  continentalTier: 'prima' | 'seconda' | 'terza' | null;
   minutesShare: number;
+  /** Le competizioni del paese: nomi veri, non etichette generiche. */
+  competitions: CountryCompetitions;
 }
 
 /**
@@ -33,17 +37,22 @@ export function resolveTrophies(input: TrophiesInput, rng: Rng): Trophy[] {
   }
 
   if (rng.chance(cupChance(input.position, input.clubCount))) {
-    trophies.push({ kind: 'nationalCup', season: input.season, competitionName: 'Coppa Nazionale' });
+    trophies.push({
+      kind: 'nationalCup',
+      season: input.season,
+      competitionName: input.competitions.cup,
+    });
   }
 
-  if (input.qualifiedToContinental) {
+  if (input.continentalTier !== null) {
     const strength = 1 - (input.position - 1) / Math.max(1, input.clubCount - 1);
-    // Anche la coppa continentale ha una sola vincitrice fra decine di qualificate.
-    if (rng.chance(0.02 + strength ** 3 * 0.1)) {
+    // Più in basso è la coppa, più è facile vincerla: la Terza non è la Coppa Europea.
+    const facilita = input.continentalTier === 'prima' ? 1 : input.continentalTier === 'seconda' ? 1.6 : 2.4;
+    if (rng.chance((0.02 + strength ** 3 * 0.1) * facilita)) {
       trophies.push({
         kind: 'continental',
         season: input.season,
-        competitionName: 'Coppa Continentale',
+        competitionName: input.competitions.continental[input.continentalTier],
       });
     }
   }

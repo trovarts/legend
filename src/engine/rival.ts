@@ -1,5 +1,6 @@
 import type { Role } from '../world/types';
 import { clubStrength } from './clubStrength';
+import type { ContinentalTier } from './competitionsMap';
 import { signContract, tickContract, type Contract } from './contract';
 import { createPlayer } from './create';
 import { boldPolicy } from './dilemmas';
@@ -19,7 +20,7 @@ export interface RivalState {
   player: CareerPlayer;
   club: CandidateClub;
   seasons: SeasonRecord[];
-  qualified: boolean;
+  qualified: ContinentalTier | null;
   capped: boolean;
   contract: Contract;
 }
@@ -64,7 +65,7 @@ export function createRival(input: CreateRivalInput): RivalState {
     player,
     club,
     seasons: [],
-    qualified: false,
+    qualified: null,
     capped: false,
     contract: signContract(0, input.playerAge, rng),
   };
@@ -78,6 +79,7 @@ export function advanceRival(
   careerSeed: number,
 ): RivalState {
   const rng = createRng(rivalSeed(careerSeed) + season * 7919);
+  const paeseDelClub = state.club.country ?? 'Italy';
 
   const sameLeague = clubs.filter((entry) => entry.leagueId === state.club.leagueId);
   const leagueStrengths = (sameLeague.length > 0 ? sameLeague : clubs).map((entry) =>
@@ -103,7 +105,8 @@ export function advanceRival(
         clubCount: leagueStrengths.length,
       },
       leagueStrengths,
-      qualifiedToContinental: state.qualified,
+      continentalTier: state.qualified,
+      country: paeseDelClub,
       candidates,
       alreadyCapped: state.capped,
       marks: [],
