@@ -1,11 +1,32 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import Link from 'next/link';
 import { dailyChallenge } from '../engine/challenge';
+import { Traguardi } from '../ui/Traguardi';
+import type { LeagueSummary } from '../world/types';
+
+/** Quanti campionati e quante squadre ci sono davvero: letto alla build, mai a mano. */
+function ilMondo(): { campionati: number; club: number; paesi: number } {
+  try {
+    const index = JSON.parse(
+      readFileSync(join(process.cwd(), 'public/world/index.json'), 'utf8'),
+    ) as LeagueSummary[];
+    return {
+      campionati: index.length,
+      club: index.reduce((somma, lega) => somma + lega.clubCount, 0),
+      paesi: new Set(index.map((lega) => lega.country)).size,
+    };
+  } catch {
+    return { campionati: 0, club: 0, paesi: 0 };
+  }
+}
 
 export default function Home() {
   // La sfida cambia ogni giorno ed è la stessa per tutti: si calcola alla build,
   // e il sito è statico, quindi si aggiorna a ogni pubblicazione.
   const oggi = new Date().toISOString().slice(0, 10);
   const sfida = dailyChallenge(oggi);
+  const mondo = ilMondo();
 
   return (
     <main className="home">
@@ -53,8 +74,11 @@ export default function Home() {
         </Link>
       </section>
 
+      <Traguardi />
+
       <p className="tenue" style={{ fontSize: '.78rem', textAlign: 'center', marginTop: '2rem' }}>
-        36 campionati e 619 squadre vere · nessun account, nessuna installazione
+        {mondo.campionati} campionati veri in {mondo.paesi} nazioni · {mondo.club} squadre ·
+        {' '}nessun account, nessuna installazione
       </p>
     </main>
   );
