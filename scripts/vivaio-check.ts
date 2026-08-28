@@ -14,7 +14,13 @@ import { createFileWorldSource } from '../src/world/fileSource';
 import type { YouthApproach } from '../src/engine/youth';
 
 const source = createFileWorldSource('public/world');
-const leagues = (await source.listLeagues()).filter((l) => l.country === 'Italy');
+// Lo stesso mondo che carica il gioco: i campionati del proprio paese più una
+// dozzina di altri. Serve a misurare anche quanto il mercato porta all'estero.
+const tutte = await source.listLeagues();
+const leagues = [
+  ...tutte.filter((l) => l.country === 'Italy'),
+  ...tutte.filter((l) => l.country !== 'Italy').slice(0, 12),
+];
 const clubs: CandidateClub[] = [];
 for (const league of leagues) {
   const bundle = await source.loadLeague(league.id);
@@ -31,6 +37,8 @@ const goat: number[] = [];
 const livelliMigliori: number[] = [];
 const etaPrimaStagione: number[] = [];
 const ovrPrimaStagione: number[] = [];
+let stagioniTotali = 0;
+let stagioniInPatria = 0;
 
 for (let seed = 0; seed < 200; seed += 1) {
   const start = quarta[seed % quarta.length]!;
@@ -58,6 +66,10 @@ for (let seed = 0; seed < 200; seed += 1) {
     corrente = { ...corrente, decisions: d };
     state = playCareer(corrente, clubs);
   }
+  for (const st of state.seasons) {
+    stagioniTotali += 1;
+    if (clubs.find((c) => c.club.id === st.clubId)?.country === 'Italy') stagioniInPatria += 1;
+  }
   const prima = state.seasons[0];
   if (prima) { etaPrimaStagione.push(prima.age); ovrPrimaStagione.push(prima.overallStart); }
   if (state.result) {
@@ -68,12 +80,14 @@ for (let seed = 0; seed < 200; seed += 1) {
 }
 
 const media = (v: number[]) => v.reduce((a, b) => a + b, 0) / Math.max(1, v.length);
+const mediaPatria = stagioniTotali === 0 ? 0 : stagioniInPatria / stagioniTotali;
 console.log(`Carriere giocate dal vivaio, partendo dal livello ${livello}: ${picchi.length}`);
 console.log(`Prima stagione: età media ${media(etaPrimaStagione).toFixed(1)} | overall medio ${media(ovrPrimaStagione).toFixed(1)}`);
 console.log(`Picco: medio ${media(picchi).toFixed(1)} | massimo ${Math.max(...picchi)} | minimo ${Math.min(...picchi)}`);
 console.log(`Sopra 80 di picco: ${((picchi.filter((p) => p >= 80).length / picchi.length) * 100).toFixed(1)}%`);
 console.log(`Punteggio GOAT: medio ${media(goat).toFixed(0)} | massimo ${Math.max(...goat)}`);
 console.log(`Categoria più alta raggiunta: ${media(livelliMigliori).toFixed(2)} (1 = massima serie)`);
+console.log(`Stagioni giocate in patria: ${(mediaPatria * 100).toFixed(0)}%`);
 
 const guasti: string[] = [];
 const etaMedia = media(etaPrimaStagione);
@@ -81,6 +95,10 @@ if (etaMedia < 15 || etaMedia > 19) guasti.push(`si esce dal vivaio a ${etaMedia
 const ovrMedio = media(ovrPrimaStagione);
 if (ovrMedio < 44 || ovrMedio > 58) guasti.push(`si esce dal vivaio con overall ${ovrMedio.toFixed(1)} (atteso 44-58)`);
 if (media(picchi) < 60) guasti.push(`picco medio troppo basso: ${media(picchi).toFixed(1)}`);
+// Il calcio è ancorato a un paese: se si emigra sempre, o mai, non è più un mercato.
+if (mediaPatria < 0.4 || mediaPatria > 0.95) {
+  guasti.push(`mercato sbilanciato: ${(mediaPatria * 100).toFixed(0)}% delle stagioni in patria (atteso 40-95%)`);
+}
 if (Math.max(...picchi) < 80) guasti.push('nessuna carriera arriva a 80 di picco: il sogno è irraggiungibile');
 if (livello > 1 && media(livelliMigliori) > livello - 0.5) {
   guasti.push(`chi parte dal livello ${livello} non risale: si ferma in media a ${media(livelliMigliori).toFixed(2)}`);

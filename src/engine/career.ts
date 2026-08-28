@@ -155,10 +155,22 @@ export function runCareer(input: RunCareerInput): CareerResult {
     const season = seasons.length + 1;
     const leagueStrengths = strengthsByLeague.get(club.leagueId) ?? [clubStrength(club.club)];
 
+    // Le squadre che il mercato prende in considerazione. Pescare a caso da tutto il
+    // mondo faceva arrivare a un ragazzo di Serie C offerte dalla Cina: il calcio non
+    // funziona così. Due terzi della rosa di candidati vengono dal proprio paese, il
+    // resto da fuori — a meno che l'agente non abbia ricevuto l'ordine di guardare
+    // altrove.
     const others = input.world.clubs.filter((entry) => entry.club.id !== club.club.id);
+    const inPatria = others.filter((entry) => entry.country === paeseDelClub);
+    const allEstero = others.filter((entry) => entry.country !== paeseDelClub);
+    const cercaFuori = input.requestFor?.(season)?.kind === 'vetrina';
+    const quotaCasa = cercaFuori ? 0.3 : 0.66;
+
     const candidates: CandidateClub[] = [];
     for (let i = 0; i < Math.min(CANDIDATE_SAMPLE, others.length); i += 1) {
-      const picked = others[rng.int(0, others.length - 1)];
+      const daCasa = inPatria.length > 0 && (allEstero.length === 0 || rng.chance(quotaCasa));
+      const urna = daCasa ? inPatria : allEstero;
+      const picked = urna[rng.int(0, urna.length - 1)];
       if (picked && !candidates.includes(picked)) candidates.push(picked);
     }
 
