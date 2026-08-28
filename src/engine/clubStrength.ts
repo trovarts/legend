@@ -45,10 +45,16 @@ export function leaguePosition(
   strength: number,
   allStrengths: readonly number[],
   rng: Rng,
+  /**
+   * La forza del proprio club nell'elenco, quando è diversa da `strength`.
+   * Serve perché `strength` comprende già il contributo del giocatore: senza questo
+   * il club non si riconosce nella lista, resta in gara con se stesso e il campionato
+   * finisce per avere una posizione in più di quante squadre ha.
+   */
+  ownStrength: number = strength,
 ): number {
-  // allStrengths contiene anche il proprio club: va tolto, o ci si confronta con se stessi.
   const others = [...allStrengths];
-  const self = others.indexOf(strength);
+  const self = others.indexOf(ownStrength);
   if (self >= 0) others.splice(self, 1);
 
   const mine = strength + (rng.next() - 0.5) * 2 * UPSET_SPREAD;

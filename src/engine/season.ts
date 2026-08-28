@@ -6,7 +6,7 @@ import {
 } from './dilemmas';
 import { injuryMinutesPenalty, rollInjury } from './injuries';
 import { ageMarks, minutesModifier } from './marks';
-import { clubStrengthWith, leaguePosition } from './clubStrength';
+import { clubStrength, clubStrengthWith, leaguePosition } from './clubStrength';
 import { cupRun, resolveTrophies } from './competitions';
 import { competitionsOf, continentalTierFor, type ContinentalTier } from './competitionsMap';
 import { growPlayer } from './growth';
@@ -101,7 +101,7 @@ export function simulateSeason(input: SimulateSeasonInput, rng: Rng): SeasonOutc
   const minutesShare = Math.max(0.02, trainedShare * (1 - injuryMinutesPenalty(injury)));
 
   const strength = clubStrengthWith(club, player.overall, player.role, minutesShare);
-  const position = leaguePosition(strength, input.leagueStrengths, rng);
+  const position = leaguePosition(strength, input.leagueStrengths, rng, clubStrength(club));
 
   const stats = seasonStats(
     {

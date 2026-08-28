@@ -91,4 +91,15 @@ describe('leaguePosition', () => {
       leaguePosition(74, strengths, createRng(9)),
     );
   });
+
+  it('non esiste una posizione in più delle squadre iscritte', () => {
+    // Il club vale 60, ma con il giocatore in campo ne vale 63: se non gli si dice
+    // qual è la sua riga nell'elenco, il campionato si allunga di una posizione.
+    const strengths = [78, 74, 70, 66, 62, 60];
+    for (let seed = 0; seed < 200; seed += 1) {
+      const position = leaguePosition(63, strengths, createRng(seed), 60);
+      expect(position).toBeLessThanOrEqual(strengths.length);
+      expect(position).toBeGreaterThanOrEqual(1);
+    }
+  });
 });
