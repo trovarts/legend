@@ -1,0 +1,8 @@
+# Per pubblicare su Netlify invece che su GitHub Pages: qui il sito sta alla radice
+# del dominio, quindi non serve nessun percorso base.
+[build]
+  command = "npm run import:world && npm run build"
+  publish = "out"
+
+[build.environment]
+  NODE_VERSION = "24"
