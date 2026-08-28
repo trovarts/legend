@@ -41,7 +41,7 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
           label: 'Aspetta di guarire davvero',
           stake: 'Perdi mezza stagione, ma torni intero.',
           outcomes: [
-            { chance: 1, text: 'Rientri quando il ginocchio è a posto. Nessuno strascico.', effects: { minutesDelta: -0.1 } },
+            { chance: 1, text: 'Rientri quando il ginocchio è a posto. Nessuno strascico, ma la stagione è andata.', effects: { minutesDelta: -0.14 } },
           ],
         },
         {
@@ -49,7 +49,7 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
           label: 'Rientra un mese prima',
           stake: '70% torni come prima, 30% te lo porti dietro per sempre.',
           outcomes: [
-            { chance: 0.7, text: 'Il rientro regge. Sei di nuovo in campo prima del previsto.', effects: { minutesDelta: 0.08 } },
+            { chance: 0.7, text: 'Il rientro regge, e la squadra ti ritrova nel momento decisivo.', effects: { minutesDelta: 0.16, addMark: { id: 'beniamino-dei-tifosi', intensity: 0.4 } } },
             { chance: 0.3, text: 'Il ginocchio cede di nuovo. Da qui in avanti dovrai conviverci.', effects: { addMark: { id: 'ginocchio-fragile', intensity: 0.8 }, overall: -2, retirementDelta: -2 } },
           ],
         },
@@ -125,7 +125,7 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
           label: 'Aspetta la scadenza',
           stake: 'Guadagni di più, ma passi per uno che se ne va a zero.',
           outcomes: [
-            { chance: 0.6, text: 'Arrivi a scadenza con le offerte in mano. Affare fatto.', effects: { valueMultiplier: 1.15, addMark: { id: 'mercenario', intensity: 0.4 } } },
+            { chance: 0.6, text: 'Arrivi a scadenza con le offerte in mano: ingaggio doppio e maglia da titolare.', effects: { valueMultiplier: 1.35, minutesDelta: 0.1, addMark: { id: 'mercenario', intensity: 0.4 } } },
             { chance: 0.4, text: 'La piazza la prende malissimo. Ogni pallone toccato è un fischio.', effects: { addMark: { id: 'promessa-tradita', intensity: 0.6 }, minutesDelta: -0.08 } },
           ],
         },
@@ -188,9 +188,10 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
         {
           id: 'tieni-il-punto',
           label: 'Non hai niente di cui scusarti',
-          stake: 'Resti te stesso, ma il muro resta in piedi.',
+          stake: 'Se hai ragione tu, ne esci più forte. Se no, resti fuori.',
           outcomes: [
-            { chance: 1, text: 'Nessuno fa il primo passo. Si va avanti così.', effects: { addMark: { id: 'carattere-fragile', intensity: 0.3 } } },
+            { chance: 0.55, text: 'A marzo esonerano lui. Lo spogliatoio si ricorda chi non si è piegato.', effects: { removeMark: 'rissa-col-mister', addMark: { id: 'leader-riconosciuto', intensity: 0.6 }, minutesDelta: 0.12 } },
+            { chance: 0.45, text: 'Nessuno fa il primo passo. Si va avanti così.', effects: { addMark: { id: 'carattere-fragile', intensity: 0.3 }, minutesDelta: -0.05 } },
           ],
         },
       ],
@@ -218,7 +219,9 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
           id: 'rifiuta',
           label: 'Lascia perdere',
           stake: 'Niente pressione, ma qualcuno se lo segna.',
-          outcomes: [{ chance: 1, text: 'Preferisci pensare a giocare. Legittimo.', effects: {} }],
+          outcomes: [
+            { chance: 1, text: 'Preferisci pensare solo a giocare. Senza quel peso rendi meglio.', effects: { minutesDelta: 0.06 } },
+          ],
         },
       ],
     }),
@@ -245,7 +248,7 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
           label: 'Fatti trovare pronto e basta',
           stake: 'Difendi il posto, ma lo spogliatoio ti guarda.',
           outcomes: [
-            { chance: 0.6, text: 'Il campo dice che il titolare sei ancora tu.', effects: { minutesDelta: 0.06 } },
+            { chance: 0.6, text: 'Il campo dice che il titolare sei ancora tu, e per un altro anno nessuno discute.', effects: { minutesDelta: 0.12 } },
             { chance: 0.4, text: 'Il ragazzino gioca lo stesso, e tu passi per quello scomodo.', effects: { minutesDelta: -0.1, addMark: { id: 'carattere-fragile', intensity: 0.4 } } },
           ],
         },
@@ -266,7 +269,7 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
           label: 'Torna a casa',
           stake: 'Chiudi la carriera dove è cominciata, ma rinunci al palcoscenico.',
           outcomes: [
-            { chance: 1, text: 'Firmi dove hai imparato a giocare. Lo stadio si alza in piedi.', effects: { addMark: { id: 'tornato-a-casa', intensity: 1 }, minutesDelta: 0.15, valueMultiplier: 0.8 } },
+            { chance: 1, text: 'Firmi dove hai imparato a giocare. Lo stadio si alza in piedi.', effects: { addMark: { id: 'tornato-a-casa', intensity: 1 }, minutesDelta: 0.1, valueMultiplier: 0.7 } },
           ],
         },
         {

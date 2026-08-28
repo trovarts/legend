@@ -161,3 +161,44 @@ mestierante» non è un gioco.
 
 È la stessa lezione di D-007, dall'altro lato: **i dati misurano, il design decide** — e
 quando il design si allontana dal dato, lo si scrive invece di nasconderlo in una soglia.
+
+## D-011 — Lo strumento che verifica le scelte mentiva
+
+Il `choices-lab` (spec §6: nessun ramo deve essere quello giusto più del 70% delle volte)
+alla prima esecuzione dichiarava **sei bivi dominanti su otto**, uno addirittura al 100%.
+Erano quasi tutti falsi.
+
+**Bug 1 — i pareggi contati come vittorie.** Se in una carriera il bivio non si presentava
+(per `pace-col-mister` serve aver già litigato col mister), le due varianti forzate erano
+identiche e producevano lo stesso punteggio: il confronto assegnava allora la vittoria alla
+prima opzione della lista, sempre. Ora si contano solo le carriere in cui il bivio è
+davvero comparso, e i pareggi vengono scartati.
+
+**Bug 2 — lo strumento non visitava tutti i rami.** Sugli altri bivi usava `boldPolicy`,
+che non sceglie mai un'opzione dal valore atteso negativo: nessuno litigava col mister,
+quindi il bivio della riconciliazione non si presentava **mai** in cento carriere. Ora la
+politica di contorno **esplora** — sceglie in modo deterministico ma vario — così tutti i
+rami vengono percorsi. Un utente vero, del resto, sceglie anche col cuore.
+
+**Esito dopo le correzioni** (200 carriere per bivio, contando solo quelle in cui il bivio
+è comparso):
+
+| Bivio | Ripartizione delle vittorie |
+|---|---|
+| rientro-anticipato | aspetta 52% \| anticipa 39% \| infiltrazioni 8% |
+| panchina-lunga | lavora 30% \| parla 38% \| chiedi-cessione 31% |
+| rinnovo-o-addio | rinnova 52% \| aspetta-scadenza 48% |
+| intervista-dopo-la-sconfitta | difendi 48% \| attacca 30% \| niente 22% |
+| pace-col-mister | scusati 55% \| tieni-il-punto 45% |
+| fascia-di-capitano | accetta 51% \| rifiuta 49% |
+| il-ragazzino | aiutalo 42% \| ignoralo 58% |
+| ritorno-a-casa | torna 60% \| resta 40% |
+
+Nessuna strada supera il 60%. Per arrivarci sono serviti veri ribilanciamenti del catalogo:
+ogni opzione «prudente» che non offriva nulla perdeva sempre, perché il punteggio GOAT
+premia minuti, trofei e valore. Adesso **ogni strada paga in qualche moneta**: tenere il
+punto col mister può portare al suo esonero, rifiutare la fascia toglie pressione, restare
+ad alto livello vale più soldi che tornare a casa.
+
+**Lezione:** prima di credere a uno strumento di verifica, verificare lo strumento. Un
+100% netto non è un risultato, è un sintomo.
