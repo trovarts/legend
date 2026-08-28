@@ -83,7 +83,14 @@ export function Creazione({
     });
     onStart({
       ...base,
-      decisions: { ...base.decisions, style, position: posizione },
+      decisions: {
+        ...base.decisions,
+        style,
+        position: posizione,
+        look: aspetto,
+        numero,
+        piede,
+      },
     });
   }
 
@@ -113,7 +120,24 @@ export function Creazione({
             </div>
 
             <div>
-              <span className="contesto-etichetta">Aspetto</span>
+              <span className="contesto-etichetta">
+                Aspetto
+                <button
+                  type="button"
+                  className="a-caso"
+                  onClick={() =>
+                    setAspetto({
+                      pelle: Math.floor(Math.random() * NOMI_PELLE.length),
+                      capelli: Math.floor(Math.random() * NOMI_CAPELLI.length),
+                      espressione: Math.floor(Math.random() * NOMI_ESPRESSIONE.length),
+                      divisa: Math.floor(Math.random() * NOMI_DIVISA.length),
+                      scarpini: Math.floor(Math.random() * NOMI_SCARPINI.length),
+                    })
+                  }
+                >
+                  <span aria-hidden="true">⤨</span> A caso
+                </button>
+              </span>
               <div className="card" style={{ marginTop: '.35rem' }}>
                 <Avatar aspetto={aspetto} numero={numero} />
                 {OPZIONI_ASPETTO.map((opzione) => (

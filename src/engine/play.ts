@@ -29,6 +29,11 @@ export interface CareerDecisions {
   position?: string;
   /** Cosa è stato chiesto all'agente, stagione per stagione. */
   requests?: Record<string, RequestKind>;
+  /** Com'è fatto: indici dell'avatar. Non tocca la simulazione, si vede e basta. */
+  look?: { pelle: number; capelli: number; espressione: number; divisa: number; scarpini: number };
+  /** Il numero di maglia e il piede preferito. */
+  numero?: string;
+  piede?: 'Destro' | 'Sinistro';
 }
 
 /**

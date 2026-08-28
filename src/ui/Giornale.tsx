@@ -2,10 +2,10 @@
 
 import { seasonMoments } from '../engine/moments';
 import type { RivalSnapshot, SeasonRecord } from '../engine/types';
+import { dataDi, etichettaStagione } from './calendario';
 
 /** Testate diverse a rotazione: dà l'impressione di una rassegna stampa, non di un template. */
 const TESTATE = ['NOVANTA MINUTI', 'IL CORRIERE DEL CAMPO', 'PALLONE', 'FUORICLASSE', 'PRIMA PAGINA'];
-const MESI = ['giugno', 'luglio', 'agosto', 'settembre'];
 
 /**
  * Il titolo di prima pagina. Non è mai una statistica: un giornale titola sui fatti,
@@ -65,8 +65,7 @@ export function Giornale({
 }) {
   const moments = seasonMoments({ record, previous, isFirstSeason: isFirst, playerName });
   const testata = TESTATE[record.season % TESTATE.length]!;
-  const mese = MESI[record.season % MESI.length]!;
-  const anno = 2026 + record.season;
+  const data = dataDi('fine', record.season);
   const principale = moments[0]?.text ?? 'Una stagione da raccontare';
   const resto = moments.slice(1);
   const titolo = titoloDi(record, isFirst);
@@ -76,7 +75,7 @@ export function Giornale({
       <header className="testata">
         <span className="testata-nome">{testata}</span>
         <span className="testata-data">
-          {mese} {anno} · stagione {record.season}
+          {data} · stagione {etichettaStagione(record.season)}
         </span>
       </header>
 

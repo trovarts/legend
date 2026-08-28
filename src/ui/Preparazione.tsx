@@ -2,6 +2,7 @@
 
 import type { ClubObjectives } from '../engine/objectives';
 import { TRAINING_AXES, trainingEffect, type TrainingAxis } from '../engine/training';
+import { dataDi, etichettaStagione } from './calendario';
 import { Scelta, Scelte } from './Scelte';
 
 /** Sigle distinte: "Tecnica" e "Testa" comincerebbero entrambe per TE. */
@@ -50,7 +51,9 @@ export function Preparazione({
     <section className="giornale">
       <header className="testata">
         <span className="testata-nome">RITIRO</span>
-        <span className="testata-data">pre-stagione · stagione {season}</span>
+        <span className="testata-data">
+          {dataDi('ritiro', season)} · pre-stagione {etichettaStagione(season)}
+        </span>
       </header>
       <h2 className="titolone">Su cosa lavori</h2>
       <p className="sommario">

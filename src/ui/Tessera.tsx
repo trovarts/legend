@@ -1,6 +1,7 @@
 'use client';
 
 import type { RivalSnapshot, SeasonRecord } from '../engine/types';
+import { ASPETTO_INIZIALE, Avatar, type Aspetto } from './Avatar';
 import { bandiera } from './bandiere';
 
 function soldi(valore: number): string {
@@ -18,6 +19,8 @@ export function Tessera({
   ora,
   goat,
   nationality,
+  look,
+  numero,
 }: {
   name: string;
   last: SeasonRecord | undefined;
@@ -27,6 +30,9 @@ export function Tessera({
   /** Punti GOAT maturati finora: si vedono anche prima della prima squadra. */
   goat?: number;
   nationality?: string;
+  /** Com'è fatto il giocatore: scelto alla creazione, si porta dietro tutta la carriera. */
+  look?: Aspetto;
+  numero?: string;
 }) {
   const age = last?.age ?? ora?.age;
   const overall = last?.overallEnd ?? ora?.overall;
@@ -34,6 +40,9 @@ export function Tessera({
   return (
     <>
       <div className="tessera">
+        <span className="tessera-avatar" aria-hidden="true">
+          <Avatar aspetto={look ?? ASPETTO_INIZIALE} numero={numero ?? ''} />
+        </span>
         <span className="tessera-nome">
           {nationality !== undefined && <span aria-hidden="true">{bandiera(nationality)} </span>}
           {name}

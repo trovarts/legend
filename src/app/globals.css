@@ -595,3 +595,8 @@ select.bottone { appearance: none; }
 .obiettivo-esito { font-weight: 800; }
 .obiettivo-fatto .obiettivo-esito { color: var(--verde); }
 .obiettivo-mancato .obiettivo-esito { color: var(--rosso); }
+
+.a-caso { margin-left: .5rem; border: 1px solid var(--bordo); background: var(--carta-alta); color: var(--testo); border-radius: 999px; padding: .12rem .5rem; font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
+.a-caso:hover { border-color: var(--oro); color: var(--oro); }
+.tessera-avatar { display: block; width: 34px; flex: 0 0 34px; }
+.tessera-avatar .avatar { width: 100%; height: auto; display: block; }

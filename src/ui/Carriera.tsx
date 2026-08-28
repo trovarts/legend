@@ -149,6 +149,8 @@ export function Carriera({
         name={save.create.name}
         nationality={save.create.nationality}
         goat={state.result?.goat.total ?? 0}
+        look={save.decisions.look}
+        numero={save.decisions.numero}
         last={last}
         rival={lastRival}
         ora={

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { RivalSnapshot, SeasonRecord } from '../engine/types';
+import { dataDi, etichettaStagione } from './calendario';
 
 /** Il numero che sale davanti agli occhi: è il momento in cui si vede di essere migliorati. */
 function Contatore({ da, a }: { da: number; a: number }) {
@@ -47,7 +48,7 @@ export function Resoconto({
       <header className="testata">
         <span className="testata-nome">RESOCONTO</span>
         <span className="testata-data">
-          {record.clubName} · stagione {record.season}
+          {record.clubName} · {dataDi('fine', record.season)} · {etichettaStagione(record.season)}
         </span>
       </header>
 
