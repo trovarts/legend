@@ -1,22 +1,22 @@
-import type { Club } from '../world/types.js';
-import { resolveAwards } from './awards.js';
-import type { DilemmaContext } from './dilemmaCatalog.js';
+import type { Club } from '../world/types';
+import { resolveAwards } from './awards';
+import type { DilemmaContext } from './dilemmaCatalog';
 import {
   applyEffects, pickDilemmas, resolveOption, type DilemmaPolicy, type DilemmaState,
-} from './dilemmas.js';
-import { injuryMinutesPenalty, rollInjury } from './injuries.js';
-import { ageMarks, minutesModifier } from './marks.js';
-import { clubStrengthWith, leaguePosition } from './clubStrength.js';
-import { resolveTrophies } from './competitions.js';
-import { growPlayer } from './growth.js';
-import { generateOffers, type CandidateClub } from './market.js';
-import { nationalSeason } from './national.js';
-import { playingTimeShare } from './playingTime.js';
-import type { Rng } from './rng.js';
-import { seasonStats } from './stats.js';
-import { trainingEffect, type TrainingAxis } from './training.js';
-import type { CareerPlayer, DilemmaChoice, Mark, SeasonRecord } from './types.js';
-import { marketValue } from './value.js';
+} from './dilemmas';
+import { injuryMinutesPenalty, rollInjury } from './injuries';
+import { ageMarks, minutesModifier } from './marks';
+import { clubStrengthWith, leaguePosition } from './clubStrength';
+import { resolveTrophies } from './competitions';
+import { growPlayer } from './growth';
+import { generateOffers, type CandidateClub } from './market';
+import { nationalSeason } from './national';
+import { playingTimeShare } from './playingTime';
+import type { Rng } from './rng';
+import { seasonStats } from './stats';
+import { trainingEffect, type TrainingAxis } from './training';
+import type { CareerPlayer, DilemmaChoice, Mark, SeasonRecord } from './types';
+import { marketValue } from './value';
 
 export interface SimulateSeasonInput {
   season: number;

@@ -1,4 +1,4 @@
-import type { CareerSave } from './play.js';
+import type { CareerSave } from './play';
 
 /** Sale a ogni modifica del motore che cambia l'esito di una simulazione (spec §5.4). */
 export const SAVE_VERSION = 1;

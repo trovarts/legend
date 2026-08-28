@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { createPlayer } from '../../src/engine/create.js';
-import { createRng } from '../../src/engine/rng.js';
+import { createPlayer } from '../../src/engine/create';
+import { createRng } from '../../src/engine/rng';
 
 const base = { name: 'Diego', nationality: 'Italy', role: 'FWD' as const, age: 17 };
 

@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { runCareer } from '../../src/engine/career.js';
-import type { CandidateClub } from '../../src/engine/market.js';
-import { createFileWorldSource } from '../../src/world/fileSource.js';
+import { runCareer } from '../../src/engine/career';
+import type { CandidateClub } from '../../src/engine/market';
+import { createFileWorldSource } from '../../src/world/fileSource';
 
 describe('la carriera completa', () => {
   let clubs: CandidateClub[];

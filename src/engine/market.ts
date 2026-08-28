@@ -1,9 +1,9 @@
-import type { Club, Role } from '../world/types.js';
-import { clubStrength } from './clubStrength.js';
-import { playingTimeShare } from './playingTime.js';
-import type { Rng } from './rng.js';
-import type { Offer, SeasonStats } from './types.js';
-import { marketValue, weeklyWage } from './value.js';
+import type { Club, Role } from '../world/types';
+import { clubStrength } from './clubStrength';
+import { playingTimeShare } from './playingTime';
+import type { Rng } from './rng';
+import type { Offer, SeasonStats } from './types';
+import { marketValue, weeklyWage } from './value';
 
 export interface CandidateClub {
   club: Club;

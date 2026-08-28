@@ -1,6 +1,6 @@
-import { injuryRiskModifier } from './marks.js';
-import type { Rng } from './rng.js';
-import type { Injury, InjurySeverity, Mark } from './types.js';
+import { injuryRiskModifier } from './marks';
+import type { Rng } from './rng';
+import type { Injury, InjurySeverity, Mark } from './types';
 
 export interface InjuryInput {
   season: number;

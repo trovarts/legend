@@ -1,4 +1,4 @@
-import type { LeagueBundle, LeagueSummary } from './types.js';
+import type { LeagueBundle, LeagueSummary } from './types';
 
 /**
  * L'unico punto di contatto fra il gioco e il database del mondo.

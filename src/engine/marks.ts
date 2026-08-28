@@ -1,4 +1,4 @@
-import type { Mark, MarkId } from './types.js';
+import type { Mark, MarkId } from './types';
 
 interface MarkRule {
   /** Un segno permanente non sbiadisce: certe cose restano. */

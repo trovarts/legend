@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { compareSeason, rollShowdown, seasonScoreOf } from '../../src/engine/rival.js';
-import { createRng } from '../../src/engine/rng.js';
-import type { SeasonRecord } from '../../src/engine/types.js';
+import { compareSeason, rollShowdown, seasonScoreOf } from '../../src/engine/rival';
+import { createRng } from '../../src/engine/rng';
+import type { SeasonRecord } from '../../src/engine/types';
 
 function season(over: Partial<SeasonRecord> = {}): SeasonRecord {
   return {

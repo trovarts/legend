@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { computeGoatScore, type GoatInput } from '../../src/engine/goatScore.js';
-import type { SeasonRecord } from '../../src/engine/types.js';
+import { computeGoatScore, type GoatInput } from '../../src/engine/goatScore';
+import type { SeasonRecord } from '../../src/engine/types';
 
 function season(goals: number, rating = 7, cleanSheets = 0): SeasonRecord {
   return {

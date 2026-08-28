@@ -1,0 +1,80 @@
+/*
+ * Il colore del gioco: notte da stadio. Fondo profondo, verde campo, giallo tabellone.
+ * Tutto in variabili: il tema si cambia in un punto solo.
+ */
+:root {
+  --fondo: #0b1015;
+  --fondo-alto: #131b23;
+  --bordo: #223040;
+  --testo: #eef3f7;
+  --testo-tenue: #93a4b5;
+  --campo: #1f9d55;
+  --tabellone: #f5c518;
+  --allarme: #e05252;
+  --raggio: 12px;
+  --colonna: 34rem;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--fondo);
+  color: var(--testo);
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 17px;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+main { max-width: var(--colonna); margin: 0 auto; padding: 1.25rem 1rem 4rem; }
+
+h1, h2, h3 { line-height: 1.15; margin: 0 0 .5rem; letter-spacing: -.02em; }
+h1 { font-size: 1.9rem; }
+h2 { font-size: 1.3rem; }
+
+.tenue { color: var(--testo-tenue); }
+.numero { font-variant-numeric: tabular-nums; }
+
+.card {
+  background: var(--fondo-alto);
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
+  padding: 1rem;
+  margin-bottom: .9rem;
+}
+
+.bottone {
+  display: block;
+  width: 100%;
+  padding: .85rem 1rem;
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
+  background: var(--fondo-alto);
+  color: var(--testo);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.bottone:hover, .bottone:focus-visible { border-color: var(--campo); }
+.bottone[disabled] { opacity: .45; cursor: not-allowed; }
+.bottone-forte { background: var(--campo); border-color: var(--campo); font-weight: 600; text-align: center; }
+.bottone-forte:hover { filter: brightness(1.08); }
+.bottone-scelto { border-color: var(--campo); }
+
+/* La posta dichiarata di ogni scelta: è il cuore del gioco, si vede. */
+.posta { display: block; margin-top: .35rem; color: var(--tabellone); font-size: .92rem; }
+
+.momento { border-left: 3px solid var(--bordo); padding: .1rem 0 .1rem .8rem; margin: .55rem 0; }
+.momento-alto { border-left-color: var(--campo); }
+.momento-basso { border-left-color: var(--allarme); }
+
+.riga { display: flex; justify-content: space-between; gap: 1rem; padding: .3rem 0; flex-wrap: wrap; }
+.griglia { display: grid; grid-template-columns: repeat(2, 1fr); gap: .6rem; }
+
+select.bottone { appearance: none; }
+
+@media (min-width: 40rem) {
+  .griglia { grid-template-columns: repeat(4, 1fr); }
+}

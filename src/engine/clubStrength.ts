@@ -1,5 +1,5 @@
-import type { Club, Role } from '../world/types.js';
-import type { Rng } from './rng.js';
+import type { Club, Role } from '../world/types';
+import type { Rng } from './rng';
 
 const SQUAD_SIZE = 11;
 /** Quanto la classifica si discosta dalla forza pura: senza sorprese non è calcio. */

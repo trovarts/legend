@@ -1,7 +1,7 @@
-import { DILEMMA_CATALOG, type DilemmaContext } from './dilemmaCatalog.js';
-import { addMark } from './marks.js';
-import type { Rng } from './rng.js';
-import type { Dilemma, DilemmaEffects, DilemmaOption, DilemmaOutcome, Mark } from './types.js';
+import { DILEMMA_CATALOG, type DilemmaContext } from './dilemmaCatalog';
+import { addMark } from './marks';
+import type { Rng } from './rng';
+import type { Dilemma, DilemmaEffects, DilemmaOption, DilemmaOutcome, Mark } from './types';
 
 /** Quanto cambia una stagione per effetto delle scelte fatte. */
 export interface DilemmaState {

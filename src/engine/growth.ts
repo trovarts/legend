@@ -1,5 +1,5 @@
-import type { Rng } from './rng.js';
-import type { CareerPlayer } from './types.js';
+import type { Rng } from './rng';
+import type { CareerPlayer } from './types';
 
 /** Quanto si cresce a una certa età: sotto i 22 tutto, dopo i 30 niente. */
 const GROWTH_BY_AGE: readonly (readonly [number, number])[] = [

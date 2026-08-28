@@ -1,4 +1,4 @@
-import type { Role } from './types.js';
+import type { Role } from './types';
 
 const ROLE_BY_POSITION: Record<string, Role> = {
   GK: 'GK',

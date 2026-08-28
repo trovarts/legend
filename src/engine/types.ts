@@ -1,4 +1,4 @@
-import type { Role } from '../world/types.js';
+import type { Role } from '../world/types';
 
 /** Il giocatore dell'utente. Il potenziale non viene mai mostrato come numero (spec §3.1). */
 export interface CareerPlayer {

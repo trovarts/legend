@@ -1,5 +1,5 @@
-import type { Role } from '../world/types.js';
-import type { Award, GoatComponent, GoatScore, SeasonRecord, Showdown, Trophy } from './types.js';
+import type { Role } from '../world/types';
+import type { Award, GoatComponent, GoatScore, SeasonRecord, Showdown, Trophy } from './types';
 
 export interface GoatInput {
   role: Role;

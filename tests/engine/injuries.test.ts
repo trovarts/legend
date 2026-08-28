@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { injuryMinutesPenalty, rollInjury, type InjuryInput } from '../../src/engine/injuries.js';
-import { addMark } from '../../src/engine/marks.js';
-import { createRng } from '../../src/engine/rng.js';
+import { injuryMinutesPenalty, rollInjury, type InjuryInput } from '../../src/engine/injuries';
+import { addMark } from '../../src/engine/marks';
+import { createRng } from '../../src/engine/rng';
 
 const healthy: InjuryInput = { season: 5, age: 24, physique: 70, minutesShare: 0.8, marks: [] };
 

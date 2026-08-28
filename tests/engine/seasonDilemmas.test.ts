@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { createPlayer } from '../../src/engine/create.js';
-import { boldPolicy } from '../../src/engine/dilemmas.js';
-import { addMark } from '../../src/engine/marks.js';
-import { createRng } from '../../src/engine/rng.js';
-import { simulateSeason, type SimulateSeasonInput } from '../../src/engine/season.js';
-import type { Club, Role, WorldPlayer } from '../../src/world/types.js';
+import { createPlayer } from '../../src/engine/create';
+import { boldPolicy } from '../../src/engine/dilemmas';
+import { addMark } from '../../src/engine/marks';
+import { createRng } from '../../src/engine/rng';
+import { simulateSeason, type SimulateSeasonInput } from '../../src/engine/season';
+import type { Club, Role, WorldPlayer } from '../../src/world/types';
 
 function club(id: string, name: string, overalls: readonly number[]): Club {
   const squad: WorldPlayer[] = overalls.map((overall, index) => ({

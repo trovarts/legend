@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { nationalSeason, type NationalInput } from '../../src/engine/national.js';
-import { createRng } from '../../src/engine/rng.js';
-import type { SeasonStats } from '../../src/engine/types.js';
+import { nationalSeason, type NationalInput } from '../../src/engine/national';
+import { createRng } from '../../src/engine/rng';
+import type { SeasonStats } from '../../src/engine/types';
 
 const bigSeason: SeasonStats = {
   appearances: 34, minutes: 2900, goals: 16, assists: 8, cleanSheets: 0, rating: 7.7,

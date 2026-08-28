@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { resolveTrophies, type TrophiesInput } from '../../src/engine/competitions.js';
-import { createRng } from '../../src/engine/rng.js';
+import { resolveTrophies, type TrophiesInput } from '../../src/engine/competitions';
+import { createRng } from '../../src/engine/rng';
 
 const champion: TrophiesInput = {
   season: 5, leagueName: 'Serie A', position: 1, clubCount: 20,

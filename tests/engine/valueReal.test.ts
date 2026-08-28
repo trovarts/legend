@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { marketValue } from '../../src/engine/value.js';
+import { marketValue } from '../../src/engine/value';
 
 /**
  * La verifica che conta: la funzione deve riprodurre le mediane osservate nel

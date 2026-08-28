@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import type { WorldSource } from './source.js';
-import type { LeagueBundle, LeagueSummary } from './types.js';
+import type { WorldSource } from './source';
+import type { LeagueBundle, LeagueSummary } from './types';
 
 /** Sorgente da filesystem: serve ai test e al Simulation Lab. Nel browser userà fetch. */
 export function createFileWorldSource(rootDir: string): WorldSource {

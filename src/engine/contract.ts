@@ -1,4 +1,4 @@
-import type { Rng } from './rng.js';
+import type { Rng } from './rng';
 
 export interface Contract {
   yearsLeft: number;

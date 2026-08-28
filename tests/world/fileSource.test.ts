@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createFileWorldSource } from '../../src/world/fileSource.js';
+import { createFileWorldSource } from '../../src/world/fileSource';
 
 const source = createFileWorldSource('public/world');
 

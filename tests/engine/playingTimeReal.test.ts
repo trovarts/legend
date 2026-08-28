@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { playingTimeShare } from '../../src/engine/playingTime.js';
-import { createFileWorldSource } from '../../src/world/fileSource.js';
-import type { Club } from '../../src/world/types.js';
+import { playingTimeShare } from '../../src/engine/playingTime';
+import { createFileWorldSource } from '../../src/world/fileSource';
+import type { Club } from '../../src/world/types';
 
 /**
  * Questi test usano le ROSE VERE, non squadre inventate.

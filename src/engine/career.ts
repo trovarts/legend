@@ -1,18 +1,18 @@
-import { clubStrength } from './clubStrength.js';
-import { canLeave, signContract, tickContract } from './contract.js';
-import { createPlayer, type CreatePlayerInput } from './create.js';
-import { boldPolicy, type DilemmaPolicy } from './dilemmas.js';
-import type { TrainingAxis } from './training.js';
-import { computeGoatScore } from './goatScore.js';
-import { ambitiousPolicy, type CandidateClub, type TransferPolicy } from './market.js';
-import { advanceRival, compareSeason, createRival, rollShowdown } from './rival.js';
-import { shouldRetire } from './retirement.js';
-import { createRng } from './rng.js';
-import { simulateSeason } from './season.js';
+import { clubStrength } from './clubStrength';
+import { canLeave, signContract, tickContract } from './contract';
+import { createPlayer, type CreatePlayerInput } from './create';
+import { boldPolicy, type DilemmaPolicy } from './dilemmas';
+import type { TrainingAxis } from './training';
+import { computeGoatScore } from './goatScore';
+import { ambitiousPolicy, type CandidateClub, type TransferPolicy } from './market';
+import { advanceRival, compareSeason, createRival, rollShowdown } from './rival';
+import { shouldRetire } from './retirement';
+import { createRng } from './rng';
+import { simulateSeason } from './season';
 import type {
   Award, CareerResult, Dilemma, DilemmaChoice, Injury, Mark, Offer, SeasonRecord, SeasonStats,
   Showdown, Trophy,
-} from './types.js';
+} from './types';
 
 /** Cosa il motore sta aspettando dall'utente. */
 /** Com'è andata la stagione fino al momento della decisione: senza, l'utente sceglie al buio. */

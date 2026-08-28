@@ -1,4 +1,4 @@
-import type { SeasonRecord } from './types.js';
+import type { SeasonRecord } from './types';
 
 export type MomentTone = 'alto' | 'basso' | 'neutro';
 

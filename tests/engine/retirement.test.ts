@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { createRng } from '../../src/engine/rng.js';
-import { shouldRetire } from '../../src/engine/retirement.js';
-import type { CareerPlayer } from '../../src/engine/types.js';
+import { createRng } from '../../src/engine/rng';
+import { shouldRetire } from '../../src/engine/retirement';
+import type { CareerPlayer } from '../../src/engine/types';
 
 function playerAt(age: number, overall: number): CareerPlayer {
   return {

@@ -1,5 +1,5 @@
-import { markIntensity } from './marks.js';
-import type { Dilemma, Injury, Mark } from './types.js';
+import { markIntensity } from './marks';
+import type { Dilemma, Injury, Mark } from './types';
 
 export interface DilemmaContext {
   season: number;
@@ -19,7 +19,7 @@ export interface DilemmaContext {
     clubName: string;
     leagueName: string;
     position: number;
-    stats: import('./types.js').SeasonStats;
+    stats: import('./types').SeasonStats;
     injury: Injury | null;
     minutesShare: number;
   };

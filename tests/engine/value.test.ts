@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { marketValue, weeklyWage } from '../../src/engine/value.js';
+import { marketValue, weeklyWage } from '../../src/engine/value';
 
 describe('marketValue', () => {
   it("cresce con l'overall, sempre", () => {

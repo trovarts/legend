@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { resolveAwards, type AwardsInput } from '../../src/engine/awards.js';
-import { createRng } from '../../src/engine/rng.js';
-import type { SeasonStats } from '../../src/engine/types.js';
+import { resolveAwards, type AwardsInput } from '../../src/engine/awards';
+import { createRng } from '../../src/engine/rng';
+import type { SeasonStats } from '../../src/engine/types';
 
 function stats(goals: number, assists = 5, rating = 7.2): SeasonStats {
   return { appearances: 34, minutes: 2900, goals, assists, cleanSheets: 0, rating };

@@ -3,11 +3,11 @@
  * Per ogni bivio gioca la stessa carriera forzando ogni opzione, e confronta i punteggi.
  * Uso: npm run lab:choices -- --careers=150
  */
-import { runCareer } from '../src/engine/career.js';
-import { DILEMMA_CATALOG } from '../src/engine/dilemmaCatalog.js';
-import { boldPolicy, type DilemmaPolicy } from '../src/engine/dilemmas.js';
-import type { CandidateClub } from '../src/engine/market.js';
-import { createFileWorldSource } from '../src/world/fileSource.js';
+import { runCareer } from '../src/engine/career';
+import { DILEMMA_CATALOG } from '../src/engine/dilemmaCatalog';
+import { boldPolicy, type DilemmaPolicy } from '../src/engine/dilemmas';
+import type { CandidateClub } from '../src/engine/market';
+import { createFileWorldSource } from '../src/world/fileSource';
 
 function arg(name: string, fallback: number): number {
   const raw = process.argv.find((value) => value.startsWith(`--${name}=`));

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { canLeave, signContract, tickContract } from '../../src/engine/contract.js';
-import { createRng } from '../../src/engine/rng.js';
+import { canLeave, signContract, tickContract } from '../../src/engine/contract';
+import { createRng } from '../../src/engine/rng';
 
 describe('signContract', () => {
   it('un giovane firma contratti lunghi', () => {

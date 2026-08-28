@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { generateOffers, type CandidateClub, type OffersInput } from '../../src/engine/market.js';
-import { createRng } from '../../src/engine/rng.js';
-import type { SeasonStats } from '../../src/engine/types.js';
-import type { Club, Role, WorldPlayer } from '../../src/world/types.js';
+import { generateOffers, type CandidateClub, type OffersInput } from '../../src/engine/market';
+import { createRng } from '../../src/engine/rng';
+import type { SeasonStats } from '../../src/engine/types';
+import type { Club, Role, WorldPlayer } from '../../src/world/types';
 
 function club(id: string, name: string, overalls: readonly number[]): Club {
   const squad: WorldPlayer[] = overalls.map((overall, index) => ({

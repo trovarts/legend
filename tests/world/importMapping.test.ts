@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { leagueIdOf, slugify, toLevel, toRole } from '../../src/world/importMapping.js';
+import { leagueIdOf, slugify, toLevel, toRole } from '../../src/world/importMapping';
 
 describe('toRole', () => {
   it('mappa il portiere', () => {

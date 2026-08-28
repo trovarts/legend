@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { seasonMoments } from '../../src/engine/moments.js';
-import type { SeasonRecord } from '../../src/engine/types.js';
+import { seasonMoments } from '../../src/engine/moments';
+import type { SeasonRecord } from '../../src/engine/types';
 
 function record(over: Partial<SeasonRecord> = {}): SeasonRecord {
   return {

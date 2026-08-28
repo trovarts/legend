@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { decodeSave, encodeSave, isSupportedSave, SAVE_VERSION } from '../../src/engine/save.js';
-import type { CareerSave } from '../../src/engine/play.js';
+import { decodeSave, encodeSave, isSupportedSave, SAVE_VERSION } from '../../src/engine/save';
+import type { CareerSave } from '../../src/engine/play';
 
 const save: CareerSave = {
   version: SAVE_VERSION,

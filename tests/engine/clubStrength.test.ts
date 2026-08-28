@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { clubStrength, clubStrengthWith, leaguePosition } from '../../src/engine/clubStrength.js';
-import { createRng } from '../../src/engine/rng.js';
-import type { Club, Role, WorldPlayer } from '../../src/world/types.js';
+import { clubStrength, clubStrengthWith, leaguePosition } from '../../src/engine/clubStrength';
+import { createRng } from '../../src/engine/rng';
+import type { Club, Role, WorldPlayer } from '../../src/world/types';
 
 function club(overalls: readonly number[]): Club {
   const squad: WorldPlayer[] = overalls.map((overall, index) => ({

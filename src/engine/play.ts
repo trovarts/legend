@@ -1,8 +1,8 @@
-import { DecisionRequired, runCareer, type PendingDecision } from './career.js';
-import type { CreatePlayerInput } from './create.js';
-import type { CandidateClub } from './market.js';
-import type { TrainingAxis } from './training.js';
-import type { CareerResult, SeasonRecord } from './types.js';
+import { DecisionRequired, runCareer, type PendingDecision } from './career';
+import type { CreatePlayerInput } from './create';
+import type { CandidateClub } from './market';
+import type { TrainingAxis } from './training';
+import type { CareerResult, SeasonRecord } from './types';
 
 /** Le decisioni prese dall'utente. Chiavi stringa: finiscono in JSON. */
 export interface CareerDecisions {

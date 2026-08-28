@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import type { DilemmaContext } from '../../src/engine/dilemmaCatalog.js';
+import type { DilemmaContext } from '../../src/engine/dilemmaCatalog';
 import {
   applyEffects, boldPolicy, pickDilemmas, resolveOption, type DilemmaState,
-} from '../../src/engine/dilemmas.js';
-import { addMark, markIntensity } from '../../src/engine/marks.js';
-import { createRng } from '../../src/engine/rng.js';
-import type { DilemmaOption } from '../../src/engine/types.js';
+} from '../../src/engine/dilemmas';
+import { addMark, markIntensity } from '../../src/engine/marks';
+import { createRng } from '../../src/engine/rng';
+import type { DilemmaOption } from '../../src/engine/types';
 
 const base: DilemmaContext = {
   season: 5, age: 24, overall: 72, minutesShare: 0.7, injury: null, marks: [],

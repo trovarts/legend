@@ -1,4 +1,4 @@
-import type { Role, WorldPlayer } from '../world/types.js';
+import type { Role, WorldPlayer } from '../world/types';
 
 export interface PlayingTimeInput {
   overall: number;

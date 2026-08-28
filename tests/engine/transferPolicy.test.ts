@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { ambitiousPolicy } from '../../src/engine/market.js';
-import type { Offer } from '../../src/engine/types.js';
+import { ambitiousPolicy } from '../../src/engine/market';
+import type { Offer } from '../../src/engine/types';
 
 function offer(over: Partial<Offer>): Offer {
   return {

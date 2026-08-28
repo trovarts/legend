@@ -6,8 +6,8 @@
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { leagueIdOf, toLevel, toRole } from '../src/world/importMapping.js';
-import type { Club, LeagueBundle, LeagueSummary, WorldPlayer } from '../src/world/types.js';
+import { leagueIdOf, toLevel, toRole } from '../src/world/importMapping';
+import type { Club, LeagueBundle, LeagueSummary, WorldPlayer } from '../src/world/types';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SOURCE = join(ROOT, 'data/raw/fc26-players.csv');

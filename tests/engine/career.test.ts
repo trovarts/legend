@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { runCareer, type CareerWorld } from '../../src/engine/career.js';
-import type { CreatePlayerInput } from '../../src/engine/create.js';
-import type { CandidateClub } from '../../src/engine/market.js';
-import type { WorldPlayer } from '../../src/world/types.js';
+import { runCareer, type CareerWorld } from '../../src/engine/career';
+import type { CreatePlayerInput } from '../../src/engine/create';
+import type { CandidateClub } from '../../src/engine/market';
+import type { WorldPlayer } from '../../src/world/types';
 
 const create: CreatePlayerInput = {
   name: 'Diego', nationality: 'Italy', role: 'FWD', age: 17, leagueLevel: 1,

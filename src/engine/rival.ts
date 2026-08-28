@@ -1,12 +1,12 @@
-import type { Role } from '../world/types.js';
-import { clubStrength } from './clubStrength.js';
-import { signContract, tickContract, type Contract } from './contract.js';
-import { createPlayer } from './create.js';
-import { boldPolicy } from './dilemmas.js';
-import { ambitiousPolicy, type CandidateClub } from './market.js';
-import { createRng, type Rng } from './rng.js';
-import { simulateSeason } from './season.js';
-import type { CareerPlayer, RivalSnapshot, SeasonRecord, Showdown } from './types.js';
+import type { Role } from '../world/types';
+import { clubStrength } from './clubStrength';
+import { signContract, tickContract, type Contract } from './contract';
+import { createPlayer } from './create';
+import { boldPolicy } from './dilemmas';
+import { ambitiousPolicy, type CandidateClub } from './market';
+import { createRng, type Rng } from './rng';
+import { simulateSeason } from './season';
+import type { CareerPlayer, RivalSnapshot, SeasonRecord, Showdown } from './types';
 
 /** Nomi del Rivale: sono di fantasia, non appartengono a nessun calciatore reale. */
 const RIVAL_NAMES: readonly string[] = [

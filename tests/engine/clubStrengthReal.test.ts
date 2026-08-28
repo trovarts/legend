@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { clubStrength } from '../../src/engine/clubStrength.js';
-import { createFileWorldSource } from '../../src/world/fileSource.js';
-import type { Club } from '../../src/world/types.js';
+import { clubStrength } from '../../src/engine/clubStrength';
+import { createFileWorldSource } from '../../src/world/fileSource';
+import type { Club } from '../../src/world/types';
 
 describe('forza dei club veri', () => {
   let serieA: Club[];

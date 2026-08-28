@@ -1,5 +1,5 @@
-import type { Rng } from './rng.js';
-import type { Trophy } from './types.js';
+import type { Rng } from './rng';
+import type { Trophy } from './types';
 
 export interface TrophiesInput {
   season: number;

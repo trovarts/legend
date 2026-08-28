@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { DILEMMA_CATALOG, type DilemmaContext } from '../../src/engine/dilemmaCatalog.js';
-import { addMark } from '../../src/engine/marks.js';
+import { DILEMMA_CATALOG, type DilemmaContext } from '../../src/engine/dilemmaCatalog';
+import { addMark } from '../../src/engine/marks';
 
 const base: DilemmaContext = {
   season: 5, age: 24, overall: 72, minutesShare: 0.7, injury: null, marks: [],

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { playingTimeShare } from '../../src/engine/playingTime.js';
-import type { Role, WorldPlayer } from '../../src/world/types.js';
+import { playingTimeShare } from '../../src/engine/playingTime';
+import type { Role, WorldPlayer } from '../../src/world/types';
 
 function squadOf(role: Role, overalls: readonly number[]): WorldPlayer[] {
   return overalls.map((overall, index) => ({

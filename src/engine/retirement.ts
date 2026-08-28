@@ -1,5 +1,5 @@
-import type { Rng } from './rng.js';
-import type { CareerPlayer } from './types.js';
+import type { Rng } from './rng';
+import type { CareerPlayer } from './types';
 
 const EARLIEST_RETIREMENT_AGE = 32;
 const FORCED_RETIREMENT_AGE = 40;

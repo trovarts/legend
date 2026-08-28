@@ -1,6 +1,6 @@
-import type { Role } from '../world/types.js';
-import type { Rng } from './rng.js';
-import type { Award, SeasonStats } from './types.js';
+import type { Role } from '../world/types';
+import type { Rng } from './rng';
+import type { Award, SeasonStats } from './types';
 
 export interface AwardsInput {
   season: number;

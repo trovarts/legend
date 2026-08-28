@@ -1,6 +1,6 @@
-import type { Role } from '../world/types.js';
-import type { Rng } from './rng.js';
-import type { CareerPlayer } from './types.js';
+import type { Role } from '../world/types';
+import type { Rng } from './rng';
+import type { CareerPlayer } from './types';
 
 export interface CreatePlayerInput {
   name: string;

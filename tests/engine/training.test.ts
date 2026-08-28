@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { TRAINING_AXES, trainingEffect } from '../../src/engine/training.js';
+import { TRAINING_AXES, trainingEffect } from '../../src/engine/training';
 
 describe('gli assi di allenamento', () => {
   it('sono quattro, come dice la specifica', () => {

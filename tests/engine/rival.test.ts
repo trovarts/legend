@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { advanceRival, createRival, rivalSeed } from '../../src/engine/rival.js';
-import type { CandidateClub } from '../../src/engine/market.js';
-import type { Club, Role, WorldPlayer } from '../../src/world/types.js';
+import { advanceRival, createRival, rivalSeed } from '../../src/engine/rival';
+import type { CandidateClub } from '../../src/engine/market';
+import type { Club, Role, WorldPlayer } from '../../src/world/types';
 
 function club(id: string, name: string, league: string, level: number, overall: number): CandidateClub {
   const squad: WorldPlayer[] = Array.from({ length: 22 }, (_, index) => ({

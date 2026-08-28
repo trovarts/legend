@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   addMark, ageMarks, injuryRiskModifier, interestModifier, markIntensity, minutesModifier,
-} from '../../src/engine/marks.js';
-import type { Mark } from '../../src/engine/types.js';
+} from '../../src/engine/marks';
+import type { Mark } from '../../src/engine/types';
 
 describe('addMark', () => {
   it('aggiunge un segno nuovo', () => {

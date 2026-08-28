@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { createRng } from '../../src/engine/rng.js';
-import { seasonStats, type SeasonStatsInput } from '../../src/engine/stats.js';
+import { createRng } from '../../src/engine/rng';
+import { seasonStats, type SeasonStatsInput } from '../../src/engine/stats';
 
 const starterForward: SeasonStatsInput = {
   overall: 78, role: 'FWD', minutesShare: 0.85, clubStrength: 76, leagueLevel: 1,

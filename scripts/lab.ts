@@ -3,11 +3,11 @@
  * Uso: npm run lab -- --careers=2000 --seed=42
  * Esce con codice 1 se una invariante è violata.
  */
-import { runCareer } from '../src/engine/career.js';
-import type { CandidateClub } from '../src/engine/market.js';
-import type { CareerResult } from '../src/engine/types.js';
-import { createFileWorldSource } from '../src/world/fileSource.js';
-import type { Role } from '../src/world/types.js';
+import { runCareer } from '../src/engine/career';
+import type { CandidateClub } from '../src/engine/market';
+import type { CareerResult } from '../src/engine/types';
+import { createFileWorldSource } from '../src/world/fileSource';
+import type { Role } from '../src/world/types';
 
 const ROLES: readonly Role[] = ['GK', 'DEF', 'MID', 'FWD'];
 

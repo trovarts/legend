@@ -1,8 +1,8 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import type { CandidateClub } from '../../src/engine/market.js';
-import { decisionKey, playCareer, type CareerSave } from '../../src/engine/play.js';
-import { SAVE_VERSION } from '../../src/engine/save.js';
-import { createFileWorldSource } from '../../src/world/fileSource.js';
+import type { CandidateClub } from '../../src/engine/market';
+import { decisionKey, playCareer, type CareerSave } from '../../src/engine/play';
+import { SAVE_VERSION } from '../../src/engine/save';
+import { createFileWorldSource } from '../../src/world/fileSource';
 
 describe('playCareer', () => {
   let clubs: CandidateClub[];
