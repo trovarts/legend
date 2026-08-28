@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useState, type ReactElement } from 'react';
+import { useEffect, useState, type ReactElement } from 'react';
 import { clubStrength } from '../engine/clubStrength';
 import type { CareerSave } from '../engine/play';
 import { PLAY_STYLES, type PlayStyle } from '../engine/playstyle';
@@ -50,6 +50,11 @@ export function Creazione({
   const [modo, setModo] = useState<ModoPartita>('dettagliata');
   const [ambizione, setAmbizione] = useState<AmbizioneId>('nessuna');
   const [leagueId, setLeagueId] = useState('');
+
+  // Ogni passo comincia dall'alto: restare a meta' pagina fa perdere il filo.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [passo]);
 
   const ruolo = posizioneById(posizione);
   const campionati = world.leagues

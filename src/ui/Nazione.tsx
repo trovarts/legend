@@ -3,6 +3,7 @@
 import { competitionsOf } from '../engine/competitionsMap';
 import type { LeagueSummary } from '../world/types';
 import { bandiera, inItaliano } from './bandiere';
+import { usaPortaInVista } from './portaInVista';
 
 /**
  * La scheda del paese scelto sulla mappa.
@@ -20,13 +21,18 @@ export function Nazione({
   leagues: readonly LeagueSummary[];
   onConfirm: () => void;
 }) {
+  /*
+   * Sul telefono la scheda nasceva mille pixel piu' in basso: toccavi un paese e non
+   * succedeva niente di visibile. Adesso viene lei da te.
+   */
+  const carta = usaPortaInVista<HTMLDivElement>();
   const mie = leagues.filter((league) => league.country === country).sort((a, b) => a.level - b.level);
   const club = mie.reduce((somma, league) => somma + league.clubCount, 0);
   const competizioni = competitionsOf(country);
   const divisioni = new Set(mie.map((league) => league.level)).size;
 
   return (
-    <div className="card nazione">
+    <div className="card nazione" ref={carta}>
       <div className="nazione-testa">
         <span className="nazione-bandiera" aria-hidden="true">{bandiera(country)}</span>
         <span>

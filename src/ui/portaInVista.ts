@@ -16,7 +16,9 @@ export function usaPortaInVista<T extends HTMLElement>(attivo = true) {
     if (!attivo) return undefined;
     // Un attimo dopo l'entrata in scena, così l'animazione non se la porta dietro.
     const quando = setTimeout(() => {
-      riferimento.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      // Chi ha chiesto meno animazioni ci arriva di colpo: è comunque meglio che cercarla.
+      const dolce = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      riferimento.current?.scrollIntoView({ block: 'center', behavior: dolce ? 'smooth' : 'auto' });
     }, 420);
     return () => clearTimeout(quando);
   }, [attivo]);
