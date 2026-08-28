@@ -3,7 +3,7 @@ import type { Rng } from './rng';
 
 export type MatchEventKind =
   | 'inizio' | 'gol' | 'gol-subito' | 'occasione' | 'palo' | 'parata'
-  | 'cartellino' | 'intervallo' | 'fine';
+  | 'cartellino' | 'intervallo' | 'fine' | 'supplementari' | 'rigore' | 'rigore-sbagliato';
 
 export interface MatchEvent {
   minute: number;
@@ -21,10 +21,18 @@ export interface MatchStats {
   falli: [number, number];
 }
 
+/** Un tiro dal dischetto: chi lo batte e com'è finito. */
+export interface Penalty {
+  mine: boolean;
+  scored: boolean;
+}
+
 export interface MatchResult {
   home: string;
   away: string;
   goals: [number, number];
+  /** Valorizzato solo se la partita è finita ai rigori. */
+  penalties: { home: number; away: number; shots: Penalty[] } | null;
   events: MatchEvent[];
   stats: MatchStats;
   /** Gol e assist del giocatore dell'utente in questa partita. */
@@ -44,6 +52,11 @@ export interface MatchInput {
   playerRole: Role;
   /** Quanto pesa: una finale genera più occasioni di un'amichevole. */
   importance: number;
+  /**
+   * Vero per le partite che non possono finire in parità: in caso di pareggio
+   * si va ai supplementari e poi ai rigori, come in una finale vera.
+   */
+  knockout?: boolean;
 }
 
 const MINUTES = 90;
@@ -139,7 +152,68 @@ export function simulateMatch(input: MatchInput, rng: Rng): MatchResult {
     playerGoals += 1;
   }
 
-  events.push({ minute: 90, kind: 'fine', mine: false, text: 'Fine partita.' });
+  // Una finale non può finire pari: supplementari e, se serve, dal dischetto.
+  let penalties: MatchResult['penalties'] = null;
+  if (input.knockout === true && goals[0] === goals[1]) {
+    events.push({ minute: 90, kind: 'supplementari', mine: false, text: 'Novanta minuti non bastano: si va ai supplementari.' });
+
+    for (let minute = 91; minute <= 120; minute += 1) {
+      if (!rng.chance(0.035)) continue;
+      const perCasa = rng.chance(0.5 + divario * 0.12);
+      const indice = perCasa ? 0 : 1;
+      const mia = perCasa === input.playerAtHome;
+      goals[indice] += 1;
+      stats.tiri[indice] += 1;
+      stats.tiriInPorta[indice] += 1;
+      events.push({
+        minute,
+        kind: mia ? 'gol' : 'gol-subito',
+        mine: mia,
+        text: `${minute}' — Gol nei supplementari: ${perCasa ? input.home : input.away}.`,
+      });
+    }
+
+    if (goals[0] === goals[1]) {
+      const shots: Penalty[] = [];
+      let casa = 0;
+      let ospite = 0;
+
+      /** Un tiro dal dischetto: chi tira e se la mette dentro. */
+      const tira = (perCasa: boolean): void => {
+        const forza = perCasa ? forzaCasa : forzaOspite;
+        const segnato = rng.chance(0.6 + (forza - 70) * 0.004);
+        shots.push({ mine: perCasa === input.playerAtHome, scored: segnato });
+        if (segnato) {
+          if (perCasa) casa += 1;
+          else ospite += 1;
+        }
+        events.push({
+          minute: 120,
+          kind: segnato ? 'rigore' : 'rigore-sbagliato',
+          mine: perCasa === input.playerAtHome,
+          text: segnato ? 'Rigore segnato.' : 'Rigore sbagliato!',
+        });
+      };
+
+      // I primi cinque a testa, con l'uscita anticipata quando è già deciso.
+      for (let giro = 0; giro < 10; giro += 1) {
+        tira(giro % 2 === 0);
+        const tiratiCasa = Math.ceil((giro + 1) / 2);
+        const tiratiOspite = Math.floor((giro + 1) / 2);
+        if (casa > ospite + (5 - tiratiOspite) || ospite > casa + (5 - tiratiCasa)) break;
+      }
+
+      // Poi a oltranza, una coppia alla volta, finché uno non cede.
+      for (let coppia = 0; coppia < 15 && casa === ospite; coppia += 1) {
+        tira(true);
+        tira(false);
+      }
+
+      penalties = { home: casa, away: ospite, shots };
+    }
+  }
+
+  events.push({ minute: input.knockout === true ? 120 : 90, kind: 'fine', mine: false, text: 'Fine partita.' });
 
   const miei = input.playerAtHome ? goals[0] : goals[1];
   const loro = input.playerAtHome ? goals[1] : goals[0];
@@ -150,6 +224,7 @@ export function simulateMatch(input: MatchInput, rng: Rng): MatchResult {
     home: input.home,
     away: input.away,
     goals,
+    penalties,
     events,
     stats,
     playerGoals,

@@ -46,6 +46,7 @@ export function FineStagione({
   const coppa = record.trophies.find((trofeo) => trofeo.kind !== 'league');
   const giocaLaCoppa = coppa !== undefined || record.position <= 4;
 
+
   // Tutto deterministico dal seed della carriera e dalla stagione: rigiocando si rivede uguale.
   const rng = useMemo(() => createRng(seed * 7919 + record.season), [seed, record.season]);
 
@@ -56,20 +57,28 @@ export function FineStagione({
       .filter((club) => club.id !== record.clubId)
       .sort((a, b) => clubStrength(b) - clubStrength(a))[0];
     if (!mio || !avversario) return null;
-    return simulateMatch(
-      {
-        home: mio.name,
-        away: avversario.name,
-        homeStrength: clubStrength(mio),
-        awayStrength: clubStrength(avversario),
-        playerAtHome: true,
-        playerOverall: record.overallEnd,
-        playerRole: 'FWD',
-        importance: 1.2,
-      },
-      createRng(seed * 104729 + record.season),
-    );
-  }, [dellaLega, record.clubId, record.overallEnd, record.season, seed]);
+    // Se c'è un trofeo in ballo la partita è una finale: non può finire in parità.
+    const finale = coppa !== undefined;
+    return {
+      match: simulateMatch(
+        {
+          home: mio.name,
+          away: avversario.name,
+          homeStrength: clubStrength(mio),
+          awayStrength: clubStrength(avversario),
+          playerAtHome: true,
+          playerOverall: record.overallEnd,
+          playerRole: 'FWD',
+          importance: finale ? 1.5 : 1.2,
+          knockout: finale,
+        },
+        createRng(seed * 104729 + record.season),
+      ),
+      homeOverall: clubStrength(mio),
+      awayOverall: clubStrength(avversario),
+      finale,
+    };
+  }, [dellaLega, record.clubId, record.overallEnd, record.season, seed, coppa]);
 
   const [tappa, setTappa] = useState<Tappa>(partita ? 'partita' : 'classifica');
 
@@ -103,9 +112,15 @@ export function FineStagione({
   if (tappa === 'partita' && partita) {
     return (
       <Partita
-        match={partita}
+        match={partita.match}
         playerAtHome
-        titolo={`${record.leagueName} · la partita della stagione`}
+        homeOverall={partita.homeOverall}
+        awayOverall={partita.awayOverall}
+        titolo={
+          partita.finale
+            ? `${coppa?.competitionName ?? 'Coppa'} · finale`
+            : `${record.leagueName} · la partita della stagione`
+        }
         onEnd={avanti}
       />
     );

@@ -77,3 +77,49 @@ describe('simulateMatch', () => {
     expect(simulateMatch(base, createRng(11))).toEqual(simulateMatch(base, createRng(11)));
   });
 });
+
+describe('le partite che non possono finire pari', () => {
+  const finale: MatchInput = { ...base, knockout: true, homeStrength: 74, awayStrength: 74 };
+
+  it('non finiscono mai in parità', () => {
+    for (let seed = 0; seed < 300; seed += 1) {
+      const match = simulateMatch(finale, createRng(seed));
+      const pari = match.goals[0] === match.goals[1];
+      if (pari) {
+        expect(match.penalties).not.toBeNull();
+        expect(match.penalties!.home).not.toBe(match.penalties!.away);
+      }
+    }
+  });
+
+  it('qualche volta si va ai rigori, ma non sempre', () => {
+    let aiRigori = 0;
+    for (let seed = 0; seed < 300; seed += 1) {
+      if (simulateMatch(finale, createRng(seed)).penalties !== null) aiRigori += 1;
+    }
+    expect(aiRigori).toBeGreaterThan(10);
+    expect(aiRigori).toBeLessThan(200);
+  });
+
+  it('la serie di rigori è fatta di tiri alternati e coerenti col punteggio', () => {
+    for (let seed = 0; seed < 200; seed += 1) {
+      const match = simulateMatch(finale, createRng(seed));
+      if (!match.penalties) continue;
+      const segnatiCasa = match.penalties.shots.filter((tiro, indice) => indice % 2 === 0 && tiro.scored).length;
+      const segnatiOspite = match.penalties.shots.filter((tiro, indice) => indice % 2 === 1 && tiro.scored).length;
+      expect(segnatiCasa).toBe(match.penalties.home);
+      expect(segnatiOspite).toBe(match.penalties.away);
+      expect(match.penalties.shots.length).toBeGreaterThanOrEqual(2);
+      // A oltranza si può andare avanti a lungo, come nel calcio vero.
+      // La serie si ferma appena è matematicamente decisa, anche a metà coppia:
+      // per questo il numero di tiri può essere dispari.
+      expect(match.penalties.shots.length).toBeLessThanOrEqual(40);
+    }
+  });
+
+  it('una partita normale non va mai ai rigori', () => {
+    for (let seed = 0; seed < 100; seed += 1) {
+      expect(simulateMatch(base, createRng(seed)).penalties).toBeNull();
+    }
+  });
+});
