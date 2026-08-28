@@ -53,4 +53,20 @@ describe('le divisioni minori', () => {
     expect(leghe).toHaveLength(3);
     for (const lega of leghe) expect(lega.summary.level).toBe(4);
   });
+
+  it('i comprimari hanno i nomi che si passano, senza doppioni in rosa', () => {
+    const nomi = ['A. Rossi', 'B. Bianchi', 'C. Verdi', 'D. Neri', 'E. Gialli', 'F. Blu',
+      'G. Grigi', 'H. Viola', 'I. Rosa', 'L. Aranci', 'M. Marroni', 'N. Argenti',
+      'O. Oro', 'P. Bronzo', 'Q. Rame', 'R. Ferro', 'S. Acciaio', 'T. Zinco',
+      'U. Piombo', 'V. Stagno', 'Z. Nichel', 'A. Cromo', 'B. Titanio', 'C. Platino'];
+    const lega = buildLowerLeagues('Italy', 3, [4], nomi)[0]!;
+    for (const club of lega.clubs) {
+      const inRosa = club.squad.map((giocatore) => giocatore.name);
+      expect(new Set(inRosa).size).toBe(inRosa.length);
+      for (const giocatore of club.squad) {
+        expect(giocatore.nationality).toBe('Italy');
+        expect(giocatore.valueEur).toBeGreaterThan(0);
+      }
+    }
+  });
 });

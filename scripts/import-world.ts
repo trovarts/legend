@@ -142,6 +142,20 @@ function main(): void {
 
   // Terza e quarta divisione: il dataset si ferma alla serie B, ma una carriera
   // vera comincia piu' in basso. Le generiamo qui, una volta, con lo stesso seed.
+  // I nomi dei comprimari delle serie minori vengono dai calciatori veri di quel
+  // paese: nelle categorie basse giocano i ragazzi di casa, non degli sconosciuti.
+  const nomiPerPaese = new Map<string, string[]>();
+  for (const league of leagues.values()) {
+    for (const club of league.clubs.values()) {
+      for (const giocatore of club.squad) {
+        if (giocatore.nationality === '') continue;
+        const elenco = nomiPerPaese.get(giocatore.nationality) ?? [];
+        if (elenco.length < 400) elenco.push(giocatore.name);
+        nomiPerPaese.set(giocatore.nationality, elenco);
+      }
+    }
+  }
+
   const livelliVeri = new Map<string, Set<number>>();
   for (const league of index) {
     const set = livelliVeri.get(league.country) ?? new Set<number>();
@@ -154,7 +168,8 @@ function main(): void {
     // Inghilterra e Germania hanno gia' la terza serie vera: li' non si inventa niente.
     const mancanti = [3, 4].filter((livello) => !gia.has(livello));
     if (mancanti.length === 0) continue;
-    for (const generata of buildLowerLeagues(country, semeDelPaese(country), mancanti)) {
+    const nomi = [...new Set(nomiPerPaese.get(country) ?? [])].sort();
+    for (const generata of buildLowerLeagues(country, semeDelPaese(country), mancanti, nomi)) {
       const bundle: LeagueBundle = { league: generata.summary, clubs: generata.clubs };
       writeFileSync(join(OUT_DIR, 'leagues', `${generata.summary.id}.json`), JSON.stringify(bundle));
       index.push(generata.summary);

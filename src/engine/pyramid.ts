@@ -64,7 +64,13 @@ export interface GeneratedLeague {
   clubs: Club[];
 }
 
-function rosaGenerata(clubId: string, forza: number, rng: Rng): WorldPlayer[] {
+function rosaGenerata(
+  clubId: string,
+  forza: number,
+  country: string,
+  nomi: readonly string[],
+  rng: Rng,
+): WorldPlayer[] {
   const RUOLI: readonly { role: Role; quanti: number }[] = [
     { role: 'GK', quanti: 3 },
     { role: 'DEF', quanti: 8 },
@@ -72,19 +78,35 @@ function rosaGenerata(clubId: string, forza: number, rng: Rng): WorldPlayer[] {
     { role: 'FWD', quanti: 5 },
   ];
   const rosa: WorldPlayer[] = [];
+  const presi = new Set<string>();
   for (const gruppo of RUOLI) {
     for (let indice = 0; indice < gruppo.quanti; indice += 1) {
       const overall = Math.max(35, Math.round(forza + rng.int(-6, 5)));
       const eta = rng.int(18, 34);
+      // Un compagno di reparto senza nome non è un ostacolo, è una riga vuota:
+      // i nomi arrivano dai calciatori veri di quel paese.
+      const nome = (() => {
+        if (nomi.length === 0) return `Giocatore ${rosa.length + 1}`;
+        const partenza = rng.int(0, nomi.length - 1);
+        for (let passo = 0; passo < nomi.length; passo += 1) {
+          const candidato = nomi[(partenza + passo) % nomi.length]!;
+          if (!presi.has(candidato)) {
+            presi.add(candidato);
+            return candidato;
+          }
+        }
+        return `${nomi[partenza]!} jr`;
+      })();
       rosa.push({
         id: `${clubId}-g${rosa.length}`,
-        name: `Giocatore ${rosa.length + 1}`,
+        name: nome,
         age: eta,
         role: gruppo.role,
         overall,
         potential: Math.min(90, overall + Math.max(0, 26 - eta)),
-        valueEur: 0,
-        nationality: '',
+        // In queste categorie i cartellini valgono poco: decine di migliaia, non milioni.
+        valueEur: Math.max(10_000, Math.round((overall - 30) ** 2 * 900)),
+        nationality: country,
       });
     }
   }
@@ -99,6 +121,8 @@ export function buildLowerLeagues(
   country: string,
   seed: number,
   livelli: readonly number[] = [3, 4],
+  /** Nomi veri di calciatori di quel paese, da cui pescare i comprimari. */
+  nomi: readonly string[] = [],
 ): GeneratedLeague[] {
   const citta = CITTA[country];
   if (!citta || citta.length < 12) return [];
@@ -136,7 +160,11 @@ export function buildLowerLeagues(
         const clubId = `${id}-c${indice}`;
         // Più si scende, più le rose sono modeste: è quello che rende dura la gavetta.
         const forza = (livello === 3 ? 62 : 55) + rng.int(-4, 4);
-        clubs.push({ id: clubId, name: nomeClub(citta1), squad: rosaGenerata(clubId, forza, rng) });
+        clubs.push({
+          id: clubId,
+          name: nomeClub(citta1),
+          squad: rosaGenerata(clubId, forza, country, nomi, rng),
+        });
       }
 
       leghe.push({
