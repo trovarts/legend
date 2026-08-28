@@ -585,3 +585,13 @@ select.bottone { appearance: none; }
 .nazione-blocco { display: flex; flex-direction: column; gap: .18rem; }
 .nazione-voce { font-size: .82rem; line-height: 1.35; }
 .nazione-voce b { display: inline-block; min-width: 1.1em; color: var(--oro); }
+
+.obiettivi { border: 1px solid var(--bordo); border-radius: var(--raggio); padding: .7rem .8rem; margin: .8rem 0; background: var(--carta); }
+.obiettivo { display: flex; align-items: center; gap: .6rem; padding: .35rem 0; }
+.obiettivo + .obiettivo { border-top: 1px solid var(--bordo); }
+.obiettivo-grado { font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; color: var(--oro); min-width: 5.4rem; }
+.obiettivo-grado-minore { color: var(--tenue); }
+.obiettivo-testo { flex: 1; font-size: .9rem; }
+.obiettivo-esito { font-weight: 800; }
+.obiettivo-fatto .obiettivo-esito { color: var(--verde); }
+.obiettivo-mancato .obiettivo-esito { color: var(--rosso); }

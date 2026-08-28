@@ -74,6 +74,26 @@ export function Resoconto({
         )}
       </div>
 
+      {record.objectives && record.objectivesMet && (
+        <div className="obiettivi">
+          <span className="contesto-etichetta">Gli obiettivi di agosto</span>
+          {([
+            ['Principale', record.objectives.primary.text, record.objectivesMet.primary],
+            ['Secondario', record.objectives.secondary.text, record.objectivesMet.secondary],
+          ] as const).map(([grado, testo, fatto]) => (
+            <div key={grado} className={`obiettivo${fatto ? ' obiettivo-fatto' : ' obiettivo-mancato'}`}>
+              <span className={`obiettivo-grado${grado === 'Secondario' ? ' obiettivo-grado-minore' : ''}`}>
+                {grado}
+              </span>
+              <span className="obiettivo-testo">{testo}</span>
+              <span className="obiettivo-esito" aria-label={fatto ? 'raggiunto' : 'mancato'}>
+                {fatto ? '✓' : '✕'}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="riga numero" style={{ borderTop: '1px solid var(--bordo)', paddingTop: '.8rem' }}>
         <span>{record.stats.appearances} presenze</span>
         <span>{record.stats.goals} gol</span>

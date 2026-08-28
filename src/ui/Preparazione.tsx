@@ -1,5 +1,6 @@
 'use client';
 
+import type { ClubObjectives } from '../engine/objectives';
 import { TRAINING_AXES, trainingEffect, type TrainingAxis } from '../engine/training';
 import { Scelta, Scelte } from './Scelte';
 
@@ -36,11 +37,13 @@ export function Preparazione({
   season,
   age,
   clubName,
+  objectives,
   onChoose,
 }: {
   season: number;
   age: number;
   clubName: string;
+  objectives: ClubObjectives;
   onChoose: (axis: TrainingAxis) => void;
 }) {
   return (
@@ -53,6 +56,18 @@ export function Preparazione({
       <p className="sommario">
         {age} anni, {clubName}. Una scelta sola per tutta l&apos;estate, e conta per sempre.
       </p>
+      <div className="obiettivi">
+        <span className="contesto-etichetta">Cosa ti chiede il club</span>
+        <div className="obiettivo">
+          <span className="obiettivo-grado">Principale</span>
+          <span className="obiettivo-testo">{objectives.primary.text}</span>
+        </div>
+        <div className="obiettivo">
+          <span className="obiettivo-grado obiettivo-grado-minore">Secondario</span>
+          <span className="obiettivo-testo">{objectives.secondary.text}</span>
+        </div>
+      </div>
+
       <Scelte>
         {TRAINING_AXES.map((axis) => {
           const facce = facceDi(axis.id);

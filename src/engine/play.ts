@@ -150,6 +150,7 @@ export function playCareer(save: CareerSave, clubs: readonly CandidateClub[]): P
             age: snapshot.age,
             overall: snapshot.overall,
             clubName: snapshot.clubName,
+            objectives: snapshot.objectives,
           });
         }
         return chosen;

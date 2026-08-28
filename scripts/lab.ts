@@ -230,6 +230,22 @@ async function main(): Promise<void> {
     failures.push(`retrocessioni fuori scala: ${(quotaRetrocessioni * 100).toFixed(1)}% delle stagioni (atteso 1-30%)`);
   }
 
+  // Un obiettivo mai raggiunto è una punizione, uno sempre raggiunto è un arredo.
+  const conObiettivi = results.flatMap((r) => r.seasons).filter((s) => s.objectivesMet !== undefined);
+  const quotaPrincipale = conObiettivi.length === 0 ? 0
+    : conObiettivi.filter((s) => s.objectivesMet!.primary).length / conObiettivi.length;
+  const quotaSecondario = conObiettivi.length === 0 ? 0
+    : conObiettivi.filter((s) => s.objectivesMet!.secondary).length / conObiettivi.length;
+  console.log(
+    `Obiettivi del club centrati: principale ${(quotaPrincipale * 100).toFixed(0)}% | secondario ${(quotaSecondario * 100).toFixed(0)}%`,
+  );
+  if (quotaPrincipale < 0.25 || quotaPrincipale > 0.75) {
+    failures.push(`obiettivo principale sbilanciato: centrato nel ${(quotaPrincipale * 100).toFixed(0)}% delle stagioni (atteso 25-75%)`);
+  }
+  if (quotaSecondario < 0.25 || quotaSecondario > 0.85) {
+    failures.push(`obiettivo secondario sbilanciato: centrato nel ${(quotaSecondario * 100).toFixed(0)}% delle stagioni (atteso 25-85%)`);
+  }
+
   const medianGoat = percentile(goatScores, 0.5);
   if (medianGoat < 50 || medianGoat > 700) {
     failures.push(`punteggio GOAT mediano fuori scala: ${medianGoat}`);

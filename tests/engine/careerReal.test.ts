@@ -78,4 +78,33 @@ describe('carriere sulle rose vere', () => {
       });
     expect(JSON.stringify(run())).toBe(JSON.stringify(run()));
   });
+
+  it('chi viene promosso gioca davvero nella categoria di sopra', () => {
+    const quarta = clubs.filter((entry) => entry.leagueLevel === 4);
+    expect(quarta.length).toBeGreaterThan(0);
+
+    let promozioniSeguite = 0;
+    let saliti = 0;
+    for (let seed = 0; seed < 60; seed += 1) {
+      const start = quarta[seed % quarta.length]!;
+      const result = runCareer({
+        create: { name: 'Diego', nationality: 'Italy', role: 'FWD', age: 14, leagueLevel: 4 },
+        world: { clubs, startClubId: start.club.id },
+        seed,
+      });
+      const stagioni = result.seasons;
+      for (let i = 0; i < stagioni.length - 1; i += 1) {
+        const questa = stagioni[i]!;
+        const prossima = stagioni[i + 1]!;
+        // Solo se resta nello stesso club: un trasferimento cambia categoria da sé.
+        if (questa.movement !== 'promosso' || prossima.clubId !== questa.clubId) continue;
+        promozioniSeguite += 1;
+        expect(prossima.leagueLevel).toBe(questa.leagueLevel - 1);
+      }
+      if (Math.min(...stagioni.map((s) => s.leagueLevel)) < 4) saliti += 1;
+    }
+
+    expect(promozioniSeguite).toBeGreaterThan(0);
+    expect(saliti).toBeGreaterThan(30);
+  });
 });

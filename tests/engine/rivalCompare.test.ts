@@ -10,7 +10,7 @@ function season(over: Partial<SeasonRecord> = {}): SeasonRecord {
     stats: { appearances: 30, minutes: 2500, goals: 10, assists: 5, cleanSheets: 0, rating: 7 },
     position: 5, trophies: [], awards: [],
     national: { capped: false, caps: 0, goals: 0, tournament: null },
-    valueEur: 5_000_000, offers: [], injury: null, choices: [], marks: [], movement: null, playoffPlayed: false,
+    valueEur: 5_000_000, offers: [], injury: null, choices: [], marks: [], movement: null, playoffPlayed: false, cupRound: 0,
     ...over,
   };
 }

@@ -7,7 +7,7 @@ import {
 import { injuryMinutesPenalty, rollInjury } from './injuries';
 import { ageMarks, minutesModifier } from './marks';
 import { clubStrengthWith, leaguePosition } from './clubStrength';
-import { resolveTrophies } from './competitions';
+import { cupRun, resolveTrophies } from './competitions';
 import { competitionsOf, continentalTierFor, type ContinentalTier } from './competitionsMap';
 import { growPlayer } from './growth';
 import type { Agent } from './agent';
@@ -15,6 +15,7 @@ import type { AgentRequest } from './agentRequest';
 import { generateOffers, type CandidateClub } from './market';
 import { resolveMovement, type Movement } from './movement';
 import { nationalSeason } from './national';
+import { judgeObjectives, type ClubObjectives } from './objectives';
 import { playingTimeShare } from './playingTime';
 import type { Rng } from './rng';
 import { seasonStats } from './stats';
@@ -55,6 +56,8 @@ export interface SimulateSeasonInput {
   training: TrainingAxis;
   /** Come interpreta il ruolo. */
   style?: PlayStyle;
+  /** Cosa il club ha chiesto quest'anno. */
+  objectives?: ClubObjectives;
 }
 
 export interface SeasonOutcome {
@@ -239,6 +242,13 @@ export function simulateSeason(input: SimulateSeasonInput, rng: Rng): SeasonOutc
 
   const marks = ageMarks(state.marks);
 
+  const cammino = cupRun(
+    position,
+    league.clubCount,
+    trophies.some((trofeo) => trofeo.kind === 'nationalCup'),
+    rng,
+  );
+
   const salto = resolveMovement(
     {
       position,
@@ -274,6 +284,15 @@ export function simulateSeason(input: SimulateSeasonInput, rng: Rng): SeasonOutc
       marks,
       movement: salto.movement,
       playoffPlayed: salto.viaPlayoff,
+      cupRound: cammino,
+      objectives: input.objectives,
+      objectivesMet:
+        input.objectives === undefined
+          ? undefined
+          : judgeObjectives(input.objectives, {
+              position, cupRound: cammino, minutesShare, stats,
+              capped: national.capped,
+            }),
     },
     grownPlayer,
     qualifiedNextSeason: continentalTierFor(position, competitions),

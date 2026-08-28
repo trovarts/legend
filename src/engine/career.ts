@@ -3,7 +3,8 @@ import { canLeave, signContract, tickContract } from './contract';
 import { createPlayer, type CreatePlayerInput } from './create';
 import { boldPolicy, type DilemmaPolicy } from './dilemmas';
 import type { Agent } from './agent';
-import type { ContinentalTier } from './competitionsMap';
+import { competitionsOf, type ContinentalTier } from './competitionsMap';
+import { seasonObjectives, type ClubObjectives } from './objectives';
 import type { AgentRequest } from './agentRequest';
 import type { PlayStyle } from './playstyle';
 import type { TrainingAxis } from './training';
@@ -30,7 +31,11 @@ export interface SeasonSoFar {
 }
 
 export type PendingDecision =
-  | { kind: 'training'; season: number; age: number; overall: number; clubName: string }
+  | {
+      kind: 'training'; season: number; age: number; overall: number; clubName: string;
+      /** Cosa il club chiede quest'anno: si legge prima di scegliere il ritiro. */
+      objectives: ClubObjectives;
+    }
   | { kind: 'dilemma'; season: number; dilemma: Dilemma; soFar: SeasonSoFar }
   | { kind: 'transfer'; season: number; offers: Offer[] };
 
@@ -64,7 +69,10 @@ export interface RunCareerInput {
   /** Cosa gli è stato chiesto di cercare, stagione per stagione. */
   requestFor?: (season: number) => AgentRequest | undefined;
   /** Su cosa lavora in preparazione; in Fase 4 lo sceglie l'utente. */
-  trainingPolicy?: (season: number, snapshot: { age: number; overall: number; clubName: string }) => TrainingAxis;
+  trainingPolicy?: (
+    season: number,
+    snapshot: { age: number; overall: number; clubName: string; objectives: ClubObjectives },
+  ) => TrainingAxis;
   /**
    * Chiamata a ogni stagione conclusa: raccoglie lo stato anche se poi si sospende.
    * Porta con sé il Rivale, che altrimenti si vedrebbe solo alla fine della carriera.
@@ -152,6 +160,20 @@ export function runCareer(input: RunCareerInput): CareerResult {
       if (picked && !candidates.includes(picked)) candidates.push(picked);
     }
 
+    // Gli obiettivi si annunciano ad agosto, prima di ogni scelta: hanno un
+    // generatore tutto loro, così aggiungerli non sposta nessuna carriera esistente.
+    const forzaClub = clubStrength(club.club);
+    const migliori = leagueStrengths.filter((valore) => valore > forzaClub).length;
+    const objectives = seasonObjectives(
+      {
+        expectedPosition: migliori + 1,
+        clubCount: leagueStrengths.length,
+        role: player.role,
+        cupName: competitionsOf(paeseDelClub).cup,
+      },
+      createRng(input.seed * 2654435761 + season * 40503),
+    );
+
     const outcome = simulateSeason(
       {
         season,
@@ -176,8 +198,9 @@ export function runCareer(input: RunCareerInput): CareerResult {
         minutesBonus,
         dilemmaPolicy,
         style: input.style,
+        objectives,
         training: (input.trainingPolicy ?? (() => 'tecnica' as const))(season, {
-          age: player.age, overall: player.overall, clubName: club.club.name,
+          age: player.age, overall: player.overall, clubName: club.club.name, objectives,
         }),
       },
       rng,

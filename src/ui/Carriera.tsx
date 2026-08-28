@@ -288,6 +288,7 @@ export function Carriera({
               season={pending.season}
               age={pending.age}
               clubName={pending.clubName}
+              objectives={pending.objectives}
               onChoose={(axis) =>
                 decide({ training: { ...save.decisions.training, [String(pending.season)]: axis } })
               }

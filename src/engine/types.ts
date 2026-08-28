@@ -1,4 +1,5 @@
 import type { Role } from '../world/types';
+import type { ClubObjectives } from './objectives';
 
 /** Il giocatore dell'utente. Il potenziale non viene mai mostrato come numero (spec §3.1). */
 export interface CareerPlayer {
@@ -184,6 +185,12 @@ export interface SeasonRecord {
   movement: 'promosso' | 'retrocesso' | null;
   /** La promozione si è decisa ai playoff: c'è un tabellone da guardare. */
   playoffPlayed: boolean;
+  /** Fin dove è arrivata la squadra in coppa nazionale. */
+  cupRound: 0 | 1 | 2 | 3 | 4 | 5;
+  /** Cosa aveva chiesto il club ad agosto. */
+  objectives?: ClubObjectives;
+  /** E se è stato fatto. */
+  objectivesMet?: { primary: boolean; secondary: boolean };
 }
 
 export type GoatComponent =

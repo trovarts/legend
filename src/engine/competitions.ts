@@ -29,6 +29,30 @@ function cupChance(position: number, clubCount: number): number {
   return (0.1 + normalized ** 3 * 2.9) / Math.max(4, clubCount);
 }
 
+/** Fin dove si arriva in coppa: 0 fuori subito, 5 alzata. */
+export type CupRound = 0 | 1 | 2 | 3 | 4 | 5;
+
+/**
+ * Il cammino in coppa nazionale, turno per turno.
+ * Vale la pena raccontarlo anche quando non si vince: «eliminati in semifinale» è
+ * una stagione diversa da «fuori al primo turno», e il club te lo chiede ad agosto.
+ */
+export function cupRun(
+  position: number,
+  clubCount: number,
+  wonCup: boolean,
+  rng: Rng,
+): CupRound {
+  if (wonCup) return 5;
+  const forza = 1 - (position - 1) / Math.max(1, clubCount - 1);
+  let turno = 0;
+  for (let passo = 0; passo < 4; passo += 1) {
+    if (!rng.chance(0.3 + forza * 0.42)) break;
+    turno += 1;
+  }
+  return turno as CupRound;
+}
+
 export function resolveTrophies(input: TrophiesInput, rng: Rng): Trophy[] {
   const trophies: Trophy[] = [];
 
