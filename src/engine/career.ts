@@ -184,5 +184,6 @@ export function runCareer(input: RunCareerInput): CareerResult {
     marks,
     injuries,
     seasonsAheadOfRival,
+    careerYearsBurned: retirementDelta,
   };
 }

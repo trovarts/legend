@@ -129,3 +129,35 @@ contratti pluriennali, che in Fase 2 non esistono.
 **Non corretto adesso di proposito:** i contratti servono comunque alla Fase 3, dove il
 rinnovo è uno dei bivi con posta dichiarata (spec §3.5). Introdurli lì, e non qui con una
 pezza nella politica di trasferimento.
+
+## D-009 — Il talento va generato, non sperato
+
+Alla fine della Fase 3 il Lab segnalava che **meno dell'1% delle carriere superava 85 di
+picco**: la condizione posta da D-004 era di nuovo violata, perché gli infortuni tolgono
+minuti e senza minuti non si cresce.
+
+La prima ipotesi era sbagliata. Il collo di bottiglia non erano gli infortuni ma la
+**generazione del giocatore**: `createPlayer` partiva sempre da un overall di ~55 e
+affidava tutto al margine di potenziale, con un tetto che rendeva 85 quasi irraggiungibile.
+
+I dati hanno chiarito come funziona la realtà: sui 1999 under 19 del dataset il margine di
+potenziale arriva **al massimo a +26** (mediana +15), mentre il potenziale assoluto tocca
+95. Vuol dire che i fuoriclasse non hanno un margine enorme — **partono già forti**. Il
+modello ora genera il talento in tre fasce (fenomeno, promessa, buon giovane), e la
+crescita premia di più chi gioca titolare, perché chi ha talento e campo deve esprimerlo.
+
+Effetto: le carriere sopra 85 di picco sono tornate sopra l'1%, e il picco medio è salito
+da 70 a 71,7 in tutti e quattro i ruoli.
+
+## D-010 — Il protagonista è più talentuoso della media, di proposito
+
+Il generatore produce circa il **7% di giovani con potenziale da 85 in su**, contro il
+**3,9%** misurato fra gli under 19 di prima divisione nel dataset.
+
+Lo scarto è voluto. Quel 3,9% riguarda ragazzi che sono già stati selezionati per entrare
+in una rosa di massima serie; il giocatore dell'utente è il protagonista di una storia, non
+un nome preso a caso da una lista. Un gioco in cui il 96% delle partite dice «sei un onesto
+mestierante» non è un gioco.
+
+È la stessa lezione di D-007, dall'altro lato: **i dati misurano, il design decide** — e
+quando il design si allontana dal dato, lo si scrive invece di nasconderlo in una soglia.

@@ -25,11 +25,11 @@ describe('createPlayer', () => {
     expect(firstTotal / 200).toBeGreaterThan(fourthTotal / 200 + 6);
   });
 
-  it("il potenziale è sempre sopra l'overall e non supera 94", () => {
+  it("il potenziale è sempre sopra l'overall e non supera 95", () => {
     for (let seed = 0; seed < 500; seed += 1) {
       const player = createPlayer({ ...base, leagueLevel: 2 }, createRng(seed));
       expect(player.potential).toBeGreaterThan(player.overall);
-      expect(player.potential).toBeLessThanOrEqual(94);
+      expect(player.potential).toBeLessThanOrEqual(95);
     }
   });
 
@@ -39,6 +39,19 @@ describe('createPlayer', () => {
       expect(player.peakAge).toBeGreaterThanOrEqual(27);
       expect(player.peakAge).toBeLessThanOrEqual(29);
     }
+  });
+
+  it('i fenomeni sono rari ma esistono, come nel dataset reale', () => {
+    let phenoms = 0;
+    for (let seed = 0; seed < 3000; seed += 1) {
+      if (createPlayer({ ...base, leagueLevel: 1 }, createRng(seed)).potential >= 85) phenoms += 1;
+    }
+    const share = phenoms / 3000;
+    // Nel dataset il 3,9% degli under 19 di prima divisione ha potenziale da 85 in su.
+    // Noi stiamo poco sopra, di proposito: il giocatore dell'utente è il protagonista,
+    // non un ragazzo preso a caso dalla rosa. Vedi la decisione D-010.
+    expect(share).toBeGreaterThan(0.015);
+    expect(share).toBeLessThan(0.09);
   });
 
   it('è deterministico: stesso seed, stesso giocatore', () => {

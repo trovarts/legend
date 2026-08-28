@@ -76,8 +76,13 @@ async function main(): Promise<void> {
         failures.push(`carriera ${seed}: minuti incoerenti con le presenze`);
       }
     }
-    if (result.retiredAt < 30 || result.retiredAt > 41) {
-      failures.push(`carriera ${seed}: ritiro a ${result.retiredAt} anni`);
+    // Ritirarsi presto è legittimo se lo si è scelto: le infiltrazioni bruciano anni,
+    // ed è la posta dichiarata del bivio. Deve però restare spiegato, non arbitrario.
+    const earliest = Math.max(25, 30 + result.careerYearsBurned);
+    if (result.retiredAt < earliest || result.retiredAt > 41) {
+      failures.push(
+        `carriera ${seed}: ritiro a ${result.retiredAt} anni con ${result.careerYearsBurned} anni bruciati`,
+      );
     }
     if (result.seasons.length === 0) {
       failures.push(`carriera ${seed}: nessuna stagione giocata`);
@@ -118,6 +123,17 @@ async function main(): Promise<void> {
   const withAward = results.filter((result) => result.awards.length > 0).length / results.length;
   const capped = results.filter((result) => result.totalCaps > 0).length / results.length;
   const values = [...results.map((result) => result.peakValueEur)].sort((a, b) => a - b);
+  const goatScores = [...results.map((result) => result.goat.total)].sort((a, b) => a - b);
+  const rivalWins =
+    results.filter((result) => result.seasonsAheadOfRival < result.seasons.length / 2).length /
+    results.length;
+  const choicesPerCareer = average(results.map((result) => result.choices.length));
+  const injuriesPerCareer = average(results.map((result) => result.injuries.length));
+  const withPermanentMark =
+    results.filter((result) => result.marks.some((mark) => mark.id === 'ginocchio-fragile')).length /
+    results.length;
+  const showdownRate =
+    results.filter((result) => result.showdowns.length > 0).length / results.length;
 
   console.log(`Carriere simulate: ${results.length} su ${clubs.length} club`);
   console.log(`Stagioni per carriera: media ${averageSeasons.toFixed(1)} (min ${Math.min(...seasonCounts)}, max ${Math.max(...seasonCounts)})`);
@@ -128,6 +144,11 @@ async function main(): Promise<void> {
   console.log(`Club per carriera: media ${average(clubCounts).toFixed(1)} (max ${Math.max(...clubCounts)})`);
   console.log(`Con almeno un trofeo: ${(withTrophy * 100).toFixed(1)}% | con un premio: ${(withAward * 100).toFixed(1)}% | con presenze in nazionale: ${(capped * 100).toFixed(1)}%`);
   console.log(`Valore di picco mediano: ${(percentile(values, 0.5) / 1e6).toFixed(1)}M | massimo ${(values.at(-1)! / 1e6).toFixed(0)}M`);
+
+  console.log(`Punteggio GOAT: p10 ${percentile(goatScores, 0.1)} | p50 ${percentile(goatScores, 0.5)} | p90 ${percentile(goatScores, 0.9)} | max ${goatScores.at(-1)}`);
+  console.log(`Il Rivale chiude davanti nel ${(rivalWins * 100).toFixed(1)}% delle carriere`);
+  console.log(`Decisioni per carriera: ${choicesPerCareer.toFixed(1)} | infortuni: ${injuriesPerCareer.toFixed(1)} | con ginocchio fragile: ${(withPermanentMark * 100).toFixed(1)}%`);
+  console.log(`Carriere con almeno uno scontro diretto: ${(showdownRate * 100).toFixed(1)}%`);
 
   for (const role of ROLES) {
     const byRole = results.filter((result) => result.player.role === role);
@@ -160,6 +181,22 @@ async function main(): Promise<void> {
   const legends = peaks.filter((peak) => peak >= 85).length / peaks.length;
   if (legends < 0.01) {
     failures.push(`nessuna leggenda: solo ${(legends * 100).toFixed(2)}% supera 85 di picco (atteso almeno l'1%)`);
+  }
+
+  // Il Rivale deve essere un avversario vero: se vince quasi sempre è frustrante,
+  // se perde quasi sempre è inutile (spec §3.4).
+  if (rivalWins < 0.3 || rivalWins > 0.7) {
+    failures.push(`il Rivale è sbilanciato: chiude davanti nel ${(rivalWins * 100).toFixed(1)}% delle carriere (atteso 30-70%)`);
+  }
+  if (choicesPerCareer < 5) {
+    failures.push(`troppe poche decisioni per carriera: ${choicesPerCareer.toFixed(1)}`);
+  }
+  if (injuriesPerCareer < 1 || injuriesPerCareer > 8) {
+    failures.push(`infortuni fuori scala: ${injuriesPerCareer.toFixed(1)} per carriera (atteso 1-8)`);
+  }
+  const medianGoat = percentile(goatScores, 0.5);
+  if (medianGoat < 50 || medianGoat > 700) {
+    failures.push(`punteggio GOAT mediano fuori scala: ${medianGoat}`);
   }
 
   if (failures.length > 0) {

@@ -165,7 +165,10 @@ export function simulateSeason(input: SimulateSeasonInput, rng: Rng): SeasonOutc
     ...player,
     overall: Math.min(99, Math.max(1, state.overall)),
   };
-  const grownPlayer = growPlayer(afterChoices, minutesShare, rng);
+  // Chi salta partite per infortunio continua comunque ad allenarsi: la crescita risente
+  // dell'assenza, ma non si azzera come per chi resta fuori per scelta tecnica.
+  const growthShare = (minutesShare + adjustedShare) / 2;
+  const grownPlayer = growPlayer(afterChoices, growthShare, rng);
   const valueEur = Math.round(
     marketValue(grownPlayer.overall, grownPlayer.age, grownPlayer.potential) *
       state.valueMultiplier,

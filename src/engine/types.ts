@@ -213,4 +213,6 @@ export interface CareerResult {
   injuries: Injury[];
   /** In quante stagioni hai fatto meglio del Rivale. */
   seasonsAheadOfRival: number;
+  /** Anni di carriera bruciati dalle scelte: negativo, zero se non hai mai rischiato. */
+  careerYearsBurned: number;
 }
