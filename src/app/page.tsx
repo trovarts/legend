@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import Link from 'next/link';
 import { dailyChallenge } from '../engine/challenge';
+import { Albo } from '../ui/Albo';
 import { Traguardi } from '../ui/Traguardi';
 import type { LeagueSummary } from '../world/types';
 
@@ -74,6 +75,7 @@ export default function Home() {
         </Link>
       </section>
 
+      <Albo />
       <Traguardi />
 
       <p className="tenue" style={{ fontSize: '.78rem', textAlign: 'center', marginTop: '2rem' }}>

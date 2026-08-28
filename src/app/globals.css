@@ -629,3 +629,10 @@ select.bottone { appearance: none; }
 .gerarchia-nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gerarchia-ovr { text-align: right; font-weight: 700; }
 .gerarchia-mia .gerarchia-ovr { color: var(--oro); }
+
+.albo { display: grid; gap: .25rem; margin-top: .5rem; }
+.albo-riga { display: grid; grid-template-columns: 1.6rem 1fr auto; align-items: center; gap: .6rem; padding: .35rem .5rem; border-radius: 8px; border: 1px solid transparent; }
+.albo-riga:nth-child(1) .albo-goat { color: var(--oro); }
+.albo-nuova { border-color: var(--oro); background: rgba(245,197,24,.08); }
+.albo-posto { color: var(--tenue); font-size: .75rem; }
+.albo-goat { font-weight: 800; font-size: 1.05rem; }

@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { dailyChallenge } from '../engine/challenge';
 import type { CareerResult, GoatComponent } from '../engine/types';
+import { Albo } from './Albo';
+import { registraNellAlbo } from './alboSalvato';
 import { Traguardi } from './Traguardi';
 import { registraTraguardi } from './traguardiSalvati';
 
@@ -23,6 +25,7 @@ export function Verdetto({ result }: { result: CareerResult }) {
   const presenze = result.seasons.reduce((sum, season) => sum + season.stats.appearances, 0);
   const davanti = result.seasonsAheadOfRival > result.seasons.length / 2;
   const [nuovi, setNuovi] = useState<readonly string[]>([]);
+  const [posto, setPosto] = useState<number | undefined>(undefined);
   const registrato = useRef(false);
 
   // Una volta sola per carriera finita. La carriera si rigioca dal seed a ogni
@@ -32,6 +35,7 @@ export function Verdetto({ result }: { result: CareerResult }) {
     if (registrato.current) return;
     registrato.current = true;
     setNuovi(registraTraguardi(window.localStorage, result));
+    setPosto(registraNellAlbo(window.localStorage, result, Date.now()) ?? undefined);
   }, [result]);
 
   const sfida = dailyChallenge(new Date().toISOString().slice(0, 10));
@@ -88,6 +92,13 @@ export function Verdetto({ result }: { result: CareerResult }) {
       </p>
     </div>
 
+    {posto === 1 && (
+      <p className="trofeo" style={{ margin: 0 }}>
+        ★ È la carriera più forte che hai chiuso finora.
+      </p>
+    )}
+
+    <Albo evidenzia={posto} />
     <Traguardi evidenzia={nuovi} />
     </>
   );
