@@ -18,14 +18,6 @@ export interface PlayoffBracket {
   winner: string;
 }
 
-/** Chi arriva in questa forbice si jgioca la promozione ai playoff. */
-export const PLAYOFF_FROM = 3;
-export const PLAYOFF_TO = 6;
-
-export function inPlayoffZone(position: number, leagueLevel: number): boolean {
-  return leagueLevel > 1 && position >= PLAYOFF_FROM && position <= PLAYOFF_TO;
-}
-
 /**
  * I playoff di promozione: quattro squadre, due semifinali e una finale.
  * Chi vince sale di categoria — ed è il momento più teso di una stagione in serie minore.
@@ -35,6 +27,8 @@ export function buildPlayoff(
   clubs: readonly Club[],
   playerClubId: string,
   rng: Rng,
+  /** Il verdetto e' gia' stato deciso dal motore: qui si racconta, non si estrae. */
+  esitoImposto?: boolean,
 ): PlayoffBracket {
   const player = clubs.find((club) => club.id === playerClubId);
   const rivali = [...clubs]
@@ -65,11 +59,32 @@ export function buildPlayoff(
     };
   };
 
-  const semi1 = gioca(player.name, rivali[2]!.name, 'semifinale');
+  // Con un verdetto imposto la semifinale del giocatore non puo' contraddirlo.
+  const semi1 = (() => {
+    for (let tentativo = 0; tentativo < 12; tentativo += 1) {
+      const tie = gioca(player.name, rivali[2]!.name, 'semifinale');
+      if (esitoImposto !== true || tie.homeGoals > tie.awayGoals) return tie;
+    }
+    return { round: 'semifinale' as const, home: player.name, away: rivali[2]!.name, homeGoals: 1, awayGoals: 0, playerInvolved: true };
+  })();
   const semi2 = gioca(rivali[0]!.name, rivali[1]!.name, 'semifinale');
   const vince1 = semi1.homeGoals > semi1.awayGoals ? semi1.home : semi1.away;
   const vince2 = semi2.homeGoals > semi2.awayGoals ? semi2.home : semi2.away;
-  const finale = gioca(vince1, vince2, 'finale');
+  const finale = (() => {
+    for (let tentativo = 0; tentativo < 12; tentativo += 1) {
+      const tie = gioca(vince1, vince2, 'finale');
+      if (esitoImposto === undefined) return tie;
+      const vince = tie.homeGoals > tie.awayGoals ? tie.home : tie.away;
+      if ((vince === player.name) === esitoImposto) return tie;
+    }
+    const suoi = vince1 === player.name;
+    return {
+      round: 'finale' as const, home: vince1, away: vince2,
+      homeGoals: suoi === esitoImposto ? 1 : 0,
+      awayGoals: suoi === esitoImposto ? 0 : 1,
+      playerInvolved: vince1 === player.name || vince2 === player.name,
+    };
+  })();
   const winner = finale.homeGoals > finale.awayGoals ? finale.home : finale.away;
 
   return {

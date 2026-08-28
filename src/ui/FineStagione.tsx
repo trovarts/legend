@@ -8,7 +8,8 @@ import type { CandidateClub } from '../engine/market';
 import { createRng } from '../engine/rng';
 import { leagueTable } from '../engine/standings';
 import type { RivalSnapshot, SeasonRecord } from '../engine/types';
-import { buildPlayoff, inPlayoffZone } from '../engine/promotion';
+import { inPlayoffZone } from '../engine/movement';
+import { buildPlayoff } from '../engine/promotion';
 import { buildWorldCup } from '../engine/worldcup';
 import { Classifica } from './Classifica';
 import { Mondiale } from './Mondiale';
@@ -90,7 +91,11 @@ export function FineStagione({
   const playoff = useMemo(
     () =>
       inPlayoffZone(record.position, record.leagueLevel) && dellaLega.length >= 4
-        ? buildPlayoff(record.leagueName, dellaLega, record.clubId, createRng(seed * 15485863 + record.season))
+        ? buildPlayoff(
+            record.leagueName, dellaLega, record.clubId,
+            createRng(seed * 15485863 + record.season),
+            record.movement === 'promosso',
+          )
         : null,
     [record.position, record.leagueLevel, record.leagueName, record.clubId, dellaLega, seed, record.season],
   );

@@ -439,3 +439,28 @@ mercato mostra tre o quattro club che ti vogliono, ognuno con i minuti attesi in
 
 Tutto entra nel salvataggio come le altre decisioni: la carriera resta rigiocabile da un
 codice, agente e richieste compresi.
+
+## D-021 — Con quattro divisioni, «trofeo» smette di voler dire una cosa sola
+
+**Quando:** costruita la piramide vera (terza e quarta serie, promozioni e retrocessioni).
+
+**Il fatto:** l'invariante del Lab («i trofei sono troppo facili» sopra il 75% delle
+carriere) è saltata appena i club hanno cominciato a salire e scendere davvero. Non
+perché il modello fosse cambiato: perché vincere la Quarta Divisione · Girone B è
+diventato un trofeo come un altro.
+
+**La decisione:** il Lab misura due cose separate. «Con almeno un trofeo» resta come
+termometro generale (soglia 85%), e accanto c'è «trofei di prima fascia» — campionato di
+massima serie o coppa continentale — con la soglia severa al 70%. Il titolo in quarta
+serie continua a esistere, a comparire in bacheca e a valere nel racconto: semplicemente
+non è più la cosa che si sorveglia.
+
+**Perché conta:** la tentazione era abbassare la probabilità delle coppe finché il numero
+non tornava sotto il 75%. Sarebbe stato peggiorare il gioco per far tornare una misura
+scritta quando il gioco era un'altra cosa. Scomposti i trofei per tipo, i numeri sono
+risultati sani (campionati 4,0% delle stagioni, coppe nazionali 4,5%, continentali 2,1%
+su tre coppe diverse): a essere invecchiata era la domanda, non il modello.
+
+**Da ricordare:** quando un'invariante salta subito dopo una feature, prima di
+ricalibrare il modello chiedersi se la feature ha cambiato il significato di quello che
+l'invariante misurava.

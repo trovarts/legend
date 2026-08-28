@@ -121,6 +121,15 @@ async function main(): Promise<void> {
     );
   const clubCounts = results.map((result) => result.clubsPlayed.length);
   const withTrophy = results.filter((result) => result.trophies.length > 0).length / results.length;
+  // Con quattro divisioni un titolo esiste anche in fondo alla piramide: giusto che si
+  // festeggi, ma la soglia severa vale per i trofei che pesano davvero (D-007).
+  const primaFascia = (result: CareerResult): boolean =>
+    result.trophies.some((trofeo) => {
+      if (trofeo.kind === 'continental') return true;
+      const stagione = result.seasons.find((s) => s.season === trofeo.season);
+      return (stagione?.leagueLevel ?? 4) === 1;
+    });
+  const withMajorTrophy = results.filter(primaFascia).length / results.length;
   const withAward = results.filter((result) => result.awards.length > 0).length / results.length;
   const capped = results.filter((result) => result.totalCaps > 0).length / results.length;
   const values = [...results.map((result) => result.peakValueEur)].sort((a, b) => a - b);
@@ -143,6 +152,10 @@ async function main(): Promise<void> {
   console.log(`Minuti medi: ${average(minutes).toFixed(2)} | carriere da riserva (<0.2): ${(benchWarmers * 100).toFixed(1)}%`);
   console.log(`Gol per stagione da titolare: media ${average(goalsPerSeason).toFixed(1)} | attaccanti ${average(strikerGoals).toFixed(1)} | massimo ${Math.max(...goalsPerSeason, 0)}`);
   console.log(`Club per carriera: media ${average(clubCounts).toFixed(1)} (max ${Math.max(...clubCounts)})`);
+  const perTipo = new Map<string, number>();
+  for (const r of results) for (const t of r.trophies) perTipo.set(t.kind, (perTipo.get(t.kind) ?? 0) + 1);
+  console.log(`Trofei per tipo: ${[...perTipo].map(([k, n]) => `${k} ${n}`).join(' | ')}`);
+  console.log(`Trofei di prima fascia: ${(withMajorTrophy * 100).toFixed(1)}% delle carriere`);
   console.log(`Con almeno un trofeo: ${(withTrophy * 100).toFixed(1)}% | con un premio: ${(withAward * 100).toFixed(1)}% | con presenze in nazionale: ${(capped * 100).toFixed(1)}%`);
   console.log(`Valore di picco mediano: ${(percentile(values, 0.5) / 1e6).toFixed(1)}M | massimo ${(values.at(-1)! / 1e6).toFixed(0)}M`);
 
@@ -164,12 +177,15 @@ async function main(): Promise<void> {
   }
   const maxGoals = Math.max(...goalsPerSeason, 0);
   if (maxGoals > 45) failures.push(`stagione irreale da ${maxGoals} gol`);
+  if (withTrophy > 0.85) {
+    failures.push(`si vince troppo: ${(withTrophy * 100).toFixed(1)}% delle carriere alza qualcosa`);
+  }
   if (withTrophy < 0.2) {
     failures.push(`troppo poche carriere con trofei: ${(withTrophy * 100).toFixed(1)}%`);
   }
   // Un trofeo deve restare un traguardo: se lo vincono quasi tutti, non vale niente.
-  if (withTrophy > 0.75) {
-    failures.push(`i trofei sono troppo facili: li vince il ${(withTrophy * 100).toFixed(1)}% delle carriere`);
+  if (withMajorTrophy > 0.7) {
+    failures.push(`i trofei che contano sono troppo facili: ${(withMajorTrophy * 100).toFixed(1)}% delle carriere`);
   }
   if (average(strikerGoals) < 5 || average(strikerGoals) > 16) {
     failures.push(`gol degli attaccanti fuori scala: media ${average(strikerGoals).toFixed(1)} (atteso 5-16)`);
@@ -195,6 +211,25 @@ async function main(): Promise<void> {
   if (injuriesPerCareer < 1 || injuriesPerCareer > 8) {
     failures.push(`infortuni fuori scala: ${injuriesPerCareer.toFixed(1)} per carriera (atteso 1-8)`);
   }
+  // La piramide dev'essere viva: se nessuno sale ne' scende, le quattro divisioni
+  // sono un disegno e non un gioco (la lezione di D-011: verificare il verificatore).
+  const stagioniTotali = results.reduce((somma, r) => somma + r.seasons.length, 0);
+  const promozioni = results.reduce(
+    (somma, r) => somma + r.seasons.filter((s) => s.movement === 'promosso').length, 0);
+  const retrocessioni = results.reduce(
+    (somma, r) => somma + r.seasons.filter((s) => s.movement === 'retrocesso').length, 0);
+  const quotaPromozioni = stagioniTotali === 0 ? 0 : promozioni / stagioniTotali;
+  const quotaRetrocessioni = stagioniTotali === 0 ? 0 : retrocessioni / stagioniTotali;
+  console.log(
+    `Promozioni: ${(quotaPromozioni * 100).toFixed(1)}% delle stagioni | retrocessioni: ${(quotaRetrocessioni * 100).toFixed(1)}%`,
+  );
+  if (quotaPromozioni < 0.01 || quotaPromozioni > 0.3) {
+    failures.push(`promozioni fuori scala: ${(quotaPromozioni * 100).toFixed(1)}% delle stagioni (atteso 1-30%)`);
+  }
+  if (quotaRetrocessioni < 0.01 || quotaRetrocessioni > 0.3) {
+    failures.push(`retrocessioni fuori scala: ${(quotaRetrocessioni * 100).toFixed(1)}% delle stagioni (atteso 1-30%)`);
+  }
+
   const medianGoat = percentile(goatScores, 0.5);
   if (medianGoat < 50 || medianGoat > 700) {
     failures.push(`punteggio GOAT mediano fuori scala: ${medianGoat}`);

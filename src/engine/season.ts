@@ -13,6 +13,7 @@ import { growPlayer } from './growth';
 import type { Agent } from './agent';
 import type { AgentRequest } from './agentRequest';
 import { generateOffers, type CandidateClub } from './market';
+import { resolveMovement, type Movement } from './movement';
 import { nationalSeason } from './national';
 import { playingTimeShare } from './playingTime';
 import type { Rng } from './rng';
@@ -33,6 +34,10 @@ export interface SimulateSeasonInput {
   continentalTier: ContinentalTier | null;
   /** Il paese del campionato: decide coppe e nazionale. */
   country: string;
+  /** Esiste una divisione sopra questa, dove salire? */
+  hasHigherDivision?: boolean;
+  /** Ed esiste una divisione sotto, in cui cadere? */
+  hasLowerDivision?: boolean;
   candidates: readonly CandidateClub[];
   /** Chi rappresenta il giocatore sul mercato. */
   agent?: Agent;
@@ -234,6 +239,17 @@ export function simulateSeason(input: SimulateSeasonInput, rng: Rng): SeasonOutc
 
   const marks = ageMarks(state.marks);
 
+  const salto = resolveMovement(
+    {
+      position,
+      clubCount: league.clubCount,
+      leagueLevel: league.level,
+      hasHigher: input.hasHigherDivision ?? false,
+      hasLower: input.hasLowerDivision ?? false,
+    },
+    rng,
+  );
+
   return {
     record: {
       season: input.season,
@@ -256,6 +272,8 @@ export function simulateSeason(input: SimulateSeasonInput, rng: Rng): SeasonOutc
       injury,
       choices,
       marks,
+      movement: salto.movement,
+      playoffPlayed: salto.viaPlayoff,
     },
     grownPlayer,
     qualifiedNextSeason: continentalTierFor(position, competitions),

@@ -180,6 +180,10 @@ export interface SeasonRecord {
   choices: DilemmaChoice[];
   /** I Segni attivi a fine stagione. */
   marks: Mark[];
+  /** Il club sale, scende o resta dov'è. */
+  movement: 'promosso' | 'retrocesso' | null;
+  /** La promozione si è decisa ai playoff: c'è un tabellone da guardare. */
+  playoffPlayed: boolean;
 }
 
 export type GoatComponent =

@@ -81,8 +81,9 @@ export function runCareer(input: RunCareerInput): CareerResult {
   const policy = input.policy ?? ambitiousPolicy;
   const dilemmaPolicy = input.dilemmaPolicy ?? boldPolicy;
 
-  let current = input.world.clubs.find((entry) => entry.club.id === input.world.startClubId);
-  if (!current) throw new Error(`club di partenza non trovato: ${input.world.startClubId}`);
+  const partenza = input.world.clubs.find((entry) => entry.club.id === input.world.startClubId);
+  if (!partenza) throw new Error(`club di partenza non trovato: ${input.world.startClubId}`);
+  let current: CandidateClub = partenza;
 
   const startingLeagueLevel = current.leagueLevel;
   let player = createPlayer(input.create, rng);
@@ -109,6 +110,27 @@ export function runCareer(input: RunCareerInput): CareerResult {
   const DILEMMA_COOLDOWN = 4;
   let recentDilemmaIds: string[] = [];
 
+  // Le divisioni di ogni paese, per sapere dove si sale e dove si scende.
+  const divisioniPerPaese = new Map<string, Map<number, CandidateClub[]>>();
+  for (const entry of input.world.clubs) {
+    const paese = entry.country ?? '';
+    if (paese === '') continue;
+    const perLivello = divisioniPerPaese.get(paese) ?? new Map<number, CandidateClub[]>();
+    const lista = perLivello.get(entry.leagueLevel) ?? [];
+    lista.push(entry);
+    perLivello.set(entry.leagueLevel, lista);
+    divisioniPerPaese.set(paese, perLivello);
+  }
+
+  /** Il campionato in cui finisce un club che sale o scende di categoria. */
+  function divisioneVicina(paese: string, livello: number): CandidateClub | undefined {
+    const gruppi = divisioniPerPaese.get(paese)?.get(livello);
+    if (!gruppi || gruppi.length === 0) return undefined;
+    const ids = [...new Set(gruppi.map((entry) => entry.leagueId))].sort();
+    const scelto = ids[rng.int(0, ids.length - 1)];
+    return gruppi.find((entry) => entry.leagueId === scelto);
+  }
+
   const strengthsByLeague = new Map<string, number[]>();
   for (const entry of input.world.clubs) {
     const list = strengthsByLeague.get(entry.leagueId) ?? [];
@@ -117,7 +139,7 @@ export function runCareer(input: RunCareerInput): CareerResult {
   }
 
   while (!player.retired && seasons.length < MAX_SEASONS) {
-    const club = current;
+    const club: CandidateClub = current;
     // Il paese serve a sapere quali coppe si giocano: viene dal campionato.
     const paeseDelClub = club.country ?? 'Italy';
     const season = seasons.length + 1;
@@ -142,6 +164,8 @@ export function runCareer(input: RunCareerInput): CareerResult {
         leagueStrengths,
         continentalTier: qualified,
         country: paeseDelClub,
+        hasHigherDivision: divisioniPerPaese.get(paeseDelClub)?.has(club.leagueLevel - 1) ?? false,
+        hasLowerDivision: divisioniPerPaese.get(paeseDelClub)?.has(club.leagueLevel + 1) ?? false,
         candidates,
         agent: input.agent,
         request: input.requestFor?.(season),
@@ -188,10 +212,24 @@ export function runCareer(input: RunCareerInput): CareerResult {
       break;
     }
 
+    // Il club sale o scende: la stagione prossima si gioca in un'altra categoria.
+    if (outcome.record.movement !== null) {
+      const livello = club.leagueLevel + (outcome.record.movement === 'promosso' ? -1 : 1);
+      const nuovaLega = divisioneVicina(paeseDelClub, livello);
+      if (nuovaLega) {
+        current = {
+          ...club,
+          leagueId: nuovaLega.leagueId,
+          leagueName: nuovaLega.leagueName,
+          leagueLevel: nuovaLega.leagueLevel,
+        };
+      }
+    }
+
     if (canLeave(contract)) {
       const chosen = policy(outcome.record.offers, {
         currentMinutesShare: outcome.record.minutesShare,
-        currentLeagueLevel: club.leagueLevel,
+        currentLeagueLevel: current.leagueLevel,
         age: player.age,
         season,
       });

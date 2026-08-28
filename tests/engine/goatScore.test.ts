@@ -9,7 +9,7 @@ function season(goals: number, rating = 7, cleanSheets = 0): SeasonRecord {
     stats: { appearances: 32, minutes: 2800, goals, assists: 5, cleanSheets, rating },
     position: 4, trophies: [], awards: [],
     national: { capped: true, caps: 6, goals: 2, tournament: null },
-    valueEur: 20_000_000, offers: [], injury: null, choices: [], marks: [],
+    valueEur: 20_000_000, offers: [], injury: null, choices: [], marks: [], movement: null, playoffPlayed: false,
   };
 }
 
