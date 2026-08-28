@@ -1,3 +1,6 @@
+import type { Agent } from './agent';
+import type { AgentRequest } from './agentRequest';
+import { requestEffect } from './agentRequest';
 import type { Club, Role } from '../world/types';
 import { clubStrength } from './clubStrength';
 import { playingTimeShare } from './playingTime';
@@ -18,9 +21,14 @@ export interface OffersInput {
   currentMinutesShare: number;
   stats: SeasonStats;
   candidates: readonly CandidateClub[];
+  /** Chi ti rappresenta: decide quante porte si aprono e quanto in alto. */
+  agent?: Agent;
+  /** Cosa gli hai chiesto di cercare, se glielo hai chiesto. */
+  request?: AgentRequest;
 }
 
 const MAX_OFFERS = 4;
+
 /** Sotto questa quota di minuti un giovane è considerato bloccato e va mandato a giocare. */
 const STUCK_SHARE = 0.25;
 const LOAN_AGE = 23;
@@ -46,6 +54,9 @@ export function generateOffers(input: OffersInput, rng: Rng): Offer[] {
   const isStuck = input.player.age <= LOAN_AGE && input.currentMinutesShare < STUCK_SHARE;
 
   const offers: Offer[] = [];
+  const spinta = input.agent ? requestEffect(input.request, input.agent) : null;
+  const tetto = input.agent?.ceilingOverall ?? 99;
+  const reputazione = input.agent?.reputation ?? 0;
 
   for (const candidate of input.candidates) {
     if (candidate.club.id === input.currentClubId) continue;
@@ -70,8 +81,18 @@ export function generateOffers(input: OffersInput, rng: Rng): Offer[] {
     // Il divario di forza pesa solo su un acquisto vero: chi ti prende in prestito
     // lo fa proprio perché sei un giovane da far crescere.
     const strengthPenalty = wantsLoan ? 0 : Math.max(0, (strength - input.player.overall) * 0.04);
+    // L'agente non arriva ovunque: sopra il suo tetto le porte restano chiuse.
+    if (strength > tetto + 4) continue;
+
+    const orientamento = spinta === null
+      ? 0
+      : spinta.minutesBias * (expectedMinutesShare - 0.5) +
+        spinta.strengthBias * ((strength - 70) / 20) +
+        spinta.wageBias * ((strength - 70) / 25);
+
     const interest =
-      0.25 + score + (isProspect ? 0.25 : 0) + (wantsLoan ? 0.5 : 0) - strengthPenalty;
+      0.25 + score + reputazione + orientamento +
+      (isProspect ? 0.25 : 0) + (wantsLoan ? 0.5 : 0) - strengthPenalty;
 
     if (!rng.chance(Math.min(0.9, interest))) continue;
 
@@ -91,7 +112,11 @@ export function generateOffers(input: OffersInput, rng: Rng): Offer[] {
     });
   }
 
-  return offers.sort((a, b) => b.feeEur - a.feeEur).slice(0, MAX_OFFERS);
+  const quante = Math.min(
+    MAX_OFFERS + (spinta?.extraOffers ?? 0),
+    input.agent?.maxOffers ?? MAX_OFFERS,
+  );
+  return offers.sort((a, b) => b.feeEur - a.feeEur).slice(0, Math.max(1, quante));
 }
 
 export interface TransferContext {

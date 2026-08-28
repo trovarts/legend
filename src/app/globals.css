@@ -536,3 +536,41 @@ select.bottone { appearance: none; }
   background: var(--carta-alta); border: 1px solid currentColor; border-radius: 99px; padding: .1rem .5rem;
 }
 .esito-racconto { text-align: center; font-size: 1.05rem; margin: 0 0 1rem; }
+
+/* ── Il trofeo alzato ────────────────────────────────────────────────────── */
+.celebrazione {
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; align-items: center; gap: .3rem;
+  border: 1px solid var(--oro); border-radius: var(--raggio);
+  padding: 3rem 1.5rem 1.5rem; margin-bottom: .9rem;
+  background: radial-gradient(120% 90% at 50% 0%, rgba(245,197,24,.22), rgba(10,8,12,.9) 65%);
+  text-align: center;
+}
+.celebrazione-luce {
+  position: absolute; inset: -40% -10% auto; height: 90%;
+  background: radial-gradient(60% 60% at 50% 30%, rgba(245,197,24,.35), transparent 70%);
+  opacity: 0; transition: opacity 1s ease;
+}
+.celebrazione-viva .celebrazione-luce { opacity: 1; }
+.celebrazione-coppa {
+  font-size: 4.5rem; line-height: 1; filter: drop-shadow(0 0 26px rgba(245,197,24,.55));
+  transform: scale(.4) translateY(30px); opacity: 0;
+  transition: transform .8s cubic-bezier(.2,1.3,.4,1), opacity .6s ease;
+}
+.celebrazione-viva .celebrazione-coppa { transform: none; opacity: 1; }
+.celebrazione-nome {
+  font-size: clamp(1.8rem, 7vw, 3rem); font-weight: 800; text-transform: uppercase;
+  letter-spacing: -.03em; color: var(--oro); margin: .6rem 0 0;
+  opacity: 0; transform: translateY(14px); transition: all .6s ease .25s;
+}
+.celebrazione-viva .celebrazione-nome { opacity: 1; transform: none; }
+.celebrazione-club { color: var(--tenue); opacity: 0; transition: opacity .6s ease .5s; }
+.celebrazione-viva .celebrazione-club { opacity: 1; }
+.celebrazione-avanti { margin-top: 1.6rem; opacity: 0; transition: opacity .5s ease .8s; }
+.celebrazione-viva .celebrazione-avanti { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .celebrazione-coppa, .celebrazione-nome, .celebrazione-club, .celebrazione-avanti, .celebrazione-luce {
+    transition: none; opacity: 1; transform: none;
+  }
+}

@@ -2,6 +2,8 @@ import { clubStrength } from './clubStrength';
 import { canLeave, signContract, tickContract } from './contract';
 import { createPlayer, type CreatePlayerInput } from './create';
 import { boldPolicy, type DilemmaPolicy } from './dilemmas';
+import type { Agent } from './agent';
+import type { AgentRequest } from './agentRequest';
 import type { PlayStyle } from './playstyle';
 import type { TrainingAxis } from './training';
 import { computeGoatScore } from './goatScore';
@@ -56,6 +58,10 @@ export interface RunCareerInput {
   dilemmaPolicy?: DilemmaPolicy;
   /** Come interpreta il ruolo: scelto alla creazione. */
   style?: PlayStyle;
+  /** Chi lo rappresenta sul mercato. */
+  agent?: Agent;
+  /** Cosa gli è stato chiesto di cercare, stagione per stagione. */
+  requestFor?: (season: number) => AgentRequest | undefined;
   /** Su cosa lavora in preparazione; in Fase 4 lo sceglie l'utente. */
   trainingPolicy?: (season: number, snapshot: { age: number; overall: number; clubName: string }) => TrainingAxis;
   /**
@@ -133,6 +139,8 @@ export function runCareer(input: RunCareerInput): CareerResult {
         leagueStrengths,
         qualifiedToContinental: qualified,
         candidates,
+        agent: input.agent,
+        request: input.requestFor?.(season),
         alreadyCapped: capped,
         marks,
         contractYearsLeft: contract.yearsLeft,

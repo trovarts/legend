@@ -8,13 +8,18 @@ import type { CandidateClub } from '../engine/market';
 import { createRng } from '../engine/rng';
 import { leagueTable } from '../engine/standings';
 import type { RivalSnapshot, SeasonRecord } from '../engine/types';
+import { buildPlayoff, inPlayoffZone } from '../engine/promotion';
+import { buildWorldCup } from '../engine/worldcup';
 import { Classifica } from './Classifica';
+import { Mondiale } from './Mondiale';
+import { Playoff } from './Playoff';
+import { Trofeo } from './Trofeo';
 import { Giornale } from './Giornale';
 import { Partita } from './Partita';
 import { Resoconto } from './Resoconto';
 import { Tabellone } from './Tabellone';
 
-type Tappa = 'partita' | 'classifica' | 'coppa' | 'resoconto' | 'giornale';
+type Tappa = 'partita' | 'classifica' | 'playoff' | 'coppa' | 'trofeo' | 'mondiale' | 'resoconto' | 'giornale';
 
 /**
  * La stagione non finisce con una riga di numeri: si guarda la partita che conta,
@@ -27,6 +32,7 @@ export function FineStagione({
   rival,
   clubs,
   playerName,
+  nazione,
   seed,
   onEnd,
 }: {
@@ -35,6 +41,7 @@ export function FineStagione({
   rival: RivalSnapshot | null;
   clubs: readonly CandidateClub[];
   playerName: string;
+  nazione: string;
   seed: number;
   onEnd: () => void;
 }) {
@@ -80,6 +87,28 @@ export function FineStagione({
     };
   }, [dellaLega, record.clubId, record.overallEnd, record.season, seed, coppa]);
 
+  const playoff = useMemo(
+    () =>
+      inPlayoffZone(record.position, record.leagueLevel) && dellaLega.length >= 4
+        ? buildPlayoff(record.leagueName, dellaLega, record.clubId, createRng(seed * 15485863 + record.season))
+        : null,
+    [record.position, record.leagueLevel, record.leagueName, record.clubId, dellaLega, seed, record.season],
+  );
+
+  const mondiale = useMemo(
+    () =>
+      record.national.tournament !== null
+        ? buildWorldCup(
+            record.national.tournament.name,
+            nazione,
+            record.overallEnd,
+            record.national.tournament.stageReached,
+            createRng(seed * 32452843 + record.season),
+          )
+        : null,
+    [record.national.tournament, record.overallEnd, record.season, seed, nazione],
+  );
+
   const [tappa, setTappa] = useState<Tappa>(partita ? 'partita' : 'classifica');
 
   const classifica = useMemo(
@@ -101,12 +130,32 @@ export function FineStagione({
     [giocaLaCoppa, dellaLega, coppa, record.clubId, record.season, seed],
   );
 
+  const trofeoDaAlzare = record.trophies[0];
+
+  /** L'ordine in cui si guarda una stagione: dal campo alla prima pagina. */
+  const prossima = (corrente: Tappa): Tappa | null => {
+    const ordine: Tappa[] = ['partita', 'classifica', 'playoff', 'coppa', 'trofeo', 'mondiale', 'resoconto', 'giornale'];
+    const disponibile: Record<Tappa, boolean> = {
+      partita: partita !== null,
+      classifica: classifica.length > 0,
+      playoff: playoff !== null,
+      coppa: bracket !== null,
+      trofeo: trofeoDaAlzare !== undefined,
+      mondiale: mondiale !== null,
+      resoconto: true,
+      giornale: true,
+    };
+    for (let indice = ordine.indexOf(corrente) + 1; indice < ordine.length; indice += 1) {
+      const tappaProssima = ordine[indice]!;
+      if (disponibile[tappaProssima]) return tappaProssima;
+    }
+    return null;
+  };
+
   const avanti = (): void => {
-    if (tappa === 'partita') setTappa(classifica.length > 0 ? 'classifica' : 'resoconto');
-    else if (tappa === 'classifica') setTappa(bracket ? 'coppa' : 'resoconto');
-    else if (tappa === 'coppa') setTappa('resoconto');
-    else if (tappa === 'resoconto') setTappa('giornale');
-    else onEnd();
+    const dopo = prossima(tappa);
+    if (dopo === null) onEnd();
+    else setTappa(dopo);
   };
 
   if (tappa === 'partita' && partita) {
@@ -131,7 +180,35 @@ export function FineStagione({
       <>
         <Classifica rows={classifica} leagueName={record.leagueName} />
         <button type="button" className="avanti" onClick={avanti}>
-          <span>{bracket ? 'Vai alla coppa' : 'Vai al resoconto'}</span>
+          <span>Avanti</span>
+          <span className="scorciatoia"><b>Spazio</b> →</span>
+        </button>
+      </>
+    );
+  }
+
+  if (tappa === 'playoff' && playoff) {
+    return (
+      <>
+        <Playoff bracket={playoff} />
+        <button type="button" className="avanti" onClick={avanti}>
+          <span>Avanti</span>
+          <span className="scorciatoia"><b>Spazio</b> →</span>
+        </button>
+      </>
+    );
+  }
+
+  if (tappa === 'trofeo' && trofeoDaAlzare) {
+    return <Trofeo nome={trofeoDaAlzare.competitionName} club={record.clubName} onEnd={avanti} />;
+  }
+
+  if (tappa === 'mondiale' && mondiale) {
+    return (
+      <>
+        <Mondiale run={mondiale} country={nazione} />
+        <button type="button" className="avanti" onClick={avanti}>
+          <span>Avanti</span>
           <span className="scorciatoia"><b>Spazio</b> →</span>
         </button>
       </>
@@ -143,7 +220,7 @@ export function FineStagione({
       <>
         <Tabellone bracket={bracket} />
         <button type="button" className="avanti" onClick={avanti}>
-          <span>Vai al resoconto</span>
+          <span>Avanti</span>
           <span className="scorciatoia"><b>Spazio</b> →</span>
         </button>
       </>

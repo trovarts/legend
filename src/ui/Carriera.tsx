@@ -21,6 +21,7 @@ import type { Dilemma } from '../engine/types';
 import { posizioneById } from './Campo';
 import { PLAY_STYLES } from '../engine/playstyle';
 import { temaDelClub } from './temaClub';
+import { AGENTS } from '../engine/agent';
 import { Verdetto } from './Verdetto';
 
 export function Carriera({
@@ -179,6 +180,26 @@ export function Carriera({
         <SchedaAgente
           agent={state.agent}
           offerte={seasons.reduce((somma, stagione) => somma + stagione.offers.length, 0)}
+          prossimaStagione={seasons.length + 1}
+          richiesta={save.decisions.requests?.[String(seasons.length + 1)]}
+          onRichiesta={(kind) =>
+            onChange({
+              ...save,
+              decisions: {
+                ...save.decisions,
+                requests: { ...save.decisions.requests, [String(seasons.length + 1)]: kind },
+              },
+            })
+          }
+          proposte={
+            // Dopo qualche stagione da titolare, gli agenti migliori si fanno vivi.
+            seasons.length >= 4 && (last?.minutesShare ?? 0) > 0.5
+              ? AGENTS.filter(
+                  (altro) => altro.id !== state.agent?.id && altro.stars > (state.agent?.stars ?? 0),
+                )
+              : []
+          }
+          onCambia={(agentId) => onChange({ ...save, decisions: { ...save.decisions, agentId } })}
         />
       )}
 
@@ -250,6 +271,7 @@ export function Carriera({
           rival={lastRival}
           clubs={clubs}
           playerName={save.create.name}
+          nazione={save.create.nationality}
           seed={save.seed}
           onEnd={() => setVista(daMostrare.season)}
         />

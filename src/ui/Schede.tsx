@@ -1,6 +1,7 @@
 'use client';
 
 import type { Agent } from '../engine/agent';
+import { REQUEST_KINDS, type RequestKind } from '../engine/agentRequest';
 import type { CareerResult, SeasonRecord, Trophy } from '../engine/types';
 import type { YouthSeason } from '../engine/youth';
 
@@ -80,20 +81,86 @@ export function Profilo({
   );
 }
 
-export function SchedaAgente({ agent, offerte }: { agent: Agent | null; offerte: number }) {
+export function SchedaAgente({
+  agent,
+  offerte,
+  prossimaStagione,
+  richiesta,
+  onRichiesta,
+  proposte,
+  onCambia,
+}: {
+  agent: Agent | null;
+  offerte: number;
+  prossimaStagione: number;
+  richiesta: RequestKind | undefined;
+  onRichiesta: (kind: RequestKind) => void;
+  /** Altri agenti che si sono fatti vivi: si cambia solo se si vuole. */
+  proposte: readonly Agent[];
+  onCambia: (id: string) => void;
+}) {
   if (!agent) return <section className="card"><p className="tenue">Nessun agente, per ora.</p></section>;
+
   return (
-    <section className="card">
-      <h2>{agent.name}</h2>
-      <p className="stelle">
-        {'★'.repeat(agent.stars)}<span className="stelle-spente">{'★'.repeat(5 - agent.stars)}</span>
-      </p>
-      <p className="tenue">{agent.motto}</p>
-      <div className="riga tenue"><span>Offerte per sessione</span><span className="numero">fino a {agent.maxOffers}</span></div>
-      <div className="riga tenue"><span>Arriva a club fino a</span><span className="numero">OVR {agent.ceilingOverall}</span></div>
-      <div className="riga tenue"><span>Ti fa partire con</span><span className="numero">{agent.exitYears} anni residui</span></div>
-      <div className="riga tenue"><span>Offerte portate finora</span><span className="numero">{offerte}</span></div>
-    </section>
+    <>
+      <section className="card">
+        <div className="riga">
+          <h2 style={{ margin: 0 }}>{agent.name}</h2>
+          <span className="stelle">
+            {'★'.repeat(agent.stars)}<span className="stelle-spente">{'★'.repeat(5 - agent.stars)}</span>
+          </span>
+        </div>
+        <p className="tenue">{agent.motto}</p>
+        <div className="riga tenue"><span>Offerte per sessione</span><span className="numero">fino a {agent.maxOffers}</span></div>
+        <div className="riga tenue"><span>Arriva a club fino a</span><span className="numero">OVR {agent.ceilingOverall}</span></div>
+        <div className="riga tenue"><span>Ti fa partire con</span><span className="numero">{agent.exitYears} anni residui</span></div>
+        <div className="riga tenue"><span>Offerte portate finora</span><span className="numero">{offerte}</span></div>
+      </section>
+
+      <section className="card">
+        <span className="contesto-etichetta">Dimmi che tipo di opportunità vuoi</span>
+        <p className="tenue" style={{ fontSize: '.85rem', marginTop: '.3rem' }}>
+          Vale per il mercato della stagione {prossimaStagione}. Un agente più forte
+          riesce davvero a orientare la ricerca.
+        </p>
+        <div className="stili">
+          {REQUEST_KINDS.map((tipo) => (
+            <button
+              key={tipo.id}
+              type="button"
+              className={`stile${richiesta === tipo.id ? ' stile-scelto' : ''}`}
+              onClick={() => onRichiesta(tipo.id)}
+            >
+              <span>
+                <strong>{tipo.label}</strong>
+                <span className="tenue" style={{ display: 'block', fontSize: '.82rem' }}>{tipo.text}</span>
+              </span>
+              <span className="stile-spunta" aria-hidden="true">{richiesta === tipo.id ? '✓' : ''}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {proposte.length > 0 && (
+        <section className="card">
+          <span className="contesto-etichetta">Sono gli agenti a cercare te</span>
+          <div className="scelte" style={{ marginTop: '.5rem' }}>
+            {proposte.map((altro) => (
+              <button key={altro.id} type="button" className="scelta" onClick={() => onCambia(altro.id)}>
+                <span className="scelta-titolo">{altro.name}</span>
+                <span className="stelle">
+                  {'★'.repeat(altro.stars)}<span className="stelle-spente">{'★'.repeat(5 - altro.stars)}</span>
+                </span>
+                <span className="scelta-nota">{altro.motto}</span>
+                <span className="agente-dettagli">
+                  fino a {altro.maxOffers} offerte · club fino a OVR {altro.ceilingOverall}
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+    </>
   );
 }
 

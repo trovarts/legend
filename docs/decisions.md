@@ -415,3 +415,27 @@ Un infortunio grave è *la* cosa di quella stagione, non un evento fra tanti.
 trofeo con l'animazione, i playoff di promozione, il tabellone del Mondiale, la scheda
 agente interattiva («dimmi che tipo di opportunità vuoi», con altri agenti che ti cercano)
 e le offerte multiple in stile «tre club ti vogliono».
+
+## D-020 — Le ultime cinque cose del riferimento
+
+**La celebrazione del trofeo.** Quando si alza una coppa il gioco si ferma: luce dorata,
+trofeo che entra in scena, nome della competizione e club. Dura tre secondi e non serve a
+niente — ed è esattamente per questo che serve. La vede il 71% delle carriere.
+
+**I playoff di promozione.** Chi chiude fra il terzo e il sesto posto in una serie minore
+se li gioca: due semifinali e una finale, e chi vince sale. Capita nel 25% delle carriere.
+
+**Il Mondiale.** Quando la nazionale va a un torneo si vede il cammino: tre partite di
+girone e poi l'eliminazione diretta fino a dove si è arrivati. Nel 44% delle carriere.
+
+**L'agente diventa interattivo.** Nella sua scheda gli si dice che tipo di opportunità
+cercare — un campionato preciso, un posto da titolare, il contratto migliore, il club più
+forte — e la richiesta orienta davvero le offerte della sessione successiva, tanto più
+quanto l'agente è forte. Il suo «tetto» ora conta: sopra quel livello le porte restano
+chiuse, e dopo qualche stagione da titolare gli agenti migliori si fanno vivi.
+
+**Le offerte multiple.** Con la richiesta giusta l'agente porta un'offerta in più, e il
+mercato mostra tre o quattro club che ti vogliono, ognuno con i minuti attesi in chiaro.
+
+Tutto entra nel salvataggio come le altre decisioni: la carriera resta rigiocabile da un
+codice, agente e richieste compresi.

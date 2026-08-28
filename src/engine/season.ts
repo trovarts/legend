@@ -9,6 +9,8 @@ import { ageMarks, minutesModifier } from './marks';
 import { clubStrengthWith, leaguePosition } from './clubStrength';
 import { resolveTrophies } from './competitions';
 import { growPlayer } from './growth';
+import type { Agent } from './agent';
+import type { AgentRequest } from './agentRequest';
 import { generateOffers, type CandidateClub } from './market';
 import { nationalSeason } from './national';
 import { playingTimeShare } from './playingTime';
@@ -28,6 +30,10 @@ export interface SimulateSeasonInput {
   leagueStrengths: readonly number[];
   qualifiedToContinental: boolean;
   candidates: readonly CandidateClub[];
+  /** Chi rappresenta il giocatore sul mercato. */
+  agent?: Agent;
+  /** Cosa gli è stato chiesto per questa sessione. */
+  request?: AgentRequest;
   alreadyCapped: boolean;
   marks: readonly Mark[];
   contractYearsLeft: number;
@@ -216,6 +222,8 @@ export function simulateSeason(input: SimulateSeasonInput, rng: Rng): SeasonOutc
       currentMinutesShare: minutesShare,
       stats,
       candidates: input.candidates,
+      agent: input.agent,
+      request: input.request,
     },
     rng,
   );
