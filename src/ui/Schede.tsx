@@ -240,20 +240,28 @@ export function Bacheca({ result, seasons }: { result: CareerResult | null; seas
       {perTipo.size === 0 && premi.length === 0 ? (
         <p className="tenue">Ancora vuota. C&apos;è tempo.</p>
       ) : (
-        <>
+        <div className="bacheca">
           {[...perTipo.entries()].map(([nome, quante]) => (
-            <div key={nome} className="riga">
-              <span>🏆 {nome}</span>
-              <span className="numero">×{quante}</span>
+            <div key={nome} className="coppa">
+              <span className="coppa-figura" aria-hidden="true">🏆</span>
+              {quante > 1 && <span className="coppa-quante numero">×{quante}</span>}
+              <span className="coppa-nome">{nome}</span>
             </div>
           ))}
-          {premi.length > 0 && (
-            <div className="riga">
-              <span>🎖 Premi individuali</span>
-              <span className="numero">×{premi.length}</span>
+          {premi.map((premio, indice) => (
+            <div key={`${premio.competitionName}-${indice}`} className="coppa coppa-premio">
+              <span className="coppa-figura" aria-hidden="true">🎖</span>
+              <span className="coppa-nome">
+                {premio.kind === 'topScorer'
+                  ? 'Capocannoniere'
+                  : premio.kind === 'leagueMvp'
+                    ? 'Miglior giocatore'
+                    : 'Miglior giovane'}
+                <span className="tenue"> · {premio.competitionName}</span>
+              </span>
             </div>
-          )}
-        </>
+          ))}
+        </div>
       )}
     </section>
   );

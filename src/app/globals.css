@@ -955,3 +955,41 @@ select.bottone { appearance: none; }
   position: absolute; left: 0; right: 0; bottom: .7rem; text-align: center;
   font-size: .6rem; letter-spacing: .12em; color: var(--tenue);
 }
+
+/* ── Tu e lui, uno accanto all'altro ─────────────────────────────────────── */
+.confronto-testa { display: flex; align-items: baseline; gap: .5rem; margin: .3rem 0 .1rem; }
+.confronto-chi { font-weight: 800; font-size: 1.02rem; flex: 1; }
+.confronto-chi:last-child { text-align: right; }
+.confronto-vince { color: var(--oro); }
+.confronto-contro { font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--tenue); }
+.confronto-club { font-size: .72rem; margin: 0 0 .6rem; display: flex; justify-content: space-between; }
+.confronto-riga {
+  display: grid; grid-template-columns: 2.6rem 1fr 2.6rem; align-items: center;
+  gap: .5rem; margin-bottom: .1rem;
+}
+.confronto-riga > b { font-size: .95rem; color: var(--tenue); }
+.confronto-riga > b:last-of-type { text-align: right; }
+.confronto-meglio { color: var(--testo) !important; font-weight: 800; }
+.confronto-barra { display: flex; height: 6px; border-radius: 99px; overflow: hidden; background: rgba(255,255,255,.06); }
+.confronto-mia { background: var(--oro); }
+.confronto-sua { background: color-mix(in srgb, var(--tenue) 60%, transparent); }
+.confronto-nome {
+  grid-column: 1 / -1; text-align: center; font-size: .58rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--tenue); margin-bottom: .4rem;
+}
+.confronto-verdetto { font-size: .86rem; margin: .5rem 0 0; }
+
+/* ── La bacheca: i trofei come oggetti, non come righe ───────────────────── */
+.bacheca { display: grid; grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr)); gap: .5rem; margin-top: .5rem; }
+.coppa {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: .2rem;
+  padding: .7rem .5rem .6rem; border-radius: 12px; text-align: center;
+  border: 1px solid rgba(245,197,24,.28);
+  background: linear-gradient(180deg, rgba(245,197,24,.10), color-mix(in srgb, var(--carta) 80%, transparent));
+}
+.coppa-figura { font-size: 1.7rem; line-height: 1; filter: drop-shadow(0 3px 8px rgba(245,197,24,.35)); }
+.coppa-nome { font-size: .68rem; line-height: 1.25; font-weight: 600; }
+.coppa-quante {
+  position: absolute; top: .35rem; right: .4rem; font-size: .66rem; font-weight: 800; color: var(--oro);
+}
+.coppa-premio { border-color: rgba(255,255,255,.14); background: linear-gradient(180deg, rgba(255,255,255,.06), color-mix(in srgb, var(--carta) 80%, transparent)); }

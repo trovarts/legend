@@ -6,6 +6,7 @@ import { dailyChallenge } from '../engine/challenge';
 import type { CareerResult, GoatComponent } from '../engine/types';
 import { Albo } from './Albo';
 import type { Aspetto } from './Avatar';
+import { Confronto } from './Confronto';
 import { Poster } from './Poster';
 import { registraNellAlbo } from './alboSalvato';
 import { Traguardi } from './Traguardi';
@@ -47,7 +48,6 @@ export function Verdetto({
   const promessa = progressoAmbizione(ambizione, result.seasons, paeseDelClub ?? (() => undefined));
   const gol = result.seasons.reduce((sum, season) => sum + season.stats.goals, 0);
   const presenze = result.seasons.reduce((sum, season) => sum + season.stats.appearances, 0);
-  const davanti = result.seasonsAheadOfRival > result.seasons.length / 2;
   const [nuovi, setNuovi] = useState<readonly string[]>([]);
   const [posto, setPosto] = useState<number | undefined>(undefined);
   const [striscia, setStriscia] = useState(0);
@@ -93,15 +93,6 @@ export function Verdetto({
         <span>{result.totalCaps} in nazionale</span>
       </div>
 
-      <p style={{ marginTop: '.8rem' }}>
-        {davanti
-          ? `Hai chiuso davanti a ${result.rival.name}.`
-          : `${result.rival.name} ti è rimasto davanti.`}{' '}
-        <span className="tenue">
-          Lui: picco {result.rival.peakOverall}, {result.rival.goals} gol, {result.rival.trophies} trofei.
-        </span>
-      </p>
-
       <p className="tenue">Squadre: {result.clubsPlayed.join(' → ')}</p>
 
       {result.marks.length > 0 && (
@@ -139,6 +130,8 @@ export function Verdetto({
         ★ È la carriera più forte che hai chiuso finora.
       </p>
     )}
+
+    <Confronto result={result} nome={nome ?? 'Il tuo giocatore'} />
 
     {nome !== undefined && nazionalita !== undefined && (
       <Poster
