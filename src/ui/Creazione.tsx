@@ -291,7 +291,21 @@ export function Creazione({
             </div>
           </div>
 
-          <span className="contesto-etichetta" style={{ display: 'block', marginTop: '.8rem' }}>Gioco</span>
+
+          <button type="button" className="avanti" onClick={() => setPasso(3)}>
+            <span>Avanti</span>
+            <span aria-hidden="true">→</span>
+          </button>
+        </>
+      )}
+
+      {passo === 3 && (
+        <>
+          {testata('Opzioni carriera', 'Come vuoi cominciare, e come vuoi vivere le stagioni.', 3)}
+
+          <span className="contesto-etichetta" style={{ display: 'block', marginBottom: '.35rem' }}>
+            Che giocatore sei
+          </span>
           <div className="stili">
             {PLAY_STYLES.map((item) => (
               <button
@@ -308,17 +322,6 @@ export function Creazione({
               </button>
             ))}
           </div>
-
-          <button type="button" className="avanti" onClick={() => setPasso(3)}>
-            <span>Avanti</span>
-            <span aria-hidden="true">→</span>
-          </button>
-        </>
-      )}
-
-      {passo === 3 && (
-        <>
-          {testata('Opzioni carriera', 'Come vuoi cominciare, e come vuoi vivere le stagioni.', 3)}
 
           <span className="contesto-etichetta" style={{ display: 'block', marginBottom: '.35rem' }}>
             Come vivi le stagioni
