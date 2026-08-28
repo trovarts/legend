@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from 'react';
 import { bandiera, inItaliano } from './bandiere';
-import { MAP_HEIGHT, MAP_WIDTH, WORLD_PATHS } from './worldPaths';
+import { CONTINENTI, continenteDi } from './continenti';
+import { WORLD_PATHS } from './worldPaths';
 
 /** I nomi della mappa non coincidono sempre con quelli del database delle rose. */
 const ALIAS: Record<string, string> = {
@@ -36,17 +37,39 @@ export function Mappa({
 }) {
   const [cerca, setCerca] = useState('');
   const [sopra, setSopra] = useState<string | null>(null);
+  const [continente, setContinente] = useState(0);
 
   const accesi = useMemo(() => new Set(giocabili), [giocabili]);
   const filtro = cerca.trim().toLowerCase();
 
+  const quiSopra = CONTINENTI[continente] ?? CONTINENTI[0]!;
+
+  /**
+   * Cercando si guarda ovunque; senza cercare si guarda il continente inquadrato.
+   * Così l'elenco sotto la mappa resta corto e ha lo stesso contenuto di quello che
+   * si vede: niente più ventotto bottoni tutti insieme.
+   */
   const elenco = useMemo(
     () =>
       [...giocabili]
-        .filter((paese) => filtro === '' || inItaliano(paese).toLowerCase().includes(filtro))
+        .filter((paese) =>
+          filtro === ''
+            ? continenteDi(paese) === quiSopra.id
+            : inItaliano(paese).toLowerCase().includes(filtro),
+        )
         .sort((a, b) => inItaliano(a).localeCompare(inItaliano(b))),
-    [giocabili, filtro],
+    [giocabili, filtro, quiSopra.id],
   );
+
+  const quantiQui = useMemo(
+    () => giocabili.filter((paese) => continenteDi(paese) === quiSopra.id).length,
+    [giocabili, quiSopra.id],
+  );
+
+  const giraDi = (passo: number): void => {
+    setCerca('');
+    setContinente((corrente) => (corrente + passo + CONTINENTI.length) % CONTINENTI.length);
+  };
 
   return (
     <div className="mappa-blocco">
@@ -59,16 +82,23 @@ export function Mappa({
         onChange={(event) => setCerca(event.target.value)}
         placeholder="Scrivi una nazione"
       />
-      <p className="tenue" style={{ fontSize: '.78rem', margin: '.5rem 0' }}>
-        Nazioni giocabili in arancione · {giocabili.length} disponibili
-        {sopra !== null && ` · ${inItaliano(sopra)}`}
+      <div className="giostra">
+        <button type="button" className="giostra-freccia" aria-label="Continente precedente" onClick={() => giraDi(-1)}>‹</button>
+        <span className="giostra-nome">{quiSopra.nome}</span>
+        <button type="button" className="giostra-freccia" aria-label="Continente successivo" onClick={() => giraDi(1)}>›</button>
+      </div>
+
+      <p className="tenue giostra-conto">
+        {sopra !== null
+          ? inItaliano(sopra)
+          : `${quantiQui} ${quantiQui === 1 ? 'nazione giocabile' : 'nazioni giocabili'} qui · ${giocabili.length} in tutto`}
       </p>
 
       <svg
-        viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
-        className="mappa"
+        viewBox={quiSopra.viewBox}
+        className="mappa mappa-zoom"
         role="group"
-        aria-label="Mappa del mondo: scegli una nazione"
+        aria-label={`Mappa: ${quiSopra.nome}. Tocca una nazione accesa.`}
       >
         {WORLD_PATHS.map((paese) => {
           const chiave = chiaveDi(paese.name);

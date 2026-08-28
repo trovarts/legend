@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import Link from 'next/link';
 import { dailyChallenge } from '../engine/challenge';
 import { Albo } from '../ui/Albo';
+import { Avviso } from '../ui/Avviso';
 import { Sfida } from '../ui/Sfida';
 import { Traguardi } from '../ui/Traguardi';
 import type { LeagueSummary } from '../world/types';
@@ -32,6 +33,7 @@ export default function Home() {
 
   return (
     <main className="home">
+      <Avviso />
       <h1 className="marchio">LEGGENDA</h1>
       <p className="marchio-sotto">Il cammino verso la leggenda</p>
 

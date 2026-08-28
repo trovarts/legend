@@ -786,3 +786,66 @@ select.bottone { appearance: none; }
 @media (prefers-reduced-motion: reduce) {
   .scena-corpo > *, .scena::before { animation: none; transition: none; }
 }
+
+/* ── Il velo: quando il gioco si ferma per dirti una cosa ────────────────────
+ *
+ * Lo sfondo si sfoca e resta a fuoco una cosa sola. È il modo più diretto per non
+ * far sbagliare nessuno: non c'è altro da toccare.
+ */
+.velo {
+  position: fixed; inset: 0; z-index: 50;
+  display: grid; place-items: center; padding: 1rem;
+  background: color-mix(in srgb, var(--nero) 72%, transparent);
+  backdrop-filter: blur(10px) saturate(.8);
+  animation: velo-entra .22s ease both;
+}
+@keyframes velo-entra { from { opacity: 0; } to { opacity: 1; } }
+
+.modale {
+  width: min(30rem, 100%); max-height: min(85dvh, 44rem); overflow-y: auto;
+  background: linear-gradient(165deg,
+    color-mix(in srgb, var(--rosso) 14%, transparent),
+    color-mix(in srgb, var(--carta-alta) 92%, transparent));
+  border: 1px solid var(--bordo); border-radius: 18px;
+  padding: 1.3rem 1.2rem 1.1rem;
+  box-shadow: 0 30px 70px -30px #000, 0 0 0 1px color-mix(in srgb, var(--rosso) 22%, transparent);
+  animation: modale-entra .28s cubic-bezier(.2,.9,.3,1) both;
+}
+@keyframes modale-entra {
+  from { opacity: 0; transform: translateY(18px) scale(.96); }
+  to { opacity: 1; transform: none; }
+}
+.modale-titolo { font-size: clamp(1.4rem, 5vw, 1.9rem); font-weight: 800; letter-spacing: -.02em; margin: .2rem 0 .5rem; }
+.modale-corpo { font-size: .92rem; line-height: 1.5; color: var(--testo); }
+.modale-corpo p { margin: 0 0 .6rem; }
+.modale-corpo p:last-child { margin-bottom: 0; }
+.modale-azione { margin-top: 1rem; }
+.modale-secondaria { margin-top: .5rem; text-align: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .velo, .modale { animation: none; }
+}
+
+/* ── La giostra dei continenti ───────────────────────────────────────────────
+ *
+ * Il planisfero intero rendeva l'Italia grande come un'unghia. Un continente per
+ * volta: i paesi diventano bersagli veri, e l'elenco sotto mostra solo quelli che
+ * si vedono.
+ */
+.giostra {
+  display: flex; align-items: center; justify-content: space-between; gap: .5rem;
+  margin: .6rem 0 .3rem;
+  border: 1px solid var(--bordo); border-radius: 12px;
+  background: color-mix(in srgb, var(--carta) 80%, transparent);
+  padding: .25rem .35rem;
+}
+.giostra-nome { font-weight: 800; letter-spacing: .06em; text-transform: uppercase; font-size: .84rem; }
+.giostra-freccia {
+  border: none; background: none; color: var(--testo); cursor: pointer;
+  font-size: 1.5rem; line-height: 1; padding: .1rem .8rem; border-radius: 8px;
+}
+.giostra-freccia:hover { color: var(--rosso); background: rgba(255,255,255,.05); }
+.giostra-conto { font-size: .76rem; margin: 0 0 .5rem; min-height: 1.1em; }
+
+.mappa-zoom { aspect-ratio: auto; height: clamp(11rem, 34vh, 19rem); width: 100%; }
+.mappa-zoom .paese-attivo { stroke-width: .35; }
