@@ -573,4 +573,210 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
       ],
     }),
   },
+  {
+    id: 'la-fascia-pesa',
+    weight: 2,
+    when: (context) =>
+      context.marks.some((segno) => segno.id === 'leader-riconosciuto') &&
+      context.minutesShare < 0.55 &&
+      context.season >= 5,
+    build: (context) => ({
+      id: 'la-fascia-pesa',
+      title: 'Il capitano che non gioca',
+      text: `Sei il capitano di ${context.clubName}, ma il mister ti tiene fuori. Lo spogliatoio guarda te per capire come si reagisce.`,
+      options: [
+        {
+          id: 'tieni-il-gruppo',
+          label: 'Tieni insieme il gruppo',
+          stake: 'Il tuo peso cresce, il tuo posto no.',
+          outcomes: [
+            { chance: 1, text: 'Non alzi la voce e non molli nessuno. Lo spogliatoio se ne accorge.', effects: { addMark: { id: 'uomo-spogliatoio', intensity: 2 }, minutesDelta: -0.03 } },
+          ],
+        },
+        {
+          id: 'restituisci-la-fascia',
+          label: 'Restituisci la fascia',
+          stake: 'Torni un giocatore fra gli altri, e giochi per il posto.',
+          outcomes: [
+            { chance: 0.6, text: 'Senza il peso della fascia torni a spingere: il mister ti rivede.', effects: { minutesDelta: 0.12 } },
+            { chance: 0.4, text: 'Il gesto suona come una resa. La societa prende nota.', effects: { minutesDelta: 0.04, addMark: { id: 'carattere-fragile', intensity: 1 } } },
+          ],
+        },
+      ],
+    }),
+  },
+  {
+    id: 'la-piazza-contesta',
+    weight: 2,
+    when: (context) => context.season >= 3 && context.minutesShare > 0.5 && !context.wonSomething,
+    build: (context) => ({
+      id: 'la-piazza-contesta',
+      title: 'Fischi sotto la curva',
+      text: `Terza sconfitta di fila. A fine partita la curva di ${context.clubName} chiama la squadra sotto il settore. Qualcuno resta negli spogliatoi.`,
+      options: [
+        {
+          id: 'vai-sotto-la-curva',
+          label: 'Vai sotto la curva',
+          stake: 'Ti prendi i fischi in faccia, davanti a tutti.',
+          outcomes: [
+            { chance: 0.7, text: 'Prendi i fischi senza abbassare la testa. Alla piazza resta impresso.', effects: { addMark: { id: 'beniamino-dei-tifosi', intensity: 2 } } },
+            { chance: 0.3, text: 'Qualcuno alza il tono, la cosa degenera. Ci vorra tempo.', effects: { minutesDelta: -0.05 } },
+          ],
+        },
+        {
+          id: 'resta-dentro',
+          label: 'Resta negli spogliatoi',
+          stake: 'Eviti il momento, ma quel momento si ricorda.',
+          outcomes: [
+            { chance: 1, text: 'Entri senza voltarti. La curva lo scrive su uno striscione.', effects: { addMark: { id: 'promessa-tradita', intensity: 1 } } },
+          ],
+        },
+      ],
+    }),
+  },
+  {
+    id: 'il-procuratore-ombra',
+    weight: 2,
+    when: (context) => context.season >= 4 && context.overall >= 68 && context.contractYearsLeft <= 2,
+    build: () => ({
+      id: 'il-procuratore-ombra',
+      title: 'Un altro procuratore ti cerca',
+      text: "Ti contatta un intermediario che non e il tuo: promette un contratto altrove e una commissione che non passa dal tuo agente. Basta non dirlo a nessuno.",
+      options: [
+        {
+          id: 'ascolti-in-silenzio',
+          label: 'Lo ascolti in silenzio',
+          stake: 'Piu offerte, ma se si sa che tratti alle spalle di tutti...',
+          outcomes: [
+            { chance: 0.55, text: 'Il giro si allarga e le porte si aprono. Nessuno lo viene a sapere.', effects: { minutesDelta: 0.05, valueMultiplier: 1.2 } },
+            { chance: 0.45, text: 'La voce gira prima di te. Il club lo scopre, e il rapporto si incrina.', effects: { addMark: { id: 'mercenario', intensity: 2 }, minutesDelta: -0.08 } },
+          ],
+        },
+        {
+          id: 'lo-mandi-via',
+          label: 'Lo mandi via',
+          stake: 'Niente scorciatoie, niente rischi.',
+          outcomes: [
+            { chance: 1, text: 'Chiudi la porta e lo dici al tuo agente. Il rapporto ne esce solido.', effects: { addMark: { id: 'uomo-spogliatoio', intensity: 1 } } },
+          ],
+        },
+      ],
+    }),
+  },
+  {
+    id: 'la-notte-prima',
+    weight: 2,
+    when: (context) => context.season >= 2 && context.age <= 26 && context.minutesShare > 0.4,
+    build: () => ({
+      id: 'la-notte-prima',
+      title: 'La sera prima della partita',
+      text: 'Vecchi amici in citta, il ritrovo e stasera. Domani si gioca, e domani il mister guarda proprio te.',
+      options: [
+        {
+          id: 'esci',
+          label: 'Esci lo stesso',
+          stake: 'Una serata come una volta. E domani si vedra.',
+          outcomes: [
+            { chance: 0.45, text: 'Torni presto, dormi bene e domani giochi leggero: certe cose ti tengono in equilibrio.', effects: { minutesDelta: 0.04 } },
+            { chance: 0.55, text: 'Rientri tardi. Domani le gambe non girano, e si vede da fuori.', effects: { minutesDelta: -0.09, overall: -1 } },
+          ],
+        },
+        {
+          id: 'resti-a-casa',
+          label: 'Resti a casa',
+          stake: 'Niente di male e niente di buono: si dorme.',
+          outcomes: [
+            { chance: 1, text: 'Mandi un messaggio e vai a letto presto. Domani sei quello di sempre.', effects: {} },
+          ],
+        },
+      ],
+    }),
+  },
+  {
+    id: 'il-posto-del-giovane',
+    weight: 2,
+    when: (context) => context.age >= 29 && context.minutesShare > 0.55,
+    build: (context) => ({
+      id: 'il-posto-del-giovane',
+      title: 'Il ragazzo che gioca al tuo posto',
+      text: `A ${context.clubName} e arrivato un ragazzo del vivaio nel tuo ruolo. Il mister chiede a te cosa farne.`,
+      options: [
+        {
+          id: 'fagli-spazio',
+          label: 'Digli di farlo giocare',
+          stake: 'Meno minuti per te, e un debito che qualcuno si ricorda.',
+          outcomes: [
+            { chance: 1, text: 'Lo dici davanti a tutti. Il club se lo segna, il ragazzo pure.', effects: { minutesDelta: -0.12, addMark: { id: 'uomo-spogliatoio', intensity: 2 }, retirementDelta: 1 } },
+          ],
+        },
+        {
+          id: 'il-posto-e-mio',
+          label: 'Il posto e tuo, e lo difendi',
+          stake: 'Giochi, ma con qualcuno che ti fiata sul collo.',
+          outcomes: [
+            { chance: 0.6, text: 'Rispondi sul campo e non lasci un metro. Il posto resta tuo.', effects: { minutesDelta: 0.06 } },
+            { chance: 0.4, text: "Ti irrigidisci, e a quell'eta si paga: il ragazzo passa avanti lo stesso.", effects: { minutesDelta: -0.14 } },
+          ],
+        },
+      ],
+    }),
+  },
+  {
+    id: 'il-rigore-decisivo',
+    weight: 2,
+    when: (context) => context.minutesShare > 0.6 && context.season >= 3,
+    build: (context) => ({
+      id: 'il-rigore-decisivo',
+      title: 'Chi lo tira',
+      text: `Novantesimo, rigore per ${context.clubName}. Il rigorista designato non c'e. Il pallone e li, e nessuno si fa avanti.`,
+      options: [
+        {
+          id: 'lo-prendi-tu',
+          label: 'Prendi il pallone',
+          stake: 'Se entra sei tu. Se esce, sei tu lo stesso.',
+          outcomes: [
+            { chance: 0.72, text: 'Lo metti dove il portiere non arriva. Da li in poi i rigori li tiri tu.', effects: { addMark: { id: 'leader-riconosciuto', intensity: 2 }, minutesDelta: 0.05 } },
+            { chance: 0.28, text: 'Traversa. Il silenzio dello stadio te lo porti dietro per mesi.', effects: { addMark: { id: 'carattere-fragile', intensity: 2 }, minutesDelta: -0.06 } },
+          ],
+        },
+        {
+          id: 'lo-lasci',
+          label: 'Lo lasci a un altro',
+          stake: 'Nessun rischio, e nessuno che ti guardi.',
+          outcomes: [
+            { chance: 1, text: 'Fai un passo indietro. Lo tira un compagno, e nessuno ti chiede niente.', effects: {} },
+          ],
+        },
+      ],
+    }),
+  },
+  {
+    id: 'la-clausola',
+    weight: 2,
+    when: (context) => context.contractYearsLeft >= 2 && context.overall >= 72 && context.season >= 5,
+    build: (context) => ({
+      id: 'la-clausola',
+      title: 'La clausola nel contratto',
+      text: `${context.clubName} ti offre il rinnovo. C'e una clausola di uscita bassa: ti libera fra due anni, ma ti mette in vetrina per chiunque.`,
+      options: [
+        {
+          id: 'firmi-con-la-clausola',
+          label: 'Firmi con la clausola',
+          stake: 'Ti apre le porte, e ti toglie il potere di dire no.',
+          outcomes: [
+            { chance: 1, text: 'Firmi. Da domani il tuo nome circola in ogni lista — e il club lo sa.', effects: { valueMultiplier: 1.12, addMark: { id: 'mercenario', intensity: 2 } } },
+          ],
+        },
+        {
+          id: 'la-fai-togliere',
+          label: 'Chiedi di toglierla',
+          stake: 'Resti padrone del tuo destino, ma il club chiede qualcosa in cambio.',
+          outcomes: [
+            { chance: 0.7, text: 'Il club accetta: niente clausola, piu spazio e un anno in piu di fiducia.', effects: { retirementDelta: 2, minutesDelta: 0.08, addMark: { id: 'bandiera', intensity: 2 } } },
+            { chance: 0.3, text: 'Il club si irrigidisce e rimanda tutto. Il rinnovo resta in sospeso.', effects: { minutesDelta: -0.05 } },
+          ],
+        },
+      ],
+    }),
+  },
 ];
