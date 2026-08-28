@@ -224,3 +224,90 @@ select.bottone { appearance: none; }
 
 .faccia { min-width: 6.6rem; max-width: 11rem; }
 .faccia-extra { font-size: .68rem; opacity: .82; line-height: 1.25; margin-top: .05rem; }
+
+/* ── Pannello di contesto: dove sei, sempre ──────────────────────────────── */
+.contesto {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: .55rem;
+  margin-bottom: 1rem;
+}
+@media (min-width: 44rem) { .contesto { grid-template-columns: repeat(4, 1fr); } }
+.contesto-blocco {
+  display: flex; flex-direction: column; gap: .12rem;
+  background: var(--carta); border: 1px solid var(--bordo);
+  border-radius: 10px; padding: .55rem .7rem; font-size: .82rem;
+}
+.contesto-etichetta { font-size: .58rem; letter-spacing: .16em; text-transform: uppercase; color: var(--tenue); }
+.contesto-barra { height: 5px; border-radius: 99px; background: var(--bordo); overflow: hidden; margin: .25rem 0 .1rem; }
+.contesto-barra > span { display: block; height: 100%; background: var(--verde); transition: width .8s cubic-bezier(.2,.8,.2,1); }
+.contesto-valore { font-size: .78rem; }
+
+/* ── Classifica ──────────────────────────────────────────────────────────── */
+.tabella { display: flex; flex-direction: column; }
+.tabella-riga {
+  display: grid; grid-template-columns: 1.6rem 1fr auto auto 2.2rem;
+  gap: .5rem; align-items: center; padding: .38rem .3rem;
+  border-bottom: 1px solid rgba(255,255,255,.05); font-size: .86rem;
+}
+.tabella-mia { background: rgba(216,31,63,.14); border-radius: 6px; font-weight: 700; }
+.tabella-pos { color: var(--tenue); }
+.tabella-club { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tabella-ovr {
+  font-size: .68rem; background: var(--bordo); border-radius: 5px; padding: .05rem .35rem; color: var(--tenue);
+}
+.tabella-punti { text-align: right; font-weight: 700; }
+
+/* ── Tabellone di coppa ──────────────────────────────────────────────────── */
+.tabellone { display: grid; gap: .8rem; }
+@media (min-width: 40rem) { .tabellone { grid-template-columns: repeat(3, 1fr); } }
+.tabellone-colonna { display: flex; flex-direction: column; gap: .45rem; }
+.tie {
+  display: flex; flex-direction: column; gap: .1rem; font-size: .8rem;
+  border: 1px solid var(--bordo); border-radius: 8px; padding: .4rem .55rem; background: var(--carta);
+}
+.tie-mia { border-color: var(--rosso); background: rgba(216,31,63,.12); }
+.tie-vince { font-weight: 700; }
+.tie span { display: flex; justify-content: space-between; gap: .5rem; }
+.trofeo { text-align: center; font-size: 1.05rem; font-weight: 700; margin-top: .8rem; color: var(--oro); }
+
+/* ── Partita in diretta ──────────────────────────────────────────────────── */
+.velocita {
+  background: none; border: 1px solid var(--bordo); border-radius: 6px;
+  color: var(--tenue); font: inherit; font-size: .68rem; padding: .12rem .35rem;
+  margin-left: .2rem; cursor: pointer;
+}
+.velocita-attiva { border-color: var(--oro); color: var(--oro); }
+.tabellino {
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: .8rem;
+  padding: 1rem 0; text-align: center;
+}
+.tabellino-squadra { font-weight: 700; }
+.tabellino-punteggio { display: flex; align-items: center; gap: .9rem; font-size: 2.4rem; font-weight: 800; }
+.tabellino-minuto {
+  font-size: .68rem; letter-spacing: .12em; color: var(--oro);
+  border: 1px solid var(--bordo); border-radius: 99px; padding: .15rem .5rem; font-weight: 600;
+}
+.stat-lista { display: flex; flex-direction: column; gap: .3rem; margin: .5rem 0 1rem; }
+.stat-riga {
+  display: grid; grid-template-columns: 2.2rem 1fr 2.2rem; gap: .5rem; align-items: center;
+  font-size: .78rem;
+}
+.stat-riga .stat-nome { grid-column: 1 / -1; text-align: center; font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; margin-top: -.25rem; }
+.stat-barra { display: flex; height: 5px; border-radius: 99px; overflow: hidden; background: var(--bordo); }
+.stat-casa { background: var(--verde); transition: width .4s ease; }
+.stat-ospite { background: var(--rosso); transition: width .4s ease; }
+.cronaca { min-height: 6.5rem; display: flex; flex-direction: column; gap: .2rem; }
+.cronaca-riga { margin: 0; font-size: .86rem; animation: entra .3s ease both; }
+.cronaca-gol { color: var(--oro); font-weight: 700; font-size: 1rem; }
+
+/* ── Resoconto: il numero che sale ───────────────────────────────────────── */
+.resoconto-cifre { display: grid; gap: .8rem; margin: 1rem 0; }
+@media (min-width: 36rem) { .resoconto-cifre { grid-template-columns: 1fr 1fr; } }
+.resoconto-blocco {
+  display: flex; flex-direction: column; align-items: center; gap: .2rem;
+  border: 1px solid var(--bordo); border-radius: var(--raggio); padding: 1rem; background: var(--carta);
+}
+.salita { display: flex; align-items: baseline; gap: .5rem; font-size: 1.1rem; color: var(--tenue); }
+.salita-da { font-size: 1.4rem; }
+.salita-a { font-size: 2.6rem; font-weight: 800; color: var(--testo); }
+.salita-su { color: var(--verde); }
+.salita-giu { color: var(--rosso); }
