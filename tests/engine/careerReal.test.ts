@@ -107,4 +107,26 @@ describe('carriere sulle rose vere', () => {
     expect(promozioniSeguite).toBeGreaterThan(0);
     expect(saliti).toBeGreaterThan(30);
   });
+
+  it('il campionato non ha mai una posizione in più delle squadre iscritte', () => {
+    // Un club promosso cambia campionato ma resta la stessa squadra: prende il posto
+    // di chi è sceso, non se ne aggiunge uno.
+    const perLega = new Map<string, number>();
+    for (const entry of clubs) perLega.set(entry.leagueId, (perLega.get(entry.leagueId) ?? 0) + 1);
+
+    const quarta = clubs.filter((entry) => entry.leagueLevel === 4);
+    for (let seed = 0; seed < 40; seed += 1) {
+      const start = quarta[seed % quarta.length]!;
+      const result = runCareer({
+        create: { name: 'Diego', nationality: 'Italy', role: 'FWD', age: 17, leagueLevel: 4 },
+        world: { clubs, startClubId: start.club.id },
+        seed,
+      });
+      for (const stagione of result.seasons) {
+        const iscritte = perLega.get(stagione.leagueId) ?? 0;
+        expect(stagione.position).toBeGreaterThanOrEqual(1);
+        expect(stagione.position).toBeLessThanOrEqual(iscritte);
+      }
+    }
+  });
 });

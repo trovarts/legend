@@ -58,6 +58,11 @@ export interface SimulateSeasonInput {
   style?: PlayStyle;
   /** Cosa il club ha chiesto quest'anno. */
   objectives?: ClubObjectives;
+  /**
+   * Quanto il club vale in più (o in meno) rispetto alla sua rosa sulla carta: chi è
+   * appena salito investe, chi è appena sceso vende. Si consuma in poche stagioni.
+   */
+  clubBonus?: number;
 }
 
 export interface SeasonOutcome {
@@ -100,8 +105,9 @@ export function simulateSeason(input: SimulateSeasonInput, rng: Rng): SeasonOutc
   );
   const minutesShare = Math.max(0.02, trainedShare * (1 - injuryMinutesPenalty(injury)));
 
-  const strength = clubStrengthWith(club, player.overall, player.role, minutesShare);
-  const position = leaguePosition(strength, input.leagueStrengths, rng, clubStrength(club));
+  const bonus = input.clubBonus ?? 0;
+  const strength = clubStrengthWith(club, player.overall, player.role, minutesShare) + bonus;
+  const position = leaguePosition(strength, input.leagueStrengths, rng, clubStrength(club) + bonus);
 
   const stats = seasonStats(
     {

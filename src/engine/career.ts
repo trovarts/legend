@@ -4,6 +4,7 @@ import { createPlayer, type CreatePlayerInput } from './create';
 import { boldPolicy, type DilemmaPolicy } from './dilemmas';
 import type { Agent } from './agent';
 import { competitionsOf, type ContinentalTier } from './competitionsMap';
+import type { Movement } from './movement';
 import { seasonObjectives, type ClubObjectives } from './objectives';
 import type { AgentRequest } from './agentRequest';
 import type { PlayStyle } from './playstyle';
@@ -114,6 +115,18 @@ export function runCareer(input: RunCareerInput): CareerResult {
   let minutesBonus = 0;
   let retirementDelta = 0;
   let qualified: ContinentalTier | null = null;
+  /** Come il club è arrivato nel campionato in cui si trova: salendo, scendendo, o essendoci nato. */
+  let ospite: Movement = null;
+  /**
+   * L'onda di una promozione o di una retrocessione.
+   *
+   * Un club che sale investe, uno che scende vende: per un paio d'anni vale più (o
+   * meno) della sua rosa sulla carta. Senza, la piramide diventa una porta girevole —
+   * chi sale è per definizione il più debole del nuovo campionato e torna giù subito.
+   */
+  let strutturaBonus = 0;
+  const ONDA = 2.6;
+  const CONSUMO = 0.55;
   let capped = false;
   let seasonsAheadOfRival = 0;
   /** Per quante stagioni un bivio resta "già visto". */
@@ -141,11 +154,35 @@ export function runCareer(input: RunCareerInput): CareerResult {
     return gruppi.find((entry) => entry.leagueId === scelto);
   }
 
-  const strengthsByLeague = new Map<string, number[]>();
+  const clubsPerLega = new Map<string, CandidateClub[]>();
   for (const entry of input.world.clubs) {
-    const list = strengthsByLeague.get(entry.leagueId) ?? [];
-    list.push(clubStrength(entry.club));
-    strengthsByLeague.set(entry.leagueId, list);
+    const list = clubsPerLega.get(entry.leagueId) ?? [];
+    list.push(entry);
+    clubsPerLega.set(entry.leagueId, list);
+  }
+
+  /**
+   * Le forze del campionato in cui si gioca, con dentro esattamente una volta quella
+   * del proprio club — e con lo stesso numero di squadre di sempre.
+   *
+   * Un club promosso cambia campionato ma resta la stessa squadra: fra gli iscritti al
+   * nuovo girone non c'è. Aggiungerlo e basta faceva un girone da ventuno, con un
+   * ventunesimo posto che non esiste. Chi sale prende il posto di chi è sceso: qui si
+   * toglie la squadra che ha fatto il viaggio opposto.
+   */
+  function forzeDelCampionato(entry: CandidateClub, arrivo: Movement): number[] {
+    const iscritti = clubsPerLega.get(entry.leagueId) ?? [];
+    const altri = iscritti
+      .filter((altro) => altro.club.id !== entry.club.id)
+      .map((altro) => clubStrength(altro.club))
+      .sort((a, b) => b - a);
+
+    if (arrivo !== null && altri.length === iscritti.length) {
+      // Salendo si scambia il posto con l'ultima, scendendo con la prima.
+      if (arrivo === 'promosso') altri.pop();
+      else altri.shift();
+    }
+    return [...altri, clubStrength(entry.club) + strutturaBonus];
   }
 
   while (!player.retired && seasons.length < MAX_SEASONS) {
@@ -153,7 +190,7 @@ export function runCareer(input: RunCareerInput): CareerResult {
     // Il paese serve a sapere quali coppe si giocano: viene dal campionato.
     const paeseDelClub = club.country ?? 'Italy';
     const season = seasons.length + 1;
-    const leagueStrengths = strengthsByLeague.get(club.leagueId) ?? [clubStrength(club.club)];
+    const leagueStrengths = forzeDelCampionato(club, ospite);
 
     // Le squadre che il mercato prende in considerazione. Pescare a caso da tutto il
     // mondo faceva arrivare a un ragazzo di Serie C offerte dalla Cina: il calcio non
@@ -176,7 +213,7 @@ export function runCareer(input: RunCareerInput): CareerResult {
 
     // Gli obiettivi si annunciano ad agosto, prima di ogni scelta: hanno un
     // generatore tutto loro, così aggiungerli non sposta nessuna carriera esistente.
-    const forzaClub = clubStrength(club.club);
+    const forzaClub = clubStrength(club.club) + strutturaBonus;
     const migliori = leagueStrengths.filter((valore) => valore > forzaClub).length;
     const objectives = seasonObjectives(
       {
@@ -213,6 +250,7 @@ export function runCareer(input: RunCareerInput): CareerResult {
         dilemmaPolicy,
         style: input.style,
         objectives,
+        clubBonus: strutturaBonus,
         training: (input.trainingPolicy ?? (() => 'tecnica' as const))(season, {
           age: player.age, overall: player.overall, clubName: club.club.name, objectives,
         }),
@@ -249,6 +287,9 @@ export function runCareer(input: RunCareerInput): CareerResult {
       break;
     }
 
+    // L'onda del salto si consuma: dopo due o tre anni il club vale di nuovo la sua rosa.
+    strutturaBonus *= CONSUMO;
+
     // Il club sale o scende: la stagione prossima si gioca in un'altra categoria.
     if (outcome.record.movement !== null) {
       const livello = club.leagueLevel + (outcome.record.movement === 'promosso' ? -1 : 1);
@@ -260,6 +301,8 @@ export function runCareer(input: RunCareerInput): CareerResult {
           leagueName: nuovaLega.leagueName,
           leagueLevel: nuovaLega.leagueLevel,
         };
+        ospite = outcome.record.movement;
+        strutturaBonus += outcome.record.movement === 'promosso' ? ONDA : -ONDA;
       }
     }
 
@@ -274,6 +317,10 @@ export function runCareer(input: RunCareerInput): CareerResult {
         const destination = input.world.clubs.find((entry) => entry.club.id === chosen.clubId);
         if (destination) {
           current = destination;
+          // Cambiando maglia si torna a essere iscritti al proprio campionato,
+          // e l'onda del club precedente non ti segue.
+          ospite = null;
+          strutturaBonus = 0;
           contract = signContract(season, player.age, rng);
           if (clubsPlayed[clubsPlayed.length - 1] !== destination.club.name) {
             clubsPlayed.push(destination.club.name);
