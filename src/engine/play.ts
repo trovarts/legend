@@ -34,6 +34,8 @@ export interface CareerDecisions {
   /** Il numero di maglia e il piede preferito. */
   numero?: string;
   piede?: 'Destro' | 'Sinistro';
+  /** Come si guardano le stagioni: tutto d'un fiato o passo per passo. */
+  modo?: 'classica' | 'dettagliata';
 }
 
 /**

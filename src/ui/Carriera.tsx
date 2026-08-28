@@ -11,6 +11,7 @@ import { Contesto } from './Contesto';
 import { FineStagione } from './FineStagione';
 import { Giornale } from './Giornale';
 import { Mercato } from './Mercato';
+import { modoDi } from './preferenze';
 import { Preparazione } from './Preparazione';
 import { Tessera } from './Tessera';
 import { Promozione, Vivaio } from './Vivaio';
@@ -275,6 +276,7 @@ export function Carriera({
           playerName={save.create.name}
           nazione={save.create.nationality}
           seed={save.seed}
+          modo={modoDi(save.decisions.modo)}
           onEnd={() => setVista(daMostrare.season)}
         />
       ) : (

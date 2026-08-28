@@ -1,39 +1,27 @@
 /**
- * Le preferenze di chi guarda, non del giocatore.
+ * I due modi di vivere una stagione.
  *
- * Non entrano nel salvataggio: una carriera condivisa deve dare la stessa carriera
- * a chiunque la apra, anche a chi le partite preferisce vederle in un altro modo.
- * Stanno nel browser di chi gioca e basta.
+ * Si sceglie alla creazione e resta scritto nella carriera, non nel browser: due
+ * salvataggi sullo stesso computer possono andare a velocità diverse, e una carriera
+ * condivisa arriva com'è stata pensata.
  */
 export type ModoPartita = 'classica' | 'dettagliata';
 
-const CHIAVE = 'leggenda:modo-partita';
-
-export function leggiModoPartita(): ModoPartita {
-  try {
-    return localStorage.getItem(CHIAVE) === 'classica' ? 'classica' : 'dettagliata';
-  } catch {
-    return 'dettagliata';
-  }
-}
-
-export function scriviModoPartita(modo: ModoPartita): void {
-  try {
-    localStorage.setItem(CHIAVE, modo);
-  } catch {
-    // Finestra anonima o storage negato: si gioca lo stesso, senza ricordarselo.
-  }
-}
-
-export const MODI_PARTITA: readonly { id: ModoPartita; label: string; text: string }[] = [
+export const MODI_PARTITA: readonly { id: ModoPartita; label: string; occhiello: string; text: string }[] = [
   {
     id: 'dettagliata',
     label: 'Dettagliata',
-    text: 'La partita scorre minuto per minuto: cronometro, episodi, statistiche che si muovono.',
+    occhiello: 'Immersiva',
+    text: 'La partita che conta minuto per minuto, i tabelloni passo passo, il Mondiale e la coppa.',
   },
   {
     id: 'classica',
     label: 'Classica',
-    text: 'Solo il risultato finale e il tabellino: si va avanti veloce.',
+    occhiello: 'Rapida',
+    text: "La stagione in un colpo: classifica, trofei e resoconto subito, senza passare dal campo.",
   },
 ];
+
+export function modoDi(modo: ModoPartita | undefined): ModoPartita {
+  return modo === 'classica' ? 'classica' : 'dettagliata';
+}

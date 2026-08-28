@@ -40,7 +40,17 @@ export function Salvataggi({
             }}
           >
             <strong>{slot.name}</strong>
-            <span className="posta">{slot.seasons} stagioni giocate</span>
+            <span className="posta">
+              {[
+                slot.clubName,
+                slot.age !== undefined ? `${slot.age} anni` : undefined,
+                slot.overall !== undefined ? `OVR ${slot.overall}` : undefined,
+                slot.modo === 'classica' ? 'Classica' : 'Dettagliata',
+                `${slot.seasons} ${slot.seasons === 1 ? 'stagione' : 'stagioni'}`,
+              ]
+                .filter((pezzo) => pezzo !== undefined)
+                .join(' · ')}
+            </span>
           </button>
           <button
             type="button"

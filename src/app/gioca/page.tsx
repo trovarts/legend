@@ -34,8 +34,14 @@ export default function Gioca() {
   useEffect(() => {
     if (save === null || slotId === null || clubs.length === 0) return;
     try {
-      const seasons = playCareer(save, clubs).seasons.length;
-      saveSlot(window.localStorage, slotId, save, seasons, Date.now());
+      const stato = playCareer(save, clubs);
+      const ultima = stato.seasons[stato.seasons.length - 1];
+      const vivaio = stato.youth[stato.youth.length - 1];
+      saveSlot(window.localStorage, slotId, save, stato.seasons.length, Date.now(), {
+        clubName: ultima?.clubName ?? vivaio?.clubName,
+        age: ultima?.age ?? vivaio?.age,
+        overall: ultima?.overallEnd ?? vivaio?.overallEnd,
+      });
     } catch {
       // Spazio esaurito o finestra anonima: si gioca lo stesso, semplicemente non si salva.
     }

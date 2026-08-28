@@ -17,6 +17,7 @@ import { Playoff } from './Playoff';
 import { Trofeo } from './Trofeo';
 import { Giornale } from './Giornale';
 import { Partita } from './Partita';
+import type { ModoPartita } from './preferenze';
 import { Resoconto } from './Resoconto';
 import { Tabellone } from './Tabellone';
 
@@ -35,6 +36,7 @@ export function FineStagione({
   playerName,
   nazione,
   seed,
+  modo,
   onEnd,
 }: {
   record: SeasonRecord;
@@ -44,6 +46,8 @@ export function FineStagione({
   playerName: string;
   nazione: string;
   seed: number;
+  /** Classica salta il campo e i tabelloni: classifica, trofeo, resoconto, giornale. */
+  modo: ModoPartita;
   onEnd: () => void;
 }) {
   const dellaLega = useMemo(
@@ -114,7 +118,7 @@ export function FineStagione({
     [record.national.tournament, record.overallEnd, record.season, seed, nazione],
   );
 
-  const [tappa, setTappa] = useState<Tappa>(partita ? 'partita' : 'classifica');
+  const [tappa, setTappa] = useState<Tappa>(partita && modo === 'dettagliata' ? 'partita' : 'classifica');
 
   const classifica = useMemo(
     () => (dellaLega.length > 1 ? leagueTable(dellaLega, record.clubId, record.position, rng) : []),
@@ -140,13 +144,16 @@ export function FineStagione({
   /** L'ordine in cui si guarda una stagione: dal campo alla prima pagina. */
   const prossima = (corrente: Tappa): Tappa | null => {
     const ordine: Tappa[] = ['partita', 'classifica', 'playoff', 'coppa', 'trofeo', 'mondiale', 'resoconto', 'giornale'];
+    // In classica restano le cose che dicono com'è andata: la classifica, la
+    // coppa alzata e il racconto. Il campo e i tabelloni si saltano.
+    const immersiva = modo === 'dettagliata';
     const disponibile: Record<Tappa, boolean> = {
-      partita: partita !== null,
+      partita: immersiva && partita !== null,
       classifica: classifica.length > 0,
-      playoff: playoff !== null,
-      coppa: bracket !== null,
+      playoff: immersiva && playoff !== null,
+      coppa: immersiva && bracket !== null,
       trofeo: trofeoDaAlzare !== undefined,
-      mondiale: mondiale !== null,
+      mondiale: immersiva && mondiale !== null,
       resoconto: true,
       giornale: true,
     };
@@ -163,13 +170,14 @@ export function FineStagione({
     else setTappa(dopo);
   };
 
-  if (tappa === 'partita' && partita) {
+  if (tappa === 'partita' && partita && modo === 'dettagliata') {
     return (
       <Partita
         match={partita.match}
         playerAtHome
         homeOverall={partita.homeOverall}
         awayOverall={partita.awayOverall}
+        modo={modo}
         titolo={
           partita.finale
             ? `${coppa?.competitionName ?? 'Coppa'} · finale`

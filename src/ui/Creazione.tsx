@@ -15,6 +15,7 @@ const Mappa = dynamic(() => import('./Mappa').then((modulo) => modulo.Mappa), {
   loading: () => <p className="tenue">Sto aprendo il planisfero…</p>,
 });
 import { Nazione } from './Nazione';
+import { MODI_PARTITA, type ModoPartita } from './preferenze';
 import { newSave, randomSeed } from './newSave';
 import { Scelta, Scelte, sigla } from './Scelte';
 import type { useWorld } from './useWorld';
@@ -45,6 +46,7 @@ export function Creazione({
   const [numero, setNumero] = useState('10');
   const [piede, setPiede] = useState<'Destro' | 'Sinistro'>('Destro');
   const [sceltaClub, setSceltaClub] = useState<'sorpresa' | 'io'>('sorpresa');
+  const [modo, setModo] = useState<ModoPartita>('dettagliata');
   const [leagueId, setLeagueId] = useState('');
 
   const ruolo = posizioneById(posizione);
@@ -131,6 +133,7 @@ export function Creazione({
         ...base.decisions,
         style,
         position: posizione,
+        modo,
         look: aspetto,
         numero,
         piede,
@@ -288,7 +291,32 @@ export function Creazione({
 
       {passo === 3 && (
         <>
-          {testata('Opzioni carriera', 'Come vuoi cominciare: con una sorpresa o scegliendo tu.', 3)}
+          {testata('Opzioni carriera', 'Come vuoi cominciare, e come vuoi vivere le stagioni.', 3)}
+
+          <span className="contesto-etichetta" style={{ display: 'block', marginBottom: '.35rem' }}>
+            Come vivi le stagioni
+          </span>
+          <div className="stili" style={{ marginBottom: '.9rem' }}>
+            {MODI_PARTITA.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={`stile${modo === item.id ? ' stile-scelto' : ''}`}
+                onClick={() => setModo(item.id)}
+              >
+                <span>
+                  <span className="posta">{item.occhiello}</span>
+                  <strong style={{ display: 'block' }}>{item.label}</strong>
+                  <span className="tenue" style={{ display: 'block', fontSize: '.82rem' }}>{item.text}</span>
+                </span>
+                <span className="stile-spunta" aria-hidden="true">{modo === item.id ? '✓' : ''}</span>
+              </button>
+            ))}
+          </div>
+
+          <span className="contesto-etichetta" style={{ display: 'block', marginBottom: '.35rem' }}>
+            Da dove cominci
+          </span>
           <div className="stili">
             <button
               type="button"

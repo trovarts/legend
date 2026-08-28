@@ -8,12 +8,20 @@ export interface SlotSummary {
   name: string;
   seasons: number;
   updatedAt: number;
+  /** Dove e come sta andando: si legge nell'elenco senza aprire la carriera. */
+  clubName?: string;
+  age?: number;
+  overall?: number;
+  modo?: 'classica' | 'dettagliata';
 }
 
 interface StoredSlot {
   save: CareerSave;
   seasons: number;
   updatedAt: number;
+  clubName?: string;
+  age?: number;
+  overall?: number;
 }
 
 function readSlot(storage: Storage, key: string): StoredSlot | null {
@@ -26,6 +34,9 @@ function readSlot(storage: Storage, key: string): StoredSlot | null {
       save: parsed.save,
       seasons: typeof parsed.seasons === 'number' ? parsed.seasons : 0,
       updatedAt: typeof parsed.updatedAt === 'number' ? parsed.updatedAt : 0,
+      clubName: typeof parsed.clubName === 'string' ? parsed.clubName : undefined,
+      age: typeof parsed.age === 'number' ? parsed.age : undefined,
+      overall: typeof parsed.overall === 'number' ? parsed.overall : undefined,
     };
   } catch {
     // Uno slot illeggibile non deve impedire di vedere gli altri.
@@ -45,6 +56,10 @@ export function listSlots(storage: Storage): SlotSummary[] {
       name: stored.save.create.name,
       seasons: stored.seasons,
       updatedAt: stored.updatedAt,
+      clubName: stored.clubName,
+      age: stored.age,
+      overall: stored.overall,
+      modo: stored.save.decisions.modo === 'classica' ? 'classica' : 'dettagliata',
     });
   }
   return slots.sort((a, b) => b.updatedAt - a.updatedAt);
@@ -56,8 +71,10 @@ export function saveSlot(
   save: CareerSave,
   seasons: number,
   now: number,
+  /** A che punto è la carriera: serve solo a raccontarla nell'elenco. */
+  stato?: { clubName?: string; age?: number; overall?: number },
 ): void {
-  const stored: StoredSlot = { save, seasons, updatedAt: now };
+  const stored: StoredSlot = { save, seasons, updatedAt: now, ...stato };
   storage.setItem(PREFIX + id, JSON.stringify(stored));
 }
 
