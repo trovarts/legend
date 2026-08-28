@@ -520,3 +520,28 @@ perché tutti i test giocavano nello stesso mondo comodo — venti squadre per
 campionato, un solo paese, carriere che cominciano a diciassette anni. La feature non
 li ha creati: ha smesso di nasconderli. Per questo `lab:vivaio` gioca adesso come
 gioca l'utente, dal vivaio e in un mondo misto.
+
+## D-024 — Leggere una carriera intera, non guardarne la media
+
+Il Lab dice se i numeri stanno in scala. Non dice se una carriera si legge. Per
+scoprirlo è servito stamparne una per intero — `npm run racconto` — e leggerla riga
+per riga come la leggerebbe chi gioca. In venti minuti sono venuti fuori tre difetti
+che duemila carriere simulate non avevano mai segnalato:
+
+**Il girone si allungava.** Un club promosso veniva aggiunto al nuovo campionato
+invece di prendere il posto di chi era sceso: venti squadre e un ventunesimo posto.
+Le medie non se ne accorgono, una riga sì.
+
+**La piramide era una porta girevole.** Chi saliva era per definizione il più debole
+della categoria nuova e tornava giù l'anno dopo nel 48% dei casi. Nel calcio vero chi
+sale investe e chi scende vende: ora il salto lascia un'onda di forza che si consuma
+in due o tre stagioni, e i rimbalzi immediati scendono al 27%.
+
+**Il racconto era un foglio di calcolo.** Venti stagioni di fila con «Titolare
+inamovibile: 38 presenze» e «X gol e Y assist, media Z». Adesso il giornale guarda
+tutta la carriera e nota i fatti: il record personale, il posto perso o preso, la
+maglia nuova, la promozione (che prima non compariva affatto), l'obiettivo di agosto
+quando l'esito cambia rispetto all'anno prima. E le frasi ricorrenti hanno tre forme.
+
+**Da ricordare:** le statistiche aggregate sorvegliano il modello, non l'esperienza.
+Una volta ogni tanto bisogna sedersi e leggere una partita sola, dall'inizio alla fine.
