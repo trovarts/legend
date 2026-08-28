@@ -67,7 +67,17 @@ export function seasonMoments(input: MomentsInput): Moment[] {
   }
 
   if (record.awards.length > 0) {
-    add(90, 'premio', 'alto', "Riconoscimento individuale: quest'anno il tuo nome è stato letto sul palco.");
+    // Il premio ha un nome e un campionato: dire «riconoscimento individuale» tre
+    // anni di fila è come non dirlo.
+    const nome = (premio: (typeof record.awards)[number]): string =>
+      premio.kind === 'topScorer' ? `capocannoniere di ${premio.competitionName}`
+      : premio.kind === 'leagueMvp' ? `miglior giocatore di ${premio.competitionName}`
+      : `miglior giovane di ${premio.competitionName}`;
+    const elenco = record.awards.map(nome).join(' e ');
+    const coda = record.awards.some((premio) => premio.kind === 'topScorer') && stats.goals > 0
+      ? ` con ${stats.goals} gol.`
+      : '.';
+    add(90, 'premio', 'alto', `${elenco.charAt(0).toUpperCase()}${elenco.slice(1)}${coda}`);
   }
 
   if (input.isFirstSeason) {

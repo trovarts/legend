@@ -20,10 +20,11 @@ for (const league of leagues) {
 
 const seed = Number(process.argv[2] ?? '7');
 const ruolo = (process.argv[3] ?? 'FWD') as 'GK' | 'DEF' | 'MID' | 'FWD';
-const start = clubs.find((c) => c.leagueLevel === 4)!;
+const livello = Number(process.argv[4] ?? '4');
+const start = clubs.find((c) => c.leagueLevel === livello)!;
 const result = runCareer({
   seed,
-  create: { name: 'Diego Trovato', nationality: 'Italy', role: ruolo, age: 17, leagueLevel: 4 },
+  create: { name: 'Diego Trovato', nationality: 'Italy', role: ruolo, age: 17, leagueLevel: livello },
   world: { clubs, startClubId: start.club.id },
 });
 
