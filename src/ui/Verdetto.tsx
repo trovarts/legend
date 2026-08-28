@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { dailyChallenge } from '../engine/challenge';
 import type { CareerResult, GoatComponent } from '../engine/types';
 import { Traguardi } from './Traguardi';
@@ -23,9 +23,14 @@ export function Verdetto({ result }: { result: CareerResult }) {
   const presenze = result.seasons.reduce((sum, season) => sum + season.stats.appearances, 0);
   const davanti = result.seasonsAheadOfRival > result.seasons.length / 2;
   const [nuovi, setNuovi] = useState<readonly string[]>([]);
+  const registrato = useRef(false);
 
-  // I traguardi si registrano una volta sola, quando la carriera è davvero finita.
+  // Una volta sola per carriera finita. La carriera si rigioca dal seed a ogni
+  // disegno, quindi `result` è un oggetto nuovo ogni volta: senza questa guardia
+  // i traguardi verrebbero registrati subito e non risulterebbero mai nuovi.
   useEffect(() => {
+    if (registrato.current) return;
+    registrato.current = true;
     setNuovi(registraTraguardi(window.localStorage, result));
   }, [result]);
 
