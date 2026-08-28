@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createPlayer } from '../../src/engine/create.js';
+import { boldPolicy } from '../../src/engine/dilemmas.js';
 import { createRng } from '../../src/engine/rng.js';
 import { simulateSeason, type SimulateSeasonInput } from '../../src/engine/season.js';
 import type { Club, Role, WorldPlayer } from '../../src/world/types.js';
@@ -29,6 +30,10 @@ function input(over: Partial<SimulateSeasonInput> = {}): SimulateSeasonInput {
     qualifiedToContinental: false,
     candidates: [{ club: rival, leagueId: 'lg', leagueName: 'Lega', leagueLevel: 1 }],
     alreadyCapped: false,
+    marks: [],
+    contractYearsLeft: 2,
+    minutesBonus: 0,
+    dilemmaPolicy: boldPolicy,
     ...over,
   };
 }

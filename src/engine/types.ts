@@ -136,6 +136,25 @@ export interface DilemmaChoice {
   season: number;
 }
 
+/** Come sta andando il Rivale, stagione per stagione (spec §3.4). */
+export interface RivalSnapshot {
+  name: string;
+  clubName: string;
+  overall: number;
+  goals: number;
+  assists: number;
+  trophies: number;
+  /** Vero se in questa stagione il Rivale ha fatto meglio. */
+  aheadOfYou: boolean;
+}
+
+/** Uno scontro diretto col Rivale: pesa il doppio nel punteggio finale (spec §3.4). */
+export interface Showdown {
+  season: number;
+  competition: string;
+  won: boolean;
+}
+
 /** Una riga della timeline di carriera. */
 export interface SeasonRecord {
   season: number;
@@ -157,6 +176,20 @@ export interface SeasonRecord {
   valueEur: number;
   /** Offerte ricevute a fine stagione. */
   offers: Offer[];
+  injury: Injury | null;
+  choices: DilemmaChoice[];
+  /** I Segni attivi a fine stagione. */
+  marks: Mark[];
+}
+
+export type GoatComponent =
+  | 'performance' | 'trophies' | 'awards' | 'national'
+  | 'peakOverall' | 'peakValue' | 'longevity' | 'rival' | 'difficulty';
+
+/** Il verdetto finale: un numero da 0 a 1000 e le voci che lo compongono. */
+export interface GoatScore {
+  total: number;
+  components: Record<GoatComponent, number>;
 }
 
 export interface CareerResult {
@@ -170,4 +203,14 @@ export interface CareerResult {
   awards: Award[];
   peakValueEur: number;
   totalCaps: number;
+  /** Il verdetto finale (spec §3.7). */
+  goat: GoatScore;
+  /** Come è andata al Rivale. */
+  rival: { name: string; clubName: string; peakOverall: number; trophies: number; goals: number };
+  showdowns: Showdown[];
+  choices: DilemmaChoice[];
+  marks: Mark[];
+  injuries: Injury[];
+  /** In quante stagioni hai fatto meglio del Rivale. */
+  seasonsAheadOfRival: number;
 }
