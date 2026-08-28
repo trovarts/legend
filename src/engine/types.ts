@@ -27,6 +27,22 @@ export interface SeasonStats {
   rating: number;
 }
 
+export type TrophyKind = 'league' | 'nationalCup' | 'continental';
+
+export interface Trophy {
+  kind: TrophyKind;
+  season: number;
+  competitionName: string;
+}
+
+export type AwardKind = 'topScorer' | 'leagueMvp' | 'youngPlayer';
+
+export interface Award {
+  kind: AwardKind;
+  season: number;
+  competitionName: string;
+}
+
 /** Una riga della timeline di carriera. La Fase 2 aggiungerà gol, assist e trofei. */
 export interface SeasonRecord {
   season: number;
