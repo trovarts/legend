@@ -1,6 +1,7 @@
 'use client';
 
 import { YOUTH_OPTIONS, type YouthApproach } from '../engine/youth';
+import { dataDi, etichettaStagione } from './calendario';
 import { Scelta, Scelte } from './Scelte';
 
 export function Vivaio({
@@ -18,7 +19,9 @@ export function Vivaio({
     <section className="giornale">
       <header className="testata">
         <span className="testata-nome">VIVAIO</span>
-        <span className="testata-data">pre-stagione · {age} anni</span>
+        <span className="testata-data">
+          {dataDi('ritiro', age)} · pre-stagione {etichettaStagione(age)} · {age} anni
+        </span>
       </header>
       <h2 className="titolone">{year === 1 ? 'Primo anno nel vivaio' : `${year}° anno nel vivaio`}</h2>
       <p className="sommario">
@@ -74,7 +77,9 @@ export function Promozione({
     <section className="giornale">
       <header className="testata">
         <span className="testata-nome">VERSO LA PRIMA</span>
-        <span className="testata-data">{age} anni · OVR {overall}</span>
+        <span className="testata-data">
+          {dataDi('mercato', age - 1)} · {age} anni · OVR {overall}
+        </span>
       </header>
       <h2 className="titolone">Il salto</h2>
       <p className="sommario">

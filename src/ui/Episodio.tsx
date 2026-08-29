@@ -1,6 +1,7 @@
 'use client';
 
 import type { Dilemma } from '../engine/types';
+import { dataDi, etichettaStagione } from './calendario';
 import { Puntata } from './Puntata';
 import { Scelta, Scelte } from './Scelte';
 
@@ -27,7 +28,7 @@ export function Episodio({
       <header className="testata">
         <span className="testata-nome">VIVAIO</span>
         <span className="testata-data">
-          {clubName} · {age} anni · OVR {overall}
+          {clubName} · {dataDi('stagione', age)} · {etichettaStagione(age)} · {age} anni · OVR {overall}
         </span>
       </header>
 

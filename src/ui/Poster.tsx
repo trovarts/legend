@@ -100,7 +100,7 @@ export function Poster({
           <span className="poster-marchio">LEGGENDA</span>
           <span className="poster-anni">
             {prima && ultima
-              ? `${etichettaStagione(prima.season)} — ${etichettaStagione(ultima.season)}`
+              ? `${etichettaStagione(prima.age)} — ${etichettaStagione(ultima.age)}`
               : ''}
           </span>
         </div>

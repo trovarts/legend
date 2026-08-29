@@ -52,7 +52,7 @@ export function Preparazione({
       <header className="testata">
         <span className="testata-nome">RITIRO</span>
         <span className="testata-data">
-          {dataDi('ritiro', season)} · pre-stagione {etichettaStagione(season)}
+          {dataDi('ritiro', age)} · pre-stagione {etichettaStagione(age)}
         </span>
       </header>
       <h2 className="titolone">Su cosa lavori</h2>

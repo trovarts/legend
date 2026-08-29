@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { YouthSeason } from '../engine/youth';
+import { dataDi, etichettaStagione } from './calendario';
 
 /** Il resoconto di un anno di vivaio: quattro numeri e l'overall che sale. */
 export function AnnoVivaio({ season, onEnd }: { season: YouthSeason; onEnd: () => void }) {
@@ -26,10 +27,14 @@ export function AnnoVivaio({ season, onEnd }: { season: YouthSeason; onEnd: () =
     <section className="giornale vivaio-resoconto">
       <header className="testata">
         <span className="testata-nome">{season.clubName.toUpperCase()}</span>
-        <span className="testata-data">{season.age} anni · vivaio</span>
+        <span className="testata-data">
+          {dataDi('fine', season.age)} · vivaio {etichettaStagione(season.age)}
+        </span>
       </header>
 
-      <span className="occhiello">{season.year}° anno · in formazione</span>
+      <span className="occhiello">
+        {season.year}° anno · {season.age} anni · in formazione
+      </span>
       <h2 className="titolone">
         {season.year === 1 ? 'Primo anno nel vivaio' : `${season.year}° anno nel vivaio`}
       </h2>

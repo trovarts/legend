@@ -226,7 +226,7 @@ select.bottone { appearance: none; }
 .ritardo-3 { animation-delay: .21s; }
 
 @media (prefers-reduced-motion: reduce) {
-  .entra, .giornale, .scelta { animation: none; transition: none; }
+  .entra, .giornale, .scelta, .tie-uscita { animation: none; transition: none; }
 }
 
 /* ── La puntata: due facce con la quota sopra, come un tabellone ─────────── */
@@ -306,9 +306,29 @@ select.bottone { appearance: none; }
   display: flex; flex-direction: column; gap: .1rem; font-size: .8rem;
   border: 1px solid var(--bordo); border-radius: 8px; padding: .4rem .55rem; background: var(--carta);
 }
+/* Le voci del giornale: due virgolettati, con chi li ha detti. */
+.voce { display: flex; flex-direction: column; gap: .15rem; margin-bottom: .55rem; }
+.voce-testo { font-style: italic; }
+.voce-fonte { font-size: .72rem; color: var(--tenue); text-transform: uppercase; letter-spacing: .04em; }
+.scena-data { font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
 .tie-mia { border-color: var(--rosso); background: rgba(216,31,63,.12); }
 .tie-vince { font-weight: 700; }
 .tie span { display: flex; justify-content: space-between; gap: .5rem; }
+
+/* Il sorteggio: gli accoppiamenti non ci sono, escono. */
+.tie-coperta { opacity: .28; border-style: dashed; color: var(--tenue); }
+.tie-uscita { animation: sorteggio .32s ease both; }
+.tabellone-colonna-attesa { opacity: .55; }
+@keyframes sorteggio {
+  from { opacity: 0; transform: translateY(6px) scale(.97); }
+  to { opacity: 1; transform: none; }
+}
+.tabellone-salta {
+  display: block; margin: .8rem auto 0; padding: .35rem .8rem;
+  font: inherit; font-size: .78rem; color: var(--tenue);
+  background: none; border: 1px solid var(--bordo); border-radius: 999px; cursor: pointer;
+}
+.tabellone-salta:hover { color: var(--testo); border-color: var(--tenue); }
 .trofeo { text-align: center; font-size: 1.05rem; font-weight: 700; margin-top: .8rem; color: var(--oro); }
 
 /* ── Partita in diretta ──────────────────────────────────────────────────── */

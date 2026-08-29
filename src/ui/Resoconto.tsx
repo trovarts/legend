@@ -48,7 +48,7 @@ export function Resoconto({
       <header className="testata">
         <span className="testata-nome">RESOCONTO</span>
         <span className="testata-data">
-          {record.clubName} · {dataDi('fine', record.season)} · {etichettaStagione(record.season)}
+          {record.clubName} · {dataDi('fine', record.age)} · {etichettaStagione(record.age)}
         </span>
       </header>
 

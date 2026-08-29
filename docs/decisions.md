@@ -656,3 +656,62 @@ il caso lo trovi davvero o fallisca.
 
 **Da ricordare:** quando una parte del gioco chiede sempre la stessa domanda, il
 problema non è la domanda — è che ce n'è una sola.
+
+## D-028 — Giocato il riferimento, misurato il nostro
+
+Aperto `ilnuovogoat.it` e giocato dall'inizio: creazione, agente, primo contratto, i
+primi anni di vivaio. Il metodo di `ripartire-da-qui` — aprire e misurare invece di
+ricordare — ha prodotto una lista corta, perché su quasi tutto eravamo già pari o
+avanti.
+
+**Dove eravamo già avanti.** Il loro vivaio del primo anno non chiede niente: legge un
+resoconto e basta, e la scelta sull'allenamento arriva solo dal secondo anno. Dopo
+D-027 noi abbiamo una scelta *e* un episodio per ogni anno. Le nostre carte di scelta
+stanno affiancate; le loro sono barre impilate che scorrono sempre. E le loro rose sono
+inventate se non carichi un database della community: le nostre sono vere.
+
+**Dove eravamo già pari, e non lo sapevo prima di guardare.** L'inizio con tre offerte
+di vivaio a sorpresa c'era già (`sceltaClub === 'sorpresa'`), la sfida di oggi con la
+striscia pure, e la scheda della nazione mostra ranking e punti come la loro — con in
+più i club per divisione e i posti nelle coppe. La scheda dell'agente dichiara già gli
+stessi parametri: offerte, tetto di OVR, reputazione, anni per uscire.
+
+**Le tre cose che mancavano davvero.**
+
+1. **Il sorteggio.** Il loro tabellone di coppa esce accoppiamento per accoppiamento e
+   scorre da solo; il nostro compariva già fatto. Era l'ultima voce del riferimento
+   rimasta aperta nei documenti, ed è quella che si sente di più: un tabellone che
+   appare è da leggere, uno che esce è da guardare. Ora ogni accoppiamento esce in due
+   tempi — prima chi contro chi, poi com'è finita — la vista segue l'ultimo uscito, e
+   alla fine resta centrata la riga che riguarda te. Chi ha chiesto meno animazioni
+   vede il tabellone finito; chi ha fretta ha «Mostra il tabellone».
+
+2. **Il calendario, e un difetto che ha scoperto.** Loro scrivono il mese e la stagione
+   ovunque, testata compresa. Noi avevamo il calendario ma solo su alcune schermate — e
+   soprattutto **l'anno si ricavava dal numero di stagione**, che conta solo la prima
+   squadra: chi passava tre anni nel vivaio esordiva comunque nel 2024, e quei tre anni
+   sparivano dal calendario. Ora l'anno si ricava dall'**età**, che c'è in ogni
+   schermata e cresce di uno all'anno sempre. La data sta in testata a ogni passo, e il
+   mese dice cosa stai facendo: agosto in ritiro, luglio sul mercato, maggio a
+   consuntivo.
+
+3. **Le voci del giornale.** Il loro pezzo ha due virgolettati con chi li ha detti; il
+   nostro aveva solo la voce del cronista. Adesso ogni stagione ha due voci ricavate
+   dai fatti — il mister dopo un trofeo, lo staff medico dopo un infortunio grave, il
+   direttore sportivo dopo un trasferimento, un compagno quando non giochi mai — con
+   più forme per ognuna, perché vent'anni della stessa frase sono peggio del silenzio
+   (D-024). Nessun sorteggio: le voci si ricavano dalla stagione, così una carriera
+   riletta è la stessa carriera.
+
+**Cosa ho lasciato fuori, e perché.** La loro Italia ha 278 club (Terza in tre gironi,
+Quarta in nove) contro i nostri 154: è una differenza di generazione del mondo, con un
+rischio sproporzionato rispetto a quello che aggiunge. Restano fuori per scelta del
+committente l'online, gli account e le otto lingue.
+
+**Verificati i verificatori** (D-011): legato l'anno alla sola costante di partenza, i
+test del calendario falliscono su due asserzioni; tolta la variazione alle voci, il test
+sulla ripetizione fallisce.
+
+**Da ricordare:** metà della lista che avevo in testa prima di aprire il sito era già
+fatta. Misurare non serve solo a trovare cosa manca — serve a smettere di rifare cose
+che ci sono già.

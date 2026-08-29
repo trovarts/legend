@@ -16,7 +16,7 @@ nuova senza perdere niente. Leggi questo, poi `docs/decisions.md`.
 
 ## Stato al 29/08/2026
 
-415 test verdi, tutti i laboratori puliti, 226 KB di prima pagina contro i 1199 KB del
+422 test verdi, tutti i laboratori puliti, 226 KB di prima pagina contro i 1199 KB del
 riferimento. 57 campionati veri in 28 nazioni, 1015 club, 25 bivi e 10 episodi di
 vivaio.
 
@@ -61,17 +61,26 @@ E due che sono arrivate dopo:
 Il committente giudica il risultato giocandolo e confrontandolo col riferimento. Il
 metodo che funziona: **aprire ilnuovogoat.it e misurare**, invece di ricordare.
 
-Cose viste da loro e non ancora fatte:
+Cose viste da loro e non ancora fatte (rimisurate il 29/08/2026 giocandoci, D-028):
 
-- **Lo scorrimento automatico durante i sorteggi** del tabellone di coppa (fatto per
-  classifica e accoppiamenti, non per il sorteggio che scorre da solo mentre esce).
+- ~~**Lo scorrimento automatico durante i sorteggi**~~ Fatto: il tabellone esce
+  accoppiamento per accoppiamento e la vista lo segue.
+- **La loro Italia ha 278 club** (Terza in tre gironi, Quarta in nove) contro i nostri
+  154. È l'unico divario di contenuto rimasto, e costa una modifica alla generazione
+  del mondo.
 - **Il caricamento di un database della community** (loro ce l'hanno perché non hanno
   dati; noi abbiamo le rose vere, quindi è una loro debolezza, non una nostra mancanza).
 - **Otto lingue.**
 
+Cose che credevo mancassero e invece c'erano già (D-028): l'inizio con tre offerte di
+vivaio a sorpresa, la striscia della sfida di oggi, il ranking delle nazioni, i
+parametri dichiarati dell'agente. Prima di rifare una cosa, cercarla.
+
 Cose nostre che si possono spingere oltre:
 
 - La partita è ancora raccontata a statistiche e cronaca: si può disegnare.
+- Il Mondiale e le coppe hanno il tabellone: adesso anche il sorteggio, ma non il
+  racconto.
 - ~~Il vivaio dura due o tre anni con una scelta l'anno: può avere eventi suoi.~~ Fatto,
   D-027: dieci episodi, uno per anno, che lasciano segni addosso fino in prima squadra.
 - Il Mondiale e le coppe hanno il tabellone ma non un racconto.

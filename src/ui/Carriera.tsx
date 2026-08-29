@@ -8,6 +8,7 @@ import { decisionKey, playCareer, type CareerSave } from '../engine/play';
 import { Agente } from './Agente';
 import { AnnoVivaio } from './AnnoVivaio';
 import { Bivio } from './Bivio';
+import { dataDi, etichettaStagione, type Momento } from './calendario';
 import { Contesto } from './Contesto';
 import { FineStagione } from './FineStagione';
 import { Ambizione } from './Ambizione';
@@ -191,6 +192,25 @@ export function Carriera({
    * assomigliare a giocare nell'Inter. Le variabili sono le stesse di sempre,
    * cambia solo il loro valore.
    */
+  /*
+   * La data in testata, sempre visibile.
+   *
+   * Il mese e la stagione dicono quanto tempo è passato meglio di qualunque numero:
+   * senza, una carriera di vent'anni sembra una lista di schermate. Il momento si
+   * ricava da cosa si sta facendo — in ritiro è agosto, sul mercato è luglio — e
+   * l'anno dall'età, così vale anche per gli anni di vivaio.
+   */
+  const etaCorrente =
+    pending?.kind === 'youth' || pending?.kind === 'youth-event'
+    || pending?.kind === 'promotion' || pending?.kind === 'training'
+      ? pending.age
+      : daMostrare?.age ?? last?.age ?? state.youth[state.youth.length - 1]?.age ?? 14;
+  const momentoCorrente: Momento =
+    pending?.kind === 'youth' || pending?.kind === 'training' ? 'ritiro'
+    : pending?.kind === 'transfer' || pending?.kind === 'promotion' ? 'mercato'
+    : pending?.kind === 'youth-event' || pending?.kind === 'dilemma' ? 'stagione'
+    : 'fine';
+
   const nomeClub = last?.clubName ?? state.youth[state.youth.length - 1]?.clubName
     ?? (pending?.kind === 'youth' || pending?.kind === 'promotion' ? pending.clubName : undefined);
   const tema = nomeClub !== undefined ? temaDelClub(nomeClub) : null;
@@ -217,6 +237,10 @@ export function Carriera({
       {onEsci && (
         <div className="scena-barra">
           <button type="button" className="torna" onClick={onEsci}>← Menu di gioco</button>
+          <span className="scena-data">
+            {dataDi(momentoCorrente, etaCorrente)}
+            <span className="tenue"> · {etichettaStagione(etaCorrente)}</span>
+          </span>
           <span className="tenue" style={{ fontSize: '.64rem' }}>Salvata da sola, a ogni scelta</span>
         </div>
       )}

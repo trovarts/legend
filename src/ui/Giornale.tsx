@@ -1,6 +1,7 @@
 'use client';
 
 import { seasonMoments } from '../engine/moments';
+import { seasonVoices } from '../engine/voices';
 import type { RivalSnapshot, SeasonRecord } from '../engine/types';
 import type { Role } from '../world/types';
 import { dataDi, etichettaStagione } from './calendario';
@@ -70,8 +71,9 @@ export function Giornale({
   rival: RivalSnapshot | null;
 }) {
   const moments = seasonMoments({ record, previous, isFirstSeason: isFirst, playerName, before, role });
+  const voci = seasonVoices({ record, previous, isFirstSeason: isFirst });
   const testata = TESTATE[record.season % TESTATE.length]!;
-  const data = dataDi('fine', record.season);
+  const data = dataDi('fine', record.age);
   const principale = moments[0]?.text ?? 'Una stagione da raccontare';
   const resto = moments.slice(1);
   const titolo = titoloDi(record, isFirst);
@@ -81,7 +83,7 @@ export function Giornale({
       <header className="testata">
         <span className="testata-nome">{testata}</span>
         <span className="testata-data">
-          {data} · stagione {etichettaStagione(record.season)}
+          {data} · stagione {etichettaStagione(record.age)}
         </span>
       </header>
 
@@ -106,7 +108,15 @@ export function Giornale({
         </div>
 
         <aside className="spalla">
-          <p className="etichetta">Dal campo</p>
+          <p className="etichetta">Le voci</p>
+          {voci.map((voce) => (
+            <p key={voce.id} className="voce">
+              <span className="voce-testo">«{voce.text}»</span>
+              <span className="voce-fonte">— {voce.source}</span>
+            </p>
+          ))}
+
+          <p className="etichetta" style={{ marginTop: '.7rem' }}>Dal campo</p>
           {record.choices.length > 0 ? (
             record.choices.map((choice) => (
               <p key={`${choice.dilemmaId}-${choice.optionId}`}>
