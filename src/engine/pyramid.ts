@@ -21,6 +21,19 @@ const CITTA: Record<string, readonly string[]> = {
     'Belluno', 'Rovigo', 'Ferrara', 'Ravenna', 'Forlì', 'Prato', 'Massa', 'Grosseto',
     'Viterbo', 'Latina', 'Frosinone', 'Cassino', 'Benevento', 'Potenza', 'Cosenza',
     'Crotone', 'Vibo', 'Ragusa', 'Agrigento', 'Caltanissetta',
+    // La quarta serie italiana ha nove gironi: senza abbastanza paesi veri uscirebbero
+    // quattro squadre per città, e una città con quattro squadre non è un paese, è un
+    // riempitivo. Questi sono comuni da categoria, dal nord al sud.
+    'Seregno', 'Varese', 'Busto Arsizio', 'Gallarate', 'Treviglio', 'Crema', 'Voghera',
+    'Pavia', 'Vigevano', 'Novara', 'Biella', 'Ivrea', 'Chieri', 'Asti', 'Alba', 'Bra',
+    'Cuneo', 'Fossano', 'Saluzzo', 'Chiavari', 'Albenga', 'Ventimiglia', 'Carrara',
+    'Pistoia', 'Lucca', 'Piombino', 'Follonica', 'Poggibonsi', 'Figline', 'Sansepolcro',
+    'Orvieto', 'Tivoli', 'Civitavecchia', 'Nettuno', 'Aprilia', 'Formia', 'Sora',
+    'Isernia', 'Campobasso', 'Termoli', 'Vasto', 'Lanciano', 'Giulianova',
+    'San Benedetto', 'Macerata', 'Recanati', 'Jesi', 'Senigallia', 'Urbino', 'Faenza',
+    'Imola', 'Mirandola', 'Mantova', 'Chioggia', 'Portogruaro', 'Bassano', 'Schio',
+    'Montebelluna', 'Conegliano', 'Gorizia', 'Monfalcone', 'Merano', 'Riva',
+    'Desenzano', 'Darfo',
   ],
   England: [
     'Barnsley', 'Rotherham', 'Crewe', 'Walsall', 'Stevenage', 'Grimsby', 'Carlisle',
@@ -58,6 +71,26 @@ const SOPRANNOMI: readonly string[] = [
 
 /** Come nella realtà: la terza serie è più larga della quarta a girone singolo. */
 const CLUB_PER_GIRONE: Record<number, number> = { 3: 20, 4: 18 };
+
+/**
+ * Quanti gironi ha ogni divisione, paese per paese.
+ *
+ * Una piramide non ha la stessa forma dappertutto. La Serie D italiana è divisa in
+ * **nove** gironi: con tre soli, la quarta serie italiana era un terzo di quella vera,
+ * e la gavetta finiva troppo presto. Dove non è scritto niente si resta a tre.
+ */
+const GIRONI: Record<string, Record<number, number>> = {
+  Italy: { 3: 3, 4: 9 },
+};
+
+const GIRONI_PREDEFINITI = 3;
+
+/** Le lettere dei gironi all'italiana: niente J e K, come sui calendari veri. */
+const LETTERE = 'ABCDEFGHILMNOPQRS';
+
+export function gironiDi(country: string, livello: number): number {
+  return GIRONI[country]?.[livello] ?? GIRONI_PREDEFINITI;
+}
 
 export interface GeneratedLeague {
   summary: LeagueSummary;
@@ -150,9 +183,15 @@ export function buildLowerLeagues(
   };
 
   for (const livello of livelli) {
-    for (const girone of ['A', 'B', 'C']) {
+    const quantiGironi = gironiDi(country, livello);
+    for (let indiceGirone = 0; indiceGirone < quantiGironi; indiceGirone += 1) {
+      const girone = LETTERE[indiceGirone] ?? String(indiceGirone + 1);
       const id = `${country.toLowerCase().replace(/[^a-z]/g, '')}-${livello}${girone.toLowerCase()}`;
-      const nome = `${livello === 3 ? 'Terza' : 'Quarta'} Divisione · Girone ${girone}`;
+      const categoria = livello === 3 ? 'Terza' : 'Quarta';
+      // Un campionato a girone unico non ha un girone: chiamarlo «Girone A» è un refuso.
+      const nome = quantiGironi === 1
+        ? `${categoria} Divisione`
+        : `${categoria} Divisione · Girone ${girone}`;
       const clubs: Club[] = [];
 
       const quanti = CLUB_PER_GIRONE[livello] ?? 18;

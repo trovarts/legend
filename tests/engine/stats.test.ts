@@ -101,3 +101,36 @@ describe('coerenza fra minuti e presenze', () => {
     }
   });
 });
+
+describe('le giornate seguono la dimensione del campionato', () => {
+  const base = {
+    role: 'FWD' as const, overall: 70, minutesShare: 1,
+    clubStrength: 70, leagueLevel: 1,
+  };
+
+  it('un girone da diciotto ne gioca trentaquattro, non trentotto', () => {
+    const stats = seasonStats({ ...base, clubCount: 18 }, createRng(1));
+    expect(stats.appearances).toBe(34);
+    expect(stats.minutes).toBe(34 * 90);
+  });
+
+  it('una lega da ventiquattro ne gioca quarantasei', () => {
+    const stats = seasonStats({ ...base, clubCount: 24 }, createRng(1));
+    expect(stats.appearances).toBe(46);
+  });
+
+  it('senza la dimensione resta la stagione da venti squadre', () => {
+    expect(seasonStats(base, createRng(1)).appearances).toBe(38);
+  });
+
+  it('accorciare il campionato non gonfia i gol', () => {
+    /*
+     * Gol e assist sono tarati su una stagione piena e dipendono dalla quota giocata,
+     * non dal numero di partite: se dipendessero dai minuti, un girone corto
+     * sembrerebbe pieno di attaccanti scarsi e uno lungo di fuoriclasse.
+     */
+    const corto = seasonStats({ ...base, clubCount: 18 }, createRng(9));
+    const lungo = seasonStats({ ...base, clubCount: 24 }, createRng(9));
+    expect(corto.goals).toBe(lungo.goals);
+  });
+});

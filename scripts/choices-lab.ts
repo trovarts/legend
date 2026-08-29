@@ -20,6 +20,27 @@ function arg(name: string, fallback: number): number {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+/**
+ * Una strada è dominante solo se vince più di quanto vincerebbe una moneta.
+ *
+ * La soglia secca del 70% è ingannevole sui campioni piccoli: con venti carriere e due
+ * opzioni, una moneta arriva al 75% una volta ogni cinquanta, e con trentacinque bivi
+ * sorvegliati il falso allarme è quasi garantito a ogni esecuzione. Qui si chiede che
+ * il vantaggio superi anche l'oscillazione del caso — due deviazioni standard e mezzo —
+ * così quello che resta è un difetto del catalogo, non una faccia della moneta.
+ */
+function dominante(vittorie: number, osservazioni: number, opzioni: number): boolean {
+  if (osservazioni === 0) return false;
+  const quota = vittorie / osservazioni;
+  if (quota <= SOGLIA_DOMINANZA) return false;
+  const atteso = osservazioni / opzioni;
+  const oscillazione = Math.sqrt(osservazioni * (1 / opzioni) * (1 - 1 / opzioni));
+  return vittorie > atteso + 2.5 * oscillazione;
+}
+
+/** Oltre questa quota una strada comincia a somigliare all'unica risposta giusta. */
+const SOGLIA_DOMINANZA = 0.7;
+
 function hash(text: string): number {
   let value = 0;
   for (let i = 0; i < text.length; i += 1) value = (value * 31 + text.charCodeAt(i)) >>> 0;
@@ -174,9 +195,9 @@ async function main(): Promise<void> {
     console.log(`${entry.id}: ${line}  (su ${counted} carriere in cui il bivio è comparso)`);
 
     for (const [id, wins] of totals) {
-      const share = wins / counted;
-      if (share > 0.7) {
-        failures.push(`${entry.id}: la strada "${id}" è quella giusta nel ${(share * 100).toFixed(0)}% dei casi`);
+      if (dominante(wins, counted, sample.options.length)) {
+        const share = wins / counted;
+        failures.push(`${entry.id}: la strada "${id}" è quella giusta nel ${(share * 100).toFixed(0)}% dei casi (su ${counted})`);
       }
     }
   }
@@ -239,9 +260,9 @@ async function main(): Promise<void> {
 
     console.log(`${entry.id}: ${line}  (su ${counted} carriere in cui l'episodio è comparso)`);
     for (const [id, wins] of totals) {
-      const share = wins / counted;
-      if (share > 0.7) {
-        failures.push(`${entry.id}: la risposta "${id}" è quella giusta nel ${(share * 100).toFixed(0)}% dei casi`);
+      if (dominante(wins, counted, sample.options.length)) {
+        const share = wins / counted;
+        failures.push(`${entry.id}: la risposta "${id}" è quella giusta nel ${(share * 100).toFixed(0)}% dei casi (su ${counted})`);
       }
     }
   }

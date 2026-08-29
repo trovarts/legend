@@ -33,7 +33,7 @@ regge:
 
 | Comando | Cosa sorveglia |
 | --- | --- |
-| `npm test` | 422 test sul motore e sull'interfaccia |
+| `npm test` | 428 test sul motore e sull'interfaccia |
 | `npm run lab` | 2000 carriere: crescita, trofei, minuti, età al ritiro, promozioni, obiettivi |
 | `npm run lab:choices` | che nessuna scelta ai bivi e agli episodi di vivaio sia sempre quella giusta |
 | `npm run lab:vivaio` | che anche partendo dalla quarta serie la carriera stia in piedi |

@@ -17,8 +17,22 @@ export interface SeasonStatsInput {
   clubCount?: number;
 }
 
+/** Quando la dimensione del campionato non si sa: venti squadre, trentotto giornate. */
 const MATCHES_PER_SEASON = 38;
 const MINUTES_PER_MATCH = 90;
+
+/**
+ * Le giornate di campionato: andata e ritorno con tutte le altre.
+ *
+ * Erano trentotto per chiunque, e per la Serie A andava bene. Ma un girone da diciotto
+ * ne gioca trentaquattro e la Championship quarantasei: «38 presenze» in un girone da
+ * diciotto è un numero impossibile, e con nove gironi da diciotto in quarta serie
+ * sarebbe diventato il caso normale invece dell'eccezione.
+ */
+function giornateDi(clubCount: number | undefined): number {
+  if (clubCount === undefined || clubCount < 4) return MATCHES_PER_SEASON;
+  return (clubCount - 1) * 2;
+}
 
 /** Gol e assist attesi in una stagione piena, a overall 70, in una squadra media di prima divisione. */
 const OUTPUT_BY_ROLE: Record<Role, { goals: number; assists: number }> = {
@@ -39,13 +53,14 @@ function around(expected: number, rng: Rng): number {
 }
 
 export function seasonStats(input: SeasonStatsInput, rng: Rng): SeasonStats {
-  const minutes = Math.round(MATCHES_PER_SEASON * MINUTES_PER_MATCH * input.minutesShare);
+  const giornate = giornateDi(input.clubCount);
+  const minutes = Math.round(giornate * MINUTES_PER_MATCH * input.minutesShare);
   // Le presenze devono poter contenere i minuti: con quote molto basse l'arrotondamento
   // per difetto produceva stagioni impossibili, tipo 106 minuti in una sola partita.
   const appearances = Math.min(
-    MATCHES_PER_SEASON,
+    giornate,
     Math.max(
-      Math.round(MATCHES_PER_SEASON * Math.min(1, input.minutesShare * 1.25)),
+      Math.round(giornate * Math.min(1, input.minutesShare * 1.25)),
       Math.ceil(minutes / MINUTES_PER_MATCH),
     ),
   );
@@ -53,7 +68,11 @@ export function seasonStats(input: SeasonStatsInput, rng: Rng): SeasonStats {
   const talent = (input.overall / 70) ** 3;
   // In quarta serie si incide di più: gli avversari sono più deboli.
   const levelBonus = 1 + (input.leagueLevel - 1) * 0.12;
-  const seasonFraction = minutes / (MATCHES_PER_SEASON * MINUTES_PER_MATCH);
+  /*
+   * La quota di stagione giocata, non il numero di minuti: gol e assist restano tarati
+   * su una stagione piena, così accorciare il campionato non cambia il bilanciamento.
+   */
+  const seasonFraction = minutes / (giornate * MINUTES_PER_MATCH);
   const output = OUTPUT_BY_ROLE[input.role];
 
   const style = playStyleEffect(input.style ?? 'equilibrato');

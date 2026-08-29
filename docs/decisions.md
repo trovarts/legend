@@ -715,3 +715,61 @@ sulla ripetizione fallisce.
 **Da ricordare:** metà della lista che avevo in testa prima di aprire il sito era già
 fatta. Misurare non serve solo a trovare cosa manca — serve a smettere di rifare cose
 che ci sono già.
+
+## D-029 — Nove gironi, e tre difetti che stavano lì da sempre
+
+Il riferimento mostra un'Italia da 278 club. La nostra ne aveva 154, con la quarta serie
+in tre gironi: la Serie D vera ne ha **nove**, quindi la nostra quarta categoria era un
+terzo di quella reale e la gavetta finiva troppo presto.
+
+**La forma della piramide adesso è per paese.** `GIRONI` dice quanti gironi ha ogni
+divisione in ogni paese; dove non c'è scritto niente si resta a tre, quindi Spagna,
+Francia e Germania non si muovono. L'Italia passa a nove gironi in quarta serie e a
+**262 club** su quattro divisioni: è la piramide italiana vera (20 + 20 + 60 + 162).
+I 278 del riferimento sono inventati, come le loro rose — passarli avrebbe voluto dire
+gonfiare la Serie D per battere un numero, che è il difetto contro cui mette in guardia
+D-021. Se un giorno si vuole la parità sul numero, è una riga.
+
+**Le città non bastavano.** Con 222 club generati e 50 comuni sarebbero uscite quattro
+squadre per città: «Rieti Rossi», «Rieti Neri», «Rieti Azzurri», «Rieti Verdi». Una
+città con quattro squadre non è un paese, è un riempitivo. L'elenco italiano passa a 115
+comuni veri da categoria, e si scende a meno di due squadre per città.
+
+**Cos'era rotto, e si è visto solo adesso** — come in D-023, la feature non ha creato
+niente, ha smesso di nascondere.
+
+1. **Le offerte di vivaio pescavano sempre dal Girone A.** Prendevano il *primo*
+   campionato di quel livello: con tre gironi era già discutibile, con nove significava
+   che otto noni della quarta serie non si vedevano mai — e nemmeno si caricavano. Ora
+   il girone si sorteggia all'apertura della schermata.
+
+2. **Tutti giocavano trentotto giornate.** `MATCHES_PER_SEASON` era fisso a 38. Andava
+   bene per la Serie A, ma un girone da diciotto ne gioca trentaquattro e la
+   Championship quarantasei: «38 presenze» in un girone da diciotto è un numero
+   impossibile, e con nove gironi da diciotto sarebbe diventato il caso normale. Adesso
+   le giornate si ricavano dalla dimensione del campionato. Gol e assist restano tarati
+   sulla quota di stagione giocata e non sui minuti, così accorciare un campionato non
+   cambia il bilanciamento: un girone corto non deve sembrare pieno di attaccanti
+   scarsi. Il difetto l'ha trovato `npm run racconto`, leggendo una carriera dal fondo
+   della piramide nuova (D-024).
+
+3. **Il laboratorio delle scelte dava falsi allarmi.** Denunciava «una strada giusta nel
+   75% dei casi» su **venti** carriere — il suo stesso minimo. Con due opzioni e venti
+   osservazioni, una moneta arriva al 75% una volta ogni cinquanta, e con trentacinque
+   fra bivi ed episodi sorvegliati il falso allarme era quasi garantito a ogni
+   esecuzione: infatti a campione più grande quel bivio risultava 45/55. Adesso una
+   strada è dominante solo se supera il 70% **e** batte l'oscillazione del caso (due
+   deviazioni standard e mezzo). Verificato in tutte e due le direzioni: il bivio
+   sospetto smette di essere segnalato, un episodio rotto apposta viene ancora preso al
+   100% su 95 carriere.
+
+**E un difetto vero che la regola nuova ha fatto emergere.** Tolti i falsi allarmi,
+`messaggio-alla-piazza` restava dominante all'80% su quaranta carriere. La causa era in
+chiaro nel catalogo: l'opzione «Non prometti niente» aveva `effects: {}`, cioè non
+faceva **niente**. Un'opzione che non fa niente non è una scelta, è un modo per far
+vincere l'altra. Adesso chi non si lega resta prendibile e il mercato lo nota (+12% di
+valore): 58/42.
+
+**Da ricordare:** una soglia in percentuale senza un campione dietro non è un controllo,
+è un sorteggio. E prima di ribilanciare il catalogo per far tornare una misura, guardare
+se la misura sa contare.

@@ -16,9 +16,10 @@ nuova senza perdere niente. Leggi questo, poi `docs/decisions.md`.
 
 ## Stato al 29/08/2026
 
-422 test verdi, tutti i laboratori puliti, 226 KB di prima pagina contro i 1199 KB del
-riferimento. 57 campionati veri in 28 nazioni, 1015 club, 25 bivi e 10 episodi di
-vivaio.
+428 test verdi, tutti i laboratori puliti, 226 KB di prima pagina contro i 1199 KB del
+riferimento. 63 campionati in 28 nazioni, 1123 club, 25 bivi e 10 episodi di vivaio.
+L'Italia ha la piramide vera: 262 club su quattro divisioni, con la quarta serie in
+nove gironi come la Serie D.
 
 **Il gioco è completo sul single-player.** Sono fuori scope per scelta del committente:
 online, classifiche globali, account, altre lingue.
@@ -65,9 +66,8 @@ Cose viste da loro e non ancora fatte (rimisurate il 29/08/2026 giocandoci, D-02
 
 - ~~**Lo scorrimento automatico durante i sorteggi**~~ Fatto: il tabellone esce
   accoppiamento per accoppiamento e la vista lo segue.
-- **La loro Italia ha 278 club** (Terza in tre gironi, Quarta in nove) contro i nostri
-  154. È l'unico divario di contenuto rimasto, e costa una modifica alla generazione
-  del mondo.
+- ~~**La loro Italia ha 278 club**~~ Fatto (D-029): la nostra ne ha 262, che è la
+  piramide italiana vera. I loro 278 sono inventati come le loro rose.
 - **Il caricamento di un database della community** (loro ce l'hanno perché non hanno
   dati; noi abbiamo le rose vere, quindi è una loro debolezza, non una nostra mancanza).
 - **Otto lingue.**

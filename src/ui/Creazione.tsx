@@ -71,8 +71,20 @@ export function Creazione({
   const livelliBassi = [...new Set(campionati.map((league) => league.level))]
     .sort((a, b) => b - a)
     .slice(0, 2);
+  /*
+   * Quale girone, fra quelli della categoria.
+   *
+   * La quarta serie italiana ne ha nove: prendendo sempre il primo, ogni carriera
+   * comincerebbe nello stesso angolo del paese e otto noni della categoria non si
+   * vedrebbero mai. Si sorteggia una volta all'apertura — siamo fuori dal motore,
+   * qui la casualità è lecita — e il club scelto finisce comunque nel salvataggio.
+   */
+  const [semeGirone] = useState(() => Math.floor(Math.random() * 1000));
   const legheVivaio = livelliBassi
-    .map((livello) => campionati.find((league) => league.level === livello))
+    .map((livello) => {
+      const gironi = campionati.filter((league) => league.level === livello);
+      return gironi.length === 0 ? undefined : gironi[semeGirone % gironi.length];
+    })
     .filter((league): league is (typeof campionati)[number] => league !== undefined);
 
   /**

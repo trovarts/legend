@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { clubStrength } from '../../src/engine/clubStrength';
-import { buildLowerLeagues, countriesWithPyramid } from '../../src/engine/pyramid';
+import { buildLowerLeagues, countriesWithPyramid, gironiDi } from '../../src/engine/pyramid';
 
 describe('le divisioni minori', () => {
   it('coprono i paesi principali', () => {
@@ -8,11 +8,37 @@ describe('le divisioni minori', () => {
     expect(countriesWithPyramid().length).toBeGreaterThanOrEqual(5);
   });
 
-  it('sono due livelli con tre gironi ciascuno', () => {
+  it('la quarta serie italiana ha nove gironi, come la Serie D vera', () => {
+    /*
+     * È il motivo per cui i gironi si contano paese per paese: con tre soli, la
+     * quarta serie italiana era un terzo di quella vera e la gavetta finiva subito.
+     */
     const leghe = buildLowerLeagues('Italy', 7);
-    expect(leghe).toHaveLength(6);
     expect(leghe.filter((lega) => lega.summary.level === 3)).toHaveLength(3);
-    expect(leghe.filter((lega) => lega.summary.level === 4)).toHaveLength(3);
+    expect(leghe.filter((lega) => lega.summary.level === 4)).toHaveLength(9);
+    expect(leghe).toHaveLength(12);
+
+    const gironi = leghe
+      .filter((lega) => lega.summary.level === 4)
+      .map((lega) => lega.summary.name);
+    expect(gironi[0]).toContain('Girone A');
+    expect(gironi[8]).toContain('Girone I');
+    expect(new Set(gironi).size).toBe(9);
+  });
+
+  it('l’Italia intera fa 262 club sulle quattro divisioni', () => {
+    // 20 in Serie A, 20 in B dai dati veri, più le due categorie generate qui.
+    const generati = buildLowerLeagues('Italy', 7)
+      .reduce((somma, lega) => somma + lega.clubs.length, 0);
+    expect(generati).toBe(222);
+    expect(20 + 20 + generati).toBe(262);
+  });
+
+  it('un paese senza una forma dichiarata resta a tre gironi', () => {
+    expect(gironiDi('France', 4)).toBe(3);
+    expect(gironiDi('Italy', 4)).toBe(9);
+    expect(buildLowerLeagues('France', 7).filter((lega) => lega.summary.level === 4))
+      .toHaveLength(3);
   });
 
   it('ogni girone ha le squadre della sua categoria, con rose complete', () => {

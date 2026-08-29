@@ -331,9 +331,15 @@ export const DILEMMA_CATALOG: readonly DilemmaEntry[] = [
         {
           id: 'niente-promesse',
           label: 'Non prometti niente',
-          stake: 'Nessuno esulta, nessuno ti accusa.',
+          stake: 'Nessuno esulta, nessuno ti accusa — e resti libero.',
           outcomes: [
-            { chance: 1, text: 'Rispondi che pensi solo alla partita di domenica.', effects: {} },
+            {
+              chance: 1,
+              text: 'Rispondi che pensi solo alla partita di domenica. Chi ti segue capisce che sei ancora sul mercato.',
+              // Un'opzione che non fa niente non è una scelta: l'altra vince per
+              // costruzione. Chi non si lega vale di più, perché è ancora prendibile.
+              effects: { valueMultiplier: 1.12 },
+            },
           ],
         },
       ],
