@@ -52,6 +52,7 @@ npm run import:world   # costruisce i dati del mondo da data/raw
 npm run dev
 ```
 
+Per ricominciare a lavorarci dopo una pausa: [docs/ripartire-da-qui.md](docs/ripartire-da-qui.md).
 Le decisioni di progetto, con il perché e cosa si è rotto ogni volta, stanno in
 [docs/decisions.md](docs/decisions.md).
 
