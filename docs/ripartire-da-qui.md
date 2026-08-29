@@ -16,8 +16,9 @@ nuova senza perdere niente. Leggi questo, poi `docs/decisions.md`.
 
 ## Stato al 29/08/2026
 
-406 test verdi, tutti i laboratori puliti, 226 KB di prima pagina contro i 1199 KB del
-riferimento. 57 campionati veri in 28 nazioni, 1015 club, 25 bivi.
+415 test verdi, tutti i laboratori puliti, 226 KB di prima pagina contro i 1199 KB del
+riferimento. 57 campionati veri in 28 nazioni, 1015 club, 25 bivi e 10 episodi di
+vivaio.
 
 **Il gioco è completo sul single-player.** Sono fuori scope per scelta del committente:
 online, classifiche globali, account, altre lingue.
@@ -36,7 +37,7 @@ I guardiani contano più dei test:
 | Comando | Cosa sorveglia |
 | --- | --- |
 | `npm run lab` | 2000 carriere: crescita, trofei, minuti, età al ritiro, promozioni, obiettivi |
-| `npm run lab:choices` | che nessuna scelta ai bivi sia sempre quella giusta |
+| `npm run lab:choices` | che nessuna scelta ai bivi e agli episodi di vivaio sia sempre quella giusta |
 | `npm run lab:vivaio` | che anche partendo dalla quarta serie la carriera stia in piedi |
 | `npm run racconto 7 FWD 4` | stampa una carriera intera **da leggere**: è così che sono usciti i difetti peggiori |
 | `npm run codice-finito` | il codice di una carriera già conclusa, per provare le schermate finali senza giocare vent'anni |
@@ -71,8 +72,16 @@ Cose viste da loro e non ancora fatte:
 Cose nostre che si possono spingere oltre:
 
 - La partita è ancora raccontata a statistiche e cronaca: si può disegnare.
-- Il vivaio dura due o tre anni con una scelta l'anno: può avere eventi suoi.
+- ~~Il vivaio dura due o tre anni con una scelta l'anno: può avere eventi suoi.~~ Fatto,
+  D-027: dieci episodi, uno per anno, che lasciano segni addosso fino in prima squadra.
 - Il Mondiale e le coppe hanno il tabellone ma non un racconto.
+- **Le schermate di scelta su telefono.** Con due opzioni la seconda finisce sotto la
+  piega, con tre è peggio: vale per i bivi, per il vivaio e per gli episodi, perché il
+  componente è lo stesso (`Scelte`). È l'ultimo posto dove D-026 non è ancora
+  applicato, e si vede solo sul telefono.
+- `npm run racconto` comincia a diciassette anni: non stampa il vivaio, quindi gli
+  episodi non si possono ancora leggere con lo strumento che ha trovato i difetti
+  peggiori.
 
 ## Le due cose che il committente ha chiesto e che non vanno dimenticate
 

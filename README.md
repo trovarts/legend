@@ -33,9 +33,9 @@ regge:
 
 | Comando | Cosa sorveglia |
 | --- | --- |
-| `npm test` | 400 test sul motore e sull'interfaccia |
+| `npm test` | 415 test sul motore e sull'interfaccia |
 | `npm run lab` | 2000 carriere: crescita, trofei, minuti, età al ritiro, promozioni, obiettivi |
-| `npm run lab:choices` | che nessuna scelta ai bivi sia sempre quella giusta |
+| `npm run lab:choices` | che nessuna scelta ai bivi e agli episodi di vivaio sia sempre quella giusta |
 | `npm run lab:vivaio` | che anche partendo dalla quarta serie la carriera stia in piedi |
 | `npm run racconto` | stampa una carriera intera, da leggere |
 | `npm run check:bundle` | il peso della prima pagina |

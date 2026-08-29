@@ -46,7 +46,10 @@ for (let seed = 0; seed < 200; seed += 1) {
     version: 1, seed,
     create: { name: 'Test', nationality: 'Italy', role: 'FWD', age: 14, leagueLevel: livello },
     startClubId: start.club.id,
-    decisions: { training: {}, dilemmas: {}, transfers: {}, agentId: 'amina-diallo', youth: {}, promotedAt: 3 },
+    decisions: {
+      training: {}, dilemmas: {}, transfers: {},
+      agentId: 'amina-diallo', youth: {}, youthEvents: {}, promotedAt: 3,
+    },
   };
   // Si gioca da soli: a ogni decisione mancante si prende la prima opzione.
   let state = playCareer(save, clubs);
@@ -59,6 +62,9 @@ for (let seed = 0; seed < 200; seed += 1) {
     const d = { ...corrente.decisions };
     if (p.kind === 'agent') d.agentId = p.options[0]!.id;
     else if (p.kind === 'youth') d.youth = { ...d.youth, [String(p.year)]: APPROCCI[seed % 3]! };
+    else if (p.kind === 'youth-event') {
+      d.youthEvents = { ...d.youthEvents, [String(p.year)]: p.dilemma.options[seed % p.dilemma.options.length]!.id };
+    }
     else if (p.kind === 'promotion') d.promotedAt = state.youth.length;
     else if (p.kind === 'training') d.training = { ...d.training, [String(p.season)]: 'tecnica' };
     else if (p.kind === 'dilemma') d.dilemmas = { ...d.dilemmas, [`${p.season}:${p.dilemma.id}`]: p.dilemma.options[0]!.id };

@@ -71,6 +71,10 @@ export interface RunCareerInput {
   requestFor?: (season: number) => AgentRequest | undefined;
   /** L'overall con cui esce dal vivaio, se la carriera comincia da lì. */
   startOverall?: number;
+  /** I segni lasciati dagli episodi del vivaio: una scelta a quindici anni pesa a venti. */
+  startMarks?: Mark[];
+  /** Minuti guadagnati o persi nel vivaio, validi dalla prima stagione. */
+  startMinutesBonus?: number;
   /** Su cosa lavora in preparazione; in Fase 4 lo sceglie l'utente. */
   trainingPolicy?: (
     season: number,
@@ -111,8 +115,8 @@ export function runCareer(input: RunCareerInput): CareerResult {
   const seasons: SeasonRecord[] = [];
   const clubsPlayed: string[] = [current.club.name];
   const showdowns: Showdown[] = [];
-  let marks: Mark[] = [];
-  let minutesBonus = 0;
+  let marks: Mark[] = [...(input.startMarks ?? [])];
+  let minutesBonus = input.startMinutesBonus ?? 0;
   let retirementDelta = 0;
   let qualified: ContinentalTier | null = null;
   /** Come il club è arrivato nel campionato in cui si trova: salendo, scendendo, o essendoci nato. */

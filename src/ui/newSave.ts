@@ -34,7 +34,9 @@ export function newSave(input: NewSaveInput): CareerSave {
       leagueLevel: input.leagueLevel,
     },
     startClubId: input.startClubId,
-    decisions: { training: {}, dilemmas: {}, transfers: {} },
+    // `youthEvents` c'è fin dall'inizio, anche vuota: è quella che distingue una
+    // carriera nuova da una nata prima degli episodi del vivaio.
+    decisions: { training: {}, dilemmas: {}, transfers: {}, youthEvents: {} },
   };
 }
 

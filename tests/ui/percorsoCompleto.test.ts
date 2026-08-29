@@ -59,6 +59,11 @@ describe('il percorso completo di una carriera', () => {
       if (pending.kind === 'agent') decisions.agentId = pending.options[0]!.id;
       else if (pending.kind === 'youth') {
         decisions.youth = { ...decisions.youth, [String(pending.year)]: 'piano-completo' };
+      } else if (pending.kind === 'youth-event') {
+        decisions.youthEvents = {
+          ...decisions.youthEvents,
+          [String(pending.year)]: pending.dilemma.options[0]!.id,
+        };
       } else if (pending.kind === 'promotion') decisions.promotedAt = stato.youth.length;
       else if (pending.kind === 'training') {
         decisions.training = { ...decisions.training, [String(pending.season)]: 'tecnica' };

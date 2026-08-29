@@ -36,6 +36,7 @@ for (let passi = 0; passi < 500 && !stato.finished; passi += 1) {
   const d = { ...save.decisions };
   if (p.kind === 'agent') d.agentId = p.options[0]!.id;
   else if (p.kind === 'youth') d.youth = { ...d.youth, [String(p.year)]: 'forza-il-ritmo' };
+  else if (p.kind === 'youth-event') d.youthEvents = { ...d.youthEvents, [String(p.year)]: p.dilemma.options[0]!.id };
   else if (p.kind === 'promotion') d.promotedAt = stato.youth.length;
   else if (p.kind === 'training') d.training = { ...d.training, [String(p.season)]: 'tecnica' };
   else if (p.kind === 'dilemma') {

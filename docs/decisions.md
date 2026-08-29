@@ -601,3 +601,58 @@ quello che manca è solo coperto.
 scorrere per trovare l'azione non è una schermata piena, è una schermata sbagliata.
 Se il contenuto non ci sta, non è il lettore a doversi muovere: è il contenuto a dover
 essere meno.
+
+## D-027 — Il vivaio aveva tre anni e una domanda sola
+
+**Il fatto:** il vivaio chiedeva sempre la stessa cosa — come ti alleni — due o tre
+volte di fila, con le stesse tre carte. Sono i primi minuti di ogni partita, cioè la
+prima impressione che il gioco fa, ed erano un modulo da compilare tre volte.
+
+**Cos'è entrato:** dieci episodi da settore giovanile, uno per anno, mai ripetuti nella
+stessa carriera — il giovedì con la prima squadra, gli esami che cadono sul torneo, gli
+otto centimetri cresciuti in un'estate, il procuratore dietro la rete a quindici anni,
+il primo inverno in convitto. Usano i tipi dei bivi di carriera (`DilemmaEffects`),
+quindi la posta si mostra con gli stessi pezzi e nessun numero è di facciata.
+
+**La cosa che li rende veri:** un episodio non dà solo punti, lascia **segni**. Il
+motore ora accetta `startMarks` e `startMinutesBonus`, e quello che succede a quindici
+anni entra in prima squadra insieme al giocatore. Il test l'ha scoperto da solo: un
+ragazzo che torna dal giovedì con la testa fragile si ritrova, tre anni dopo, davanti
+al bivio «lavoro mentale» — che esiste solo per chi ha quel segno. Una scelta del
+vivaio apre una situazione della carriera.
+
+**Cosa ha rischiato di rompersi, e come si è visto.**
+
+1. *L'overall saltava.* Prima l'episodio arrivava dopo il resoconto dell'anno, e i suoi
+   punti si aggiungevano fuori: il ragazzo usciva dal vivaio con un numero diverso da
+   quello con cui entrava in prima squadra. È l'invariante di D-023, e il test di
+   `percorsoCompleto` l'ha fermato subito. Ora l'episodio sta *dentro* l'anno: si
+   decide prima del resoconto, e il resoconto lo somma.
+
+2. *Il vivaio stava diventando un secondo motore di crescita.* Con i primi numeri
+   `lab:vivaio` passava da 49,8 a 54,4 di overall alla prima stagione e dall'1% al 9,5%
+   di carriere sopra 80 di picco: partire dalla quarta serie era diventato comodo come
+   partire dalla Serie A. La posta è stata spostata dai punti ai segni — l'allenamento
+   resta la leva della crescita, l'episodio è la leva del carattere. Ora 52,9 e 4,0%.
+
+3. *Il guardiano non guardava.* `lab:vivaio` pre-imposta `promotedAt`, e il primo
+   criterio per riconoscere i salvataggi vecchi («ha già lasciato le giovanili») gli
+   faceva saltare gli episodi del tutto: il laboratorio non li avrebbe visti mai. Il
+   criterio ora è preciso — un salvataggio nato prima non ha proprio la chiave
+   `youthEvents`, una carriera nuova ce l'ha sempre, anche vuota.
+
+**Il laboratorio.** `lab:choices` ora ha una seconda parte per gli episodi. Non poteva
+usare `playCareer`, che rigioca la carriera intera a ogni decisione: per questo il
+vivaio è stato estratto in `runYouth`, che si risolve da solo e passa il testimone a un
+solo `runCareer`. Ne è uscito che servono molte più carriere che per i bivi — un
+giocatore vede due o tre episodi su dieci — e con 600 carriere ogni episodio ha un
+campione fra le 27 e le 211: nessuna risposta è quella giusta più del 55% delle volte.
+
+**Verificati i verificatori** (D-011): rotto apposta l'effetto sull'overall, il test
+fallisce; tolti i segni fra vivaio e carriera, il test fallisce; resa dominante una
+risposta, `lab:choices` la denuncia al 98%. Il primo tentativo di test sui segni **non**
+falliva: cercava un caso che con quel seed non capitava mai, ed è stato riscritto perché
+il caso lo trovi davvero o fallisca.
+
+**Da ricordare:** quando una parte del gioco chiede sempre la stessa domanda, il
+problema non è la domanda — è che ce n'è una sola.

@@ -42,6 +42,14 @@ describe('playCareer', () => {
         corrente = { ...corrente, decisions: { ...d, agentId: pending.options[0]!.id } };
       } else if (pending.kind === 'youth') {
         corrente = { ...corrente, decisions: { ...d, youth: { ...d.youth, [String(pending.year)]: 'piano-completo' } } };
+      } else if (pending.kind === 'youth-event') {
+        corrente = {
+          ...corrente,
+          decisions: {
+            ...d,
+            youthEvents: { ...d.youthEvents, [String(pending.year)]: pending.dilemma.options[0]!.id },
+          },
+        };
       } else if (pending.kind === 'promotion') {
         corrente = { ...corrente, decisions: { ...d, promotedAt: 2 } };
       } else if (pending.kind === 'training') {

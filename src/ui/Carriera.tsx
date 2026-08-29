@@ -19,6 +19,7 @@ import { Mercato } from './Mercato';
 import { modoDi } from './preferenze';
 import { Preparazione } from './Preparazione';
 import { Tessera } from './Tessera';
+import { Episodio } from './Episodio';
 import { Promozione, Vivaio } from './Vivaio';
 import { Bacheca, BarraSchede, Profilo, SchedaAgente, Statistiche, type Scheda } from './Schede';
 import { Esito, facceDaEffetti, type FacciaEsito } from './Esito';
@@ -68,6 +69,7 @@ export function Carriera({
   const [attesa, setAttesa] = useState<
     | { tipo: 'dilemma'; season: number; dilemma: Dilemma; optionId: string }
     | { tipo: 'vivaio'; year: number; approach: YouthApproach }
+    | { tipo: 'episodio'; year: number; dilemma: Dilemma; optionId: string }
     | null
   >(null);
 
@@ -96,7 +98,13 @@ export function Carriera({
     if (attesa === null) return null;
 
     if (attesa.tipo === 'vivaio') {
-      const anno = state.youth.find((item) => item.year === attesa.year);
+      // L'anno resta aperto finché non si risponde all'episodio: intanto il suo
+      // risultato viaggia nella decisione in attesa.
+      const anno =
+        state.youth.find((item) => item.year === attesa.year)
+        ?? (state.pending?.kind === 'youth-event' && state.pending.year === attesa.year
+          ? state.pending.season
+          : undefined);
       if (!anno) return null;
       const option = youthOption(attesa.approach);
       const facce: FacciaEsito[] = option.outcomes.map((outcome) => ({
@@ -116,6 +124,23 @@ export function Carriera({
           salita > 0
             ? `Un anno di lavoro ben speso: da ${anno.overallStart} a ${anno.overallEnd}.`
             : 'Il fisico non ha risposto: nessun passo avanti, quest’anno.',
+      };
+    }
+
+    if (attesa.tipo === 'episodio') {
+      const episodio = state.episodes.find((item) => item.year === attesa.year);
+      const option = attesa.dilemma.options.find((item) => item.id === attesa.optionId);
+      if (!episodio || !option) return null;
+      const uscita = Math.max(
+        0,
+        option.outcomes.findIndex((outcome) => outcome.text === episodio.outcomeText),
+      );
+      return {
+        titolo: `${episodio.age} anni · vivaio`,
+        scelta: option.label,
+        facce: facceDaEffetti(option.outcomes),
+        uscita,
+        racconto: episodio.outcomeText,
       };
     }
 
@@ -340,6 +365,26 @@ export function Carriera({
               decisions: {
                 ...save.decisions,
                 youth: { ...save.decisions.youth, [String(pending.year)]: approach },
+              },
+            });
+          }}
+        />
+      )}
+
+      {scheda === 'carriera' && rivelazione === null && annoVivaio === null && pending?.kind === 'youth-event' && (
+        <Episodio
+          key={pending.year}
+          dilemma={pending.dilemma}
+          age={pending.age}
+          clubName={pending.clubName}
+          overall={pending.overall}
+          onChoose={(optionId) => {
+            setAttesa({ tipo: 'episodio', year: pending.year, dilemma: pending.dilemma, optionId });
+            onChange({
+              ...save,
+              decisions: {
+                ...save.decisions,
+                youthEvents: { ...save.decisions.youthEvents, [String(pending.year)]: optionId },
               },
             });
           }}
