@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Agente</string>
+    <string name="service_desc">Permette all\'Agente di vedere lo schermo e toccare al posto tuo, solo quando gli dai un compito dall\'app.</string>
+</resources>
